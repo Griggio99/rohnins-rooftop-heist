@@ -232,7 +232,11 @@ footer{background:linear-gradient(180deg,transparent,rgba(255,79,135,.1))}
 }
 @media(max-width:380px){.pills span{font-size:9.5px;padding:6px 8px}}
 </style>
-<meta property="og:title" content="Rohnin's Rooftop Heist"><meta property="og:description" content="A neon spy rooftop runner. Solo or 2-player co-op. Free, plays in your browser."><meta property="og:image" content="https://rohninsheist.com/share.png"><meta property="og:url" content="https://rohninsheist.com/"><meta property="og:type" content="website"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://rohninsheist.com/share.png">
+<meta name="description" content="Rohnin's Rooftop Heist is a free neon spy rooftop runner with 2-player online co-op, secret passages, boss fights, daily heists and weekly trophies. Plays in your browser.">
+<link rel="canonical" href="https://rohninsheist.com/">
+<meta name="theme-color" content="#0a0612">
+<meta property="og:title" content="Rohnin's Rooftop Heist"><meta property="og:description" content="A neon spy rooftop runner. Solo or 2-player co-op. Free, plays in your browser."><meta property="og:image" content="https://rohninsheist.com/share.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:url" content="https://rohninsheist.com/"><meta property="og:type" content="website"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Rohnin's Rooftop Heist"><meta name="twitter:description" content="Free neon spy rooftop runner. Play solo or 2-player co-op."><meta name="twitter:image" content="https://rohninsheist.com/share.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Rohnin's Rooftop Heist","url":"https://rohninsheist.com/","image":"https://rohninsheist.com/share.png","description":"A free neon spy rooftop runner with 2-player online co-op, secret passages, boss fights and daily heists.","genre":["Action","Runner","Co-op"],"gamePlatform":"Web browser","playMode":["SinglePlayer","CoOp"],"applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":[{"@type":"Person","name":"Garrett Riggio","url":"https://GarrettRiggio.com"},{"@type":"Person","name":"Rohnin"}]}</script>
 </head>
 <body>
 <div id="prog"></div><canvas id="fx"></canvas>
@@ -269,6 +273,24 @@ footer{background:linear-gradient(180deg,transparent,rgba(255,79,135,.1))}
     <div class="tools"><button class="btn alt sm" id="fs">Fullscreen</button><a class="btn alt sm" href="play.html" target="_blank" rel="noopener">Open game in new tab</a><span class="note" id="gnote" style="margin:0"></span></div>
     <div class="keys">
       <span><b>← →</b> lanes</span><span><b>↑</b> jump</span><span><b>↓</b> slide</span><span><b>SPACE</b> shoot</span><span><b>N</b> next gun</span><span><b>1-8</b> pick gun</span><span><b>C</b> EMP</span><span><b>V</b> phase</span><span><b>B</b> slow-mo</span>
+    </div>
+  </div>
+</section>
+
+<section id="watch">
+  <div class="wrap">
+    <div class="eyebrow">See it in action</div>
+    <h2>WATCH A HEIST</h2>
+    <div style="max-width:880px;margin:18px auto 0;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.2);box-shadow:0 20px 60px rgba(0,0,0,.5)"><video id="demov" muted loop playsinline preload="none" poster="gameplay-poster.jpg" style="width:100%;display:block"><source src="gameplay.webm" type="video/webm"><source src="gameplay.mp4" type="video/mp4"></video></div>
+    <div class="eyebrow" style="margin-top:46px">Field guide</div>
+    <h2>SECRETS &amp; SHORTCUTS</h2>
+    <div class="grid g3" id="fg">
+      <div class="card rv"><video muted loop playsinline preload="none" data-src="guide-portal.mp4" style="width:100%;border-radius:10px"></video><h3>SECRET PORTAL</h3><p>Fly through the gold ring to drop into a bonus vault stuffed with chips.</p></div>
+      <div class="card rv"><video muted loop playsinline preload="none" data-src="guide-phantom.mp4" style="width:100%;border-radius:10px"></video><h3>PHANTOM WALLS</h3><p>Some walls are fake. Run straight through to find a hidden stash.</p></div>
+      <div class="card rv"><video muted loop playsinline preload="none" data-src="guide-bonus.mp4" style="width:100%;border-radius:10px"></video><h3>BONUS ZONES</h3><p>Snake the lanes, hop the arcs and grab the jackpot at the end.</p></div>
+      <div class="card rv"><video muted loop playsinline preload="none" data-src="guide-gamble.mp4" style="width:100%;border-radius:10px"></video><h3>HIGH-STAKES BYPASS</h3><p>The red portal doubles the chips and adds lasers. Risk it for the biscuit.</p></div>
+      <div class="card rv"><video muted loop playsinline preload="none" data-src="guide-trap.mp4" style="width:100%;border-radius:10px"></video><h3>TRAP WALLS</h3><p>Deeper districts hide walls that bite. Look for the red tint.</p></div>
+      <div class="card rv"><video muted loop playsinline preload="none" data-src="guide-dream.mp4" style="width:100%;border-radius:10px"></video><h3>DREAM SEQUENCE</h3><p>The world goes rainbow. Trust your lanes and keep running.</p></div>
     </div>
   </div>
 </section>
@@ -503,5 +525,6 @@ function loop(){ if(!vis) return; x.clearRect(0,0,W,H); x.globalCompositeOperati
 loop();
 })();
 </script>
+<script>(function(){var vs=[].slice.call(document.querySelectorAll('#demov,#fg video'));if(!('IntersectionObserver' in window))return;var io=new IntersectionObserver(function(es){es.forEach(function(e){var v=e.target;if(e.isIntersecting){if(v.dataset.src&&!v.src){v.src=v.dataset.src}v.play().catch(function(){})}else v.pause()})},{threshold:.35});vs.forEach(function(v){io.observe(v)})})();</script>
 </body>
 </html>
