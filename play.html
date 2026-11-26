@@ -324,9 +324,9 @@ let raceSeed=0, rngS=null;
 const mulberry=a=>()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; };
 function withSeed(fn){ return function(){ if(!rngS) return fn.apply(null,arguments); const o=Math.random; Math.random=rngS; try{ return fn.apply(null,arguments); } finally{ Math.random=o; } }; }
 const SAVE_KEY='rooftopAgentSave1';
-const save={bank:0,up:{fire:0,dmg:0,shield:0,mag:0,jet:0,x2:0,gad:0,amm:0},owned:['pistol'],weapon:'pistol',bosses:0,minis:0,cp:null,skin:'classic',skins:['classic'],ach:{},bestDist:0,dailies:0};
+const save={bank:0,up:{fire:0,dmg:0,shield:0,mag:0,jet:0,x2:0,gad:0,amm:0},owned:['pistol'],weapon:'pistol',bosses:0,minis:0,cp:null,skin:'classic',skins:['classic'],ach:{},bestDist:0,dailies:0,ms:null,streak:0,lastDay:'',runs:0};
 try{ const j=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');
-  if(j&&typeof j==='object'){ save.bank=+j.bank||0; Object.assign(save.up,j.up||{}); if(Array.isArray(j.owned)&&j.owned.length) save.owned=j.owned; save.weapon=j.weapon||'pistol'; save.bosses=+j.bosses||0; save.minis=+j.minis||0; save.cp=j.cp||null; if(Array.isArray(j.skins)&&j.skins.length) save.skins=j.skins; save.skin=j.skin||'classic'; if(j.ach&&typeof j.ach==='object') save.ach=j.ach; save.bestDist=+j.bestDist||0; save.dailies=+j.dailies||0; } }catch(e){}
+  if(j&&typeof j==='object'){ save.bank=+j.bank||0; Object.assign(save.up,j.up||{}); if(Array.isArray(j.owned)&&j.owned.length) save.owned=j.owned; save.weapon=j.weapon||'pistol'; save.bosses=+j.bosses||0; save.minis=+j.minis||0; save.cp=j.cp||null; if(Array.isArray(j.skins)&&j.skins.length) save.skins=j.skins; save.skin=j.skin||'classic'; if(j.ach&&typeof j.ach==='object') save.ach=j.ach; save.bestDist=+j.bestDist||0; save.dailies=+j.dailies||0; save.ms=(j.ms&&typeof j.ms==='object')?j.ms:null; save.streak=+j.streak||0; save.lastDay=j.lastDay||''; save.runs=+j.runs||0; } }catch(e){}
 if(save.owned.indexOf(save.weapon)<0) save.weapon='pistol';
 const persist=()=>{ try{ localStorage.setItem(SAVE_KEY,JSON.stringify(save)); }catch(e){} toHost({t:'save',save}); };
 const UPS=[
@@ -651,6 +651,19 @@ let achQ=[],achBusy=false;
 function achToast(t){ achQ.push(t); if(achBusy) return; achBusy=true; const el=$('achToast'); (function next(){ const m=achQ.shift(); if(!m){ achBusy=false; return; } el.textContent=m; el.classList.add('on'); try{ sfx.victory(true); }catch(e){} setTimeout(()=>{ el.classList.remove('on'); setTimeout(next,450); },3000); })(); }
 function ach(id){ const a=ACH.find(x=>x.id===id); if(!a||save.ach[id]) return; save.ach[id]=1; save.bank+=a.r; if(a.skin&&save.skins.indexOf(a.skin)<0) save.skins.push(a.skin); persist(); achToast('TROPHY: '+a.name.toUpperCase()+'  +'+a.r+' CHIPS'+(a.skin?'  ·  NEW SKIN':'')); }
 function checkAch(){ for(const a of ACH) if(!save.ach[a.id]&&a.t()) ach(a.id); }
+const MPOOL=[
+  {k:'kills',n:'Destroy {t} targets',t:[25,40,60],r:[60,90,130],m:'sum'},
+  {k:'dist',n:'Run {t} m in total',t:[1500,3000,5000],r:[60,100,150],m:'sum'},
+  {k:'coins',n:'Collect {t} chips',t:[60,120,200],r:[60,100,150],m:'sum'},
+  {k:'sc',n:'Score {t} in one heist',t:[5000,10000,20000],r:[70,110,170],m:'max'},
+  {k:'one',n:'Run {t} m in one heist',t:[800,1500,2500],r:[70,110,170],m:'max'},
+  {k:'runs',n:'Play {t} heists',t:[3,4,5],r:[50,70,90],m:'sum'}
+];
+const dayStr0=()=>new Date().toISOString().slice(0,10);
+function missions(){ const d=dayStr0(); if(!save.ms||save.ms.day!==d){ let h=0; for(const c of d) h=(h*31+c.charCodeAt(0))>>>0; const pool=MPOOL.slice(), list=[]; for(let i=0;i<3;i++){ h=(Math.imul(h,1664525)+1013904223)>>>0; const m=pool.splice(h%pool.length,1)[0]; const tier=i; list.push({k:m.k,t:m.t[tier],r:m.r[tier],p:0,done:0}); } save.ms={day:d,list}; persist(); } return save.ms.list; }
+function missionText(m){ const d=MPOOL.find(x=>x.k===m.k); return d.n.replace('{t}',m.t.toLocaleString()); }
+function missionRun(){ const L=missions(), st={kills:G.kills,dist:Math.floor(G.dist),coins:G.coins,sc:Math.floor(G.sc),one:Math.floor(G.dist),runs:1}; for(const m of L){ if(m.done) continue; const d=MPOOL.find(x=>x.k===m.k); m.p=d.m==='max'?Math.max(m.p,st[m.k]):m.p+st[m.k]; if(m.p>=m.t){ m.done=1; save.bank+=m.r; achToast('MISSION COMPLETE: '+missionText(m).toUpperCase()+'  +'+m.r+' CHIPS'); } } persist(); }
+function loginStreak(){ const d=dayStr0(); if(save.lastDay===d) return; const y=new Date(Date.now()-864e5).toISOString().slice(0,10); save.streak=save.lastDay===y?Math.min((save.streak||0)+1,7):1; save.lastDay=d; const b=40*save.streak; save.bank+=b; persist(); setTimeout(()=>achToast('DAY '+save.streak+' STREAK  +'+b+' CHIPS · COME BACK TOMORROW FOR MORE'),1200); }
 function pop(x,y,z,text,col,rel){ pops.push({x,y,z,text,col:col||'#fff',t:1.2,rel:!!rel}); if(pops.length>30) pops.shift(); }
 function explode(x,y,z,col){ spawn(x,y,z,22,col,11,0.8,0.15,6); spawn(x,y,z,10,'#fff',8,0.4,0.08,3); G.shake=Math.max(G.shake,0.12); }
 function stumbleOrDie(msg){
@@ -1612,7 +1625,7 @@ function drawHUD(){
   }
   if(G.bannerT>0){
     const a=Math.min(1,G.bannerT/0.6,(3.4-G.bannerT)/0.4), p=PAL[G.di%PAL.length]; ctx.globalAlpha=Math.max(0,a); ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.font=`${14*u}px ${FONT}`; ctx.fillStyle=rgb(p.a); ctx.fillText('— DISTRICT '+(G.di+1)+' —',W/2,H*0.2-30*u);
+    ctx.font=`${14*u}px ${FONT}`; ctx.fillStyle=rgb(p.a); ctx.fillText('— DISTRICT '+(G.di+1)+(G.di>=6?'  ·  LOOP '+(Math.floor(G.di/6)+1):'')+' —',W/2,H*0.2-30*u);
     ctx.font=`${62*u}px ${FONT}`; ctx.fillStyle='#fff'; ctx.shadowColor=rgb(p.a); ctx.shadowBlur=22; ctx.fillText(p.name,W/2,H*0.2+4*u);
     ctx.shadowBlur=0; ctx.font=`${17*u}px ${FONT}`; ctx.fillStyle='rgba(255,255,255,.75)'; ctx.fillText((p.sub+' \u00B7 '+nlOf(G.di)+' LANES').toUpperCase(),W/2,H*0.2+42*u); ctx.globalAlpha=1;
   }
@@ -1909,6 +1922,7 @@ $('chrow').addEventListener('click',e=>{ e.stopPropagation(); const b=e.target.c
 function ncOverText(){ const el=$('o-team'); if(!NC.active&&!NC.runId){ el.classList.add('hid'); return; } const s=NC.peer&&NC.peer.s, same=s&&s.rn===NC.runId;
   el.classList.remove('hid'); el.textContent='TEAM SCORE '+Math.floor(G.sc+(same?s.sc||0:0)).toLocaleString()+(same?' · YOU '+Math.floor(G.sc).toLocaleString()+' / '+((s.nm||'PARTNER').slice(0,8))+' '+Math.floor(s.sc||0).toLocaleString()+' · KILLS '+(G.kills+(s.kl||0)):'')+(same?(s.dn===2||s.ph==='over'?' · PARTNER OUT':' · DEFEAT A BOSS TO BRING YOUR TEAM BACK IN'):'')+(NC.lobT>0?' · LOBBY IN '+Math.max(1,Math.ceil(4-NC.lobT)):''); }
 
+function drawSpeedLines(dt){ if(G.state!=='playing'||G.speed<22) return; const k=Math.min(1,(G.speed-22)/14), n=Math.floor(6+14*k); ctx.save(); ctx.globalAlpha=0.10+0.12*k; ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; const cx=W/2, cy=H*0.42; for(let i=0;i<n;i++){ const a=((i*137.5+G.t*40)%360)*Math.PI/180, r0=Math.min(W,H)*(0.35+((i*7+G.t*3)%10)/22), r1=r0+Math.min(W,H)*(0.10+0.16*k); ctx.beginPath(); ctx.moveTo(cx+Math.cos(a)*r0*1.5,cy+Math.sin(a)*r0); ctx.lineTo(cx+Math.cos(a)*r1*1.5,cy+Math.sin(a)*r1); ctx.stroke(); } ctx.restore(); }
 function drawWet(dt){
   if(!QL.lit||G.state==='menu'&&false) return; const pal=PAL[G.di%PAL.length]; if(pal.wx!=='rain') return;
   ctx.save(); ctx.globalCompositeOperation='lighter'; const t=G.dist*0.05, top=HOR+(H-HOR)*0.18;
@@ -1939,7 +1953,7 @@ function render(dt){
   for(const it of items){ switch(it.t){ case 0:drawBld(it.o);break; case 1:drawSeg(it.o,it.a,it.b);break; case 2:drawObs(it.o);break; case 3:drawCoin(it.o);break; case 4:drawPow(it.o);break;
     case 7:drawPB(it.o);break; case 8:drawEB(it.o);break; case 9:drawBoss();break; case 10:drawSkyDrone(it.o);break; case 11:drawZone(it.o);break; case 12:drawGhost(it.o);break; default: drawPlayer(); } }
   drawChaser();
-  drawParticles(); drawPops(); drawWeather(dt); drawFX(dt); drawFX2(dt); drawWet(dt);
+  drawParticles(); drawPops(); drawWeather(dt); drawFX(dt); drawFX2(dt); drawWet(dt); drawSpeedLines(dt);
   ctx.restore();
   postFX(dt);
   if(G.state==='playing'||G.state==='paused'||G.state==='dead'){ drawHUD(); drawCoopHUD(); }
@@ -1953,7 +1967,7 @@ function showOver(){
   $('o-score').textContent=Math.floor(G.sc).toLocaleString(); $('o-chips').textContent=G.coins; $('o-dist').textContent=Math.floor(G.dist); $('o-best').textContent=G.best.toLocaleString();
   $('newbest').textContent=G.newBest?'NEW PERSONAL BEST':'';
   $('o-bank').textContent=`+${G.bankGain} chips banked · ${G.kills} targets destroyed · bank ${save.bank.toLocaleString()}`;
-  if(G.dist>save.bestDist){ save.bestDist=Math.floor(G.dist); persist(); } if(G.daily&&G.sc>=500){ save.dailies=(save.dailies||0)+1; ach('daily'); } checkAch();
+  save.runs=(save.runs||0)+1; try{ missionRun(); }catch(e){} if(G.dist>save.bestDist){ save.bestDist=Math.floor(G.dist); persist(); } if(G.daily&&G.sc>=500){ save.dailies=(save.dailies||0)+1; ach('daily'); } checkAch();
   const cp=save.cp, rb=$('resumecp'); $('o-rank').textContent='';
   if(cp&&cp.di>0){ rb.classList.remove('hid'); const c=cpCost(cp); rb.textContent='RESUME DISTRICT '+(cp.di+1)+' · '+c+' CHIPS'; rb.disabled=save.bank<c; rb.style.opacity=save.bank<c?0.45:1; } else rb.classList.add('hid');
   if(NC.active){ NC.phase='over'; NC.sendT=0; } ncOverText(); $('coagain').classList.toggle('hid',!(NC.tr||NC.code));
@@ -2082,6 +2096,7 @@ function openShop(from){ shopFrom=from; shopOpen=true; $('menu').classList.add('
 function closeShop(){ shopOpen=false; $('shop').classList.add('hidden'); if(shopFrom==='over') $('over').classList.remove('hidden'); else { $('menu').classList.remove('hidden'); } refreshMenu(); }
 const dayStr=()=>new Date().toISOString().slice(0,10);
 function daySeed(){ let h=2166136261; const s='heist-'+dayStr(); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return (h>>>0)||1; }
+try{ loginStreak(); missions(); }catch(e){}
 $('daybtn').textContent='DAILY HEIST · '+new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'}).toUpperCase();
 $('daybtn').addEventListener('click',e=>{ e.currentTarget.blur(); auInit(); raceSeed=daySeed(); dailyFlag=true; startGame(); setTimeout(()=>pop(pl.x,pl.y+3,PZ,'DAILY HEIST · SAME ROOFTOPS FOR EVERYONE','#ffd35a',true),400); });
 $('go').addEventListener('click',e=>{ e.currentTarget.blur(); startGame(); });
@@ -2089,7 +2104,7 @@ $('cont').addEventListener('click',e=>{ e.currentTarget.blur(); if(save.cp) star
 $('resumecp').addEventListener('click',e=>{ e.currentTarget.blur(); const cp=save.cp; if(!cp||save.bank<cpCost(cp)) return; save.bank-=cpCost(cp); persist(); startGame(cp); });
 $('saveq').addEventListener('click',e=>{ e.currentTarget.blur(); if(G.state!=='paused') return; save.bank+=G.coins; G.coins=0; persist(); submitScore(); $('pause').classList.add('hidden'); toMenu(); });
 $('lbbtn').addEventListener('click',e=>{ e.currentTarget.blur(); openLB('solo'); });
-$('achbtn').addEventListener('click',e=>{ e.currentTarget.blur(); const l=$('ach-list'); l.textContent=''; let n=0; for(const a of ACH){ const got=!!save.ach[a.id]; if(got) n++; const r=document.createElement('div'); r.className='lbrow'+(got?' me':''); r.style.opacity=got?1:0.6; const b=document.createElement('b'); b.textContent=got?'✓':'🔒'; const s=document.createElement('span'); s.style.textAlign='left'; s.textContent=a.name+' — '+a.desc; const em=document.createElement('em'); em.style.fontStyle='normal'; em.textContent='+'+a.r; r.append(b,s,em); l.appendChild(r); } $('ach-sum').textContent=n+' / '+ACH.length+' UNLOCKED'; $('menu').classList.add('hidden'); $('achm').classList.remove('hidden'); });
+$('achbtn').addEventListener('click',e=>{ e.currentTarget.blur(); const l=$('ach-list'); l.textContent=''; const mh=document.createElement('div'); mh.className='best'; mh.style.margin='4px 0 6px'; mh.textContent='DAILY MISSIONS · DAY '+Math.max(1,save.streak||1)+' STREAK'; l.appendChild(mh); for(const m of missions()){ const r=document.createElement('div'); r.className='lbrow'+(m.done?' me':''); const b=document.createElement('b'); b.textContent=m.done?'✓':Math.min(100,Math.floor(m.p/m.t*100))+'%'; const s=document.createElement('span'); s.style.textAlign='left'; s.textContent=missionText(m); const em=document.createElement('em'); em.style.fontStyle='normal'; em.textContent='+'+m.r; r.append(b,s,em); l.appendChild(r); } const th=document.createElement('div'); th.className='best'; th.style.margin='12px 0 6px'; th.textContent='TROPHIES'; l.appendChild(th); let n=0; for(const a of ACH){ const got=!!save.ach[a.id]; if(got) n++; const r=document.createElement('div'); r.className='lbrow'+(got?' me':''); r.style.opacity=got?1:0.6; const b=document.createElement('b'); b.textContent=got?'✓':'🔒'; const s=document.createElement('span'); s.style.textAlign='left'; s.textContent=a.name+' — '+a.desc; const em=document.createElement('em'); em.style.fontStyle='normal'; em.textContent='+'+a.r; r.append(b,s,em); l.appendChild(r); } $('ach-sum').textContent=n+' / '+ACH.length+' UNLOCKED'; $('menu').classList.add('hidden'); $('achm').classList.remove('hidden'); });
 $('ach-back').addEventListener('click',e=>{ e.currentTarget.blur(); $('achm').classList.add('hidden'); $('menu').classList.remove('hidden'); });
 $('lb-tabs').addEventListener('click',e=>{ const b=e.target.closest('[data-m]'); if(b) openLB(b.dataset.m); });
 $('lb-back').addEventListener('click',e=>{ e.currentTarget.blur(); $('lbm').classList.add('hidden'); });

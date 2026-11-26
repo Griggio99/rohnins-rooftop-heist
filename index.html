@@ -177,6 +177,20 @@ footer{padding:46px 20px 60px;text-align:center;opacity:.6;font-size:14px;letter
   </div>
 </section>
 
+<section id="more">
+  <div class="wrap">
+    <div class="eyebrow">Always something new</div>
+    <h2>COME BACK EVERY DAY</h2>
+    <p class="lead">The rooftops never end: after the sixth district the city loops back harder. Daily missions, a login streak and a fresh seeded Daily Heist keep every day different.</p>
+    <div class="grid g3">
+      <div class="card rv"><div class="ic">📅</div><h3>DAILY HEIST</h3><p>One shared set of rooftops for everyone, every day, with its own leaderboard. Beat your friends on the same run.</p></div>
+      <div class="card rv"><div class="ic">🏆</div><h3>TROPHIES + SKINS</h3><p>Twelve trophies pay out chips and unlock the Ghost and Phantom outfits. Buy Neon, Crimson and High Roller in the Armoury.</p></div>
+      <div class="card rv"><div class="ic">💬</div><h3>CO-OP CALLOUTS</h3><p>One-tap quick chat, partner trails, a duo leaderboard and revive-on-boss-kill. Share an invite link and you are in.</p></div>
+    </div>
+    <div style="margin-top:26px;text-align:center"><button class="btn" id="shareBtn" style="font:inherit;cursor:pointer;padding:12px 26px">SHARE THE GAME</button></div>
+  </div>
+</section>
+
 <section id="arsenal">
   <div class="wrap">
     <div class="eyebrow">Be smart with your ammo</div>
@@ -295,5 +309,6 @@ document.querySelectorAll('.rv').forEach((e,i)=>{ e.style.transitionDelay=(i%6)*
 })();
 })();
 </script>
+<script>document.getElementById('shareBtn').addEventListener('click',async()=>{const d={title:"Rohnin's Rooftop Heist",text:'Free neon spy rooftop runner. Play solo or 2-player co-op!',url:'https://rohninsheist.com'};try{ if(navigator.share) await navigator.share(d); else { await navigator.clipboard.writeText(d.url); document.getElementById('shareBtn').textContent='LINK COPIED!'; } }catch(e){}});</script>
 </body>
 </html>
