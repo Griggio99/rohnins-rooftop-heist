@@ -2717,7 +2717,7 @@ const LVT=['ROOKIE','LOOKOUT','PICKPOCKET','CRACKSMAN','INFILTRATOR','FIXER','GH
 const xpAt=L=>Math.round(120*L*(L+1)/2*(1+L*0.1));
 const lvOf=xp=>{ let L=0; while(xp>=xpAt(L+1)) L++; return L; };
 const lvName=L=>LVT[Math.min(LVT.length-1,L)];
-function lvRefresh(){ const L=lvOf(save.xp||0); $('lvtag').textContent='LV '+L+' · '+lvName(L); }
+function lvRefresh(){ const L=lvOf(save.xp||0); $('lvtag').textContent='LV '+L+' · '+lvName(L)+((save.streak||0)>1?'  ·  🔥 DAY '+save.streak:''); }
 const LVREW={1:{c:100},2:{skin:'neon'},3:{c:150},4:{pet:'drone'},5:{skin:'crimson'},6:{c:300},7:{pet:'sprite'},8:{skin:'gold'},9:{c:500},10:{skin:'frost'},11:{pet:'gunner'},12:{c:1000}};
 const rewTxt=L=>{ const r=LVREW[L]; if(!r) return '+'+40*L+' chips'; return r.c?'+'+r.c+' chips':r.skin?(skinById(r.skin).name+' skin'):('Sidekick: '+PETS.find(p=>p.id===r.pet).name); };
 function grantLv(L){ const r=LVREW[L]; if(!r){ save.bank+=40*L; return rewTxt(L); } if(r.c) save.bank+=r.c; if(r.skin&&save.skins.indexOf(r.skin)<0) save.skins.push(r.skin); if(r.pet&&save.pets.indexOf(r.pet)<0) save.pets.push(r.pet); return rewTxt(L); }
