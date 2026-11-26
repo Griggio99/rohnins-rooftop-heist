@@ -1,5 +1,5 @@
 // Rohnin's Rooftop Heist - tiny zero-dependency server: static game + leaderboard API.
-const http=require('http'), fs=require('fs'), path=require('path');
+const http=require('http'), fs=require('fs'), path=require('path'), crypto=require('crypto');
 const PORT=process.env.PORT||3000;
 const DATA_DIR=process.env.DATA_DIR||path.join(__dirname,'data');
 const FILE=path.join(DATA_DIR,'scores.json');
@@ -21,15 +21,18 @@ function send(res,code,obj){ res.writeHead(code,Object.assign({'Content-Type':'a
 const rooms=new Map(); // code -> {clients:Map(id->res), states:Map(id->json), t}
 const MAX_ROOMS=500, MAX_PER_ROOM=6;
 function roomOf(code){ let r=rooms.get(code); if(!r){ if(rooms.size>=MAX_ROOMS) return null; r={clients:new Map(),states:new Map(),t:Date.now()}; rooms.set(code,r); } return r; }
-function sse(res,ev,data){ try{ res.write('event: '+ev+'\ndata: '+data+'\n\n'); }catch(e){} }
-setInterval(()=>{ const now=Date.now(); for(const [c,r] of rooms){ for(const [id,res] of r.clients){ try{ res.write('event: ping\ndata: 1\n\n'); }catch(e){} } for(const [id,st] of r.states) if(now-st.t>30000) r.states.delete(id); if(!r.clients.size&&now-r.t>60000) rooms.delete(c); } },8000);
+function wsFrame(op,buf){ const n=buf.length; let h; if(n<126) h=Buffer.from([0x80|op,n]); else { h=Buffer.alloc(4); h[0]=0x80|op; h[1]=126; h.writeUInt16BE(n,2); } return Buffer.concat([h,buf]); }
+function wsSend(sock,str){ if(sock.destroyed||!sock.writable) return; sock.write(wsFrame(1,Buffer.from(str))); }
+function push(c,ev,data){ try{ if(c.ws) wsSend(c.sock,JSON.stringify({e:ev,d:data})); else c.write('event: '+ev+'\ndata: '+data+'\n\n'); }catch(e){} }
+const sse=push;
+setInterval(()=>{ const now=Date.now(); for(const [c,r] of rooms){ for(const [id,res] of r.clients){ push(res,'ping','1'); } for(const [id,st] of r.states) if(now-st.t>30000) r.states.delete(id); if(!r.clients.size&&now-r.t>60000) rooms.delete(c); } },8000);
 function top(n){ return scores.slice().sort((a,b)=>b.score-a.score).slice(0,n).map(({name,score,di})=>({name,score,di})); }
 function rankOf(score){ let r=1; for(const s of scores) if(s.score>score) r++; return r; }
 const server=http.createServer((req,res)=>{
   const ip=(req.headers['x-forwarded-for']||req.socket.remoteAddress||'').split(',')[0].trim();
   const u=new URL(req.url,'http://x');
   if(req.method==='OPTIONS'){ res.writeHead(204,CORS); return res.end(); }
-  if(u.pathname==='/api/ping') return send(res,200,{ok:true,players:scores.length,rooms:true});
+  if(u.pathname==='/api/ping') return send(res,200,{ok:true,players:scores.length,rooms:true,ws:true});
   { const m=u.pathname.match(/^\/api\/room\/([A-Za-z]{4})\/(events|pub)$/);
     if(m){ const code=m[1].toUpperCase();
       if(m[2]==='events'){
@@ -41,7 +44,7 @@ const server=http.createServer((req,res)=>{
         req.on('close',()=>{ if(r.clients.get(id)===res) r.clients.delete(id); });
         return;
       }
-      if(limited(ip+':pub',900,60000)) return send(res,429,{error:'slow down'});
+      if(limited(ip+':pub',1800,60000)) return send(res,429,{error:'slow down'});
       let body=''; req.on('data',c=>{ body+=c; if(body.length>4000) req.destroy(); });
       req.on('end',()=>{ let j; try{ j=JSON.parse(body); }catch(e){ return send(res,400,{error:'bad json'}); }
         const id=String(j&&j.id||'').replace(/[^\w]/g,'').slice(0,12); if(!id) return send(res,400,{error:'id'});
@@ -71,6 +74,30 @@ const server=http.createServer((req,res)=>{
   let p=decodeURIComponent(u.pathname); if(p==='/') p='/index.html';
   const f=path.normalize(path.join(PUB,p)); if(!f.startsWith(PUB)||HIDE.test(p)){ res.writeHead(403); return res.end(); }
   fs.readFile(f,(err,buf)=>{ if(err){ res.writeHead(404); return res.end('Not found'); } res.writeHead(200,{'Content-Type':MIME[path.extname(f)]||'application/octet-stream','Cache-Control':p==='/index.html'?'no-cache':'public, max-age=3600'}); res.end(buf); });
+});
+server.on('upgrade',(req,sock)=>{
+  const u=new URL(req.url,'http://x'); const m=u.pathname.match(/^\/api\/room\/([A-Za-z]{4})\/ws$/); const key=req.headers['sec-websocket-key'];
+  if(!m||!key||String(req.headers.upgrade).toLowerCase()!=='websocket'){ sock.destroy(); return; }
+  const code=m[1].toUpperCase(), id=String(u.searchParams.get('id')||'').replace(/[^\w]/g,'').slice(0,12); if(!id){ sock.destroy(); return; }
+  const r=roomOf(code); if(!r||(r.clients.size>=MAX_PER_ROOM&&!r.clients.has(id))){ sock.write('HTTP/1.1 503 Service Unavailable\r\nConnection: close\r\n\r\n'); sock.destroy(); return; }
+  const acc=crypto.createHash('sha1').update(key+'258EAFA5-E914-47DA-95CA-C5AB0DC85B11').digest('base64');
+  sock.write('HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: '+acc+'\r\n\r\n');
+  sock.setNoDelay(true); sock.setTimeout(0);
+  const old=r.clients.get(id); if(old){ try{ old.end(); }catch(e){} }
+  const me={ws:true,sock,end(){ try{ sock.destroy(); }catch(e){} }}; r.clients.set(id,me); r.t=Date.now();
+  for(const [oid,st] of r.states) if(oid!==id) push(me,'state',st.j);
+  let buf=Buffer.alloc(0), cnt=0, win=Date.now();
+  sock.on('data',d=>{ buf=Buffer.concat([buf,d]); if(buf.length>16000){ sock.destroy(); return; }
+    for(;;){ if(buf.length<2) return; const op=buf[0]&15, masked=buf[1]&128; let len=buf[1]&127, off=2; if(len===126){ if(buf.length<4) return; len=buf.readUInt16BE(2); off=4; } else if(len===127){ sock.destroy(); return; }
+      if(!masked){ sock.destroy(); return; } if(buf.length<off+4+len) return; const mk=buf.slice(off,off+4), pl=Buffer.from(buf.slice(off+4,off+4+len)); for(let i=0;i<pl.length;i++) pl[i]^=mk[i&3]; buf=buf.slice(off+4+len);
+      if(op===8){ try{ sock.write(wsFrame(8,Buffer.alloc(0))); }catch(e){} sock.destroy(); return; }
+      if(op===9){ try{ sock.write(wsFrame(10,pl)); }catch(e){} continue; }
+      if(op!==1) continue;
+      const now=Date.now(); if(now-win>1000){ win=now; cnt=0; } if(++cnt>40) continue;
+      let j; try{ j=JSON.parse(pl.toString()); }catch(e){ continue; } if(!j||typeof j!=='object') continue; j.id=id; const jj=JSON.stringify(j);
+      r.states.set(id,{j:jj,t:now}); r.t=now; for(const [oid,c] of r.clients) if(oid!==id) push(c,'state',jj); } });
+  const gone=()=>{ if(r.clients.get(id)===me) r.clients.delete(id); };
+  sock.on('close',gone); sock.on('error',gone); sock.on('end',gone);
 });
 server.listen(PORT,()=>console.log('Rohnin\'s Rooftop Heist on :'+PORT));
 process.on('SIGTERM',()=>{ try{ fs.writeFileSync(FILE,JSON.stringify(scores)); }catch(e){} process.exit(0); });

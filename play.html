@@ -1663,7 +1663,23 @@ function trSSE(code){ const seen=new Map(); let busy=false, pending=null, dead=f
   const beat=setInterval(()=>{ if(!dead&&document.hidden){ try{ pending=JSON.stringify(ncState()); flush(); }catch(e){} } },1000);
   addEventListener('online',wake); addEventListener('pageshow',wake); document.addEventListener('visibilitychange',()=>{ if(!document.hidden) wake(); });
   connect();
-  return {name:'online',send:s=>{ pending=JSON.stringify(s); flush(); },peers:()=>[...seen.values()],close:()=>{ dead=true; clearInterval(watch); clearInterval(beat); clearTimeout(rcT); try{ es.close(); }catch(e){} }}; }
+  return {name:'online',kind:'sse',status:()=>({ok:opened&&performance.now()-lastRx<12000,kind:'SSE'}),send:s=>{ pending=JSON.stringify(s); flush(); },peers:()=>[...seen.values()],close:()=>{ dead=true; clearInterval(watch); clearInterval(beat); clearTimeout(rcT); try{ es.close(); }catch(e){} }}; }
+function wsUrl(code){ let b=window.HEIST_NET?String(window.HEIST_NET).replace(/\/$/,''):location.origin; b=b.replace(/^http/,'ws'); return b+'/api/room/'+code+'/ws?id='+NC.id; }
+function trWS(code,onFail){ const seen=new Map(); let ws=null, dead=false, opened=false, everOpen=false, lastRx=performance.now(), rcT=0, fails=0, t0=performance.now(), last=null, rtt=0;
+  const connect=()=>{ if(dead) return; try{ if(ws){ ws.onclose=ws.onerror=ws.onmessage=ws.onopen=null; ws.close(); } }catch(e){} opened=false; lastRx=performance.now();
+    try{ ws=new WebSocket(wsUrl(code)); }catch(e){ fail(); return; }
+    ws.onopen=()=>{ opened=true; everOpen=true; fails=0; lastRx=performance.now(); if(last) try{ ws.send(last); }catch(e){} };
+    ws.onmessage=e=>{ lastRx=performance.now(); let m; try{ m=JSON.parse(e.data); }catch(_){ return; } if(m.e==='state'){ try{ const st=JSON.parse(m.d); if(st&&st.id&&st.id!==NC.id) seen.set(st.id,st); }catch(_){} } };
+    ws.onclose=ws.onerror=()=>{ opened=false; if(dead) return; fail(); }; };
+  const fail=()=>{ if(dead) return; fails++; if(!everOpen&&(fails>=2||performance.now()-t0>6000)&&onFail){ onFail(); return; } clearTimeout(rcT); rcT=setTimeout(connect,Math.min(5000,700*fails)); };
+  const wake=()=>{ if(dead) return; if(!opened||performance.now()-lastRx>15000){ clearTimeout(rcT); connect(); } };
+  const watch=setInterval(()=>{ if(dead) return; if(!everOpen&&performance.now()-t0>6000&&onFail){ onFail(); return; } if(performance.now()-lastRx>25000) connect(); },4000);
+  const beat=setInterval(()=>{ if(!dead&&document.hidden&&opened){ try{ last=JSON.stringify(ncState()); ws.send(last); }catch(e){} } },1000);
+  addEventListener('online',wake); addEventListener('pageshow',wake); document.addEventListener('visibilitychange',()=>{ if(!document.hidden) wake(); });
+  connect();
+  return {name:'online',kind:'ws',status:()=>({ok:opened&&performance.now()-lastRx<12000,kind:'WS'}),send:st=>{ last=JSON.stringify(st); if(opened){ try{ ws.send(last); }catch(e){} } },peers:()=>[...seen.values()],close:()=>{ dead=true; clearInterval(watch); clearInterval(beat); clearTimeout(rcT); try{ ws.onclose=ws.onerror=null; ws.close(); }catch(e){} }}; }
+function trAuto(code){ let cur=null; const useSSE=()=>{ try{ cur.close(); }catch(e){} cur=trSSE(code); }; cur=('WebSocket' in window)?trWS(code,useSSE):trSSE(code);
+  return {name:'online',status:()=>cur.status?cur.status():{ok:true,kind:'?'},send:st=>cur.send(st),peers:()=>cur.peers(),close:()=>cur.close()}; }
 const livesLeft=()=>Math.max(0,NC.max-NC.used-NC.peerUsed);
 NC.livesLeft=livesLeft;
 function ncState(){ return {id:NC.id,nm:NC.nm,jt:NC.jt,t:++NC.seq,ph:NC.phase,rn:NC.runId,go:NC.myGo,z:+G.dist.toFixed(1),x:+pl.x.toFixed(2),y:+Math.max(-14,pl.y).toFixed(2),v:+G.speed.toFixed(1),sl:pl.slide>0?1:0,f:(G.t-NC.lastFire<0.3)?1:0,dn:NC.out?2:0,sc:Math.floor(G.sc),di:G.di,u:NC.used,bd:NC.bdOut,rv:NC.rv}; }
@@ -1673,7 +1689,7 @@ function ncDrain(){ const k=(boss.mini?'m':'b')+boss.di, pd=NC.pend[k];
 function ncOpen(code){
   ncClose(); NC.code=code; NC.jt=Date.now(); NC.nm=((LB.name||'').trim().toUpperCase()||('AGENT-'+NC.id.slice(0,3).toUpperCase())).slice(0,14); NC.phase='lobby'; NC.runId=''; NC.myGo=null; NC.sendT=0; NC.peers.clear(); NC.peer=null; NC.out=false; NC.used=0; NC.peerUsed=0; NC.hadPeer=false;
   NC.mode=EMB?'host':(LB.on&&LB.rooms?'sse':'bc');
-  try{ NC.tr=NC.mode==='host'?trHost(code):NC.mode==='sse'?trSSE(code):trBC(code); }catch(e){ NC.tr=null; }
+  try{ NC.tr=NC.mode==='host'?trHost(code):NC.mode==='sse'?trAuto(code):trBC(code); }catch(e){ NC.tr=null; }
 }
 function ncClose(){ if(NC.tr){ try{ NC.tr.close(); }catch(e){} } NC.tr=null; NC.active=false; NC.peer=null; NC.peers.clear(); NC.phase=''; NC.runId=''; NC.view=NC.view==='lobby'?'lobby':''; }
 function startCoop(seed,k){
@@ -1742,6 +1758,7 @@ function drawCoopHUD(){
   ctx.textAlign='right'; ctx.font=`${13*u}px ${FONT}`; ctx.fillStyle='rgba(255,255,255,.8)'; ctx.fillText('TEAM '+Math.floor(G.sc+(same?s.sc||0:0)).toLocaleString(),x+w-8*u,y+28*u);
   if(NC.rb>1.01) { ctx.textAlign='left'; ctx.font=`${11*u}px ${FONT}`; ctx.fillStyle='#7dffb0'; ctx.fillText('CATCH-UP BOOST',x+8*u,y+44*u); }
   else if(NC.rb<0.99){ ctx.textAlign='left'; ctx.font=`${11*u}px ${FONT}`; ctx.fillStyle='#ffcf4a'; ctx.fillText('WAIT FOR PARTNER',x+8*u,y+44*u); }
+  { const st=NC.tr&&NC.tr.status?NC.tr.status():null; if(st){ ctx.textAlign='right'; ctx.font=`${10*u}px ${FONT}`; ctx.fillStyle=st.ok?'#7dffb0':'#ffcf4a'; ctx.fillText((st.ok?'● ONLINE ':'● RECONNECTING ')+st.kind,x+w-8*u,y+44*u); } }
   ctx.restore();
   if(same&&s.ph==='run'&&s.dn!==2){ const dz=r.gz+PZ-G.dist; ctx.save(); ctx.font=`${12*u}px ${FONT}`; ctx.textAlign='center'; ctx.fillStyle='rgba(123,232,255,.85)'; ctx.shadowColor='#000'; ctx.shadowBlur=4;
     if(dz>=FAR*0.8) ctx.fillText('▲ '+(s.nm||'PARTNER')+'  +'+Math.round(r.gz-G.dist)+'m',W/2,HOR-26*u); else if(dz<=NEAR+0.5) ctx.fillText('▼ '+(s.nm||'PARTNER')+'  '+Math.round(r.gz-G.dist)+'m',W/2,H-118*u); ctx.restore(); }
@@ -1761,6 +1778,7 @@ function coRender(){
   else if(r&&r.s.ph==='run'&&NC.phase==='lobby') msg='Your partner is mid-run. Wait for the next round.';
   else if(r&&!NC.isHost) msg='Waiting for the host to start...';
   else if(r&&NC.isHost) msg='Partner connected. Start when ready.';
+  if(NC.tr&&NC.tr.status&&NC.mode==='sse'&&!NC.tr.status().ok&&!msg.startsWith('ROOM')) msg='Connecting to the server... (the first connection can take up to a minute)';
   coStat(msg);
   const b=$('co-start'); b.classList.toggle('hid',!!r&&!NC.isHost); b.disabled=!(r&&NC.isHost&&NC.member&&r.s.ph!=='run');
 }
