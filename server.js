@@ -32,6 +32,16 @@ function wsSend(sock,str){ if(sock.destroyed||!sock.writable) return; sock.write
 function push(c,ev,data){ try{ if(c.ws) wsSend(c.sock,JSON.stringify({e:ev,d:data})); else c.write('event: '+ev+'\ndata: '+data+'\n\n'); }catch(e){} }
 const sse=push;
 setInterval(()=>{ const now=Date.now(); for(const [c,r] of rooms){ for(const [id,res] of r.clients){ push(res,'ping','1'); } for(const [id,st] of r.states) if(now-st.t>30000) r.states.delete(id); if(!r.clients.size&&now-r.t>60000) rooms.delete(c); } },8000);
+// extra boards: duo (co-op) and daily-heist leaderboards, plus client error log
+const XFILE=path.join(DATA_DIR,'extra.json');
+let extra={co:[],daily:{}}; try{ extra=Object.assign(extra,JSON.parse(fs.readFileSync(XFILE,'utf8'))); }catch(e){}
+let xdirty=false;
+function saveExtra(){ try{ fs.writeFileSync(XFILE+'.tmp',JSON.stringify(extra)); fs.renameSync(XFILE+'.tmp',XFILE); }catch(e){ console.error('extra save failed',e.message); } }
+setInterval(()=>{ if(!xdirty) return; xdirty=false; saveExtra(); },3000);
+const dayKey=()=>new Date().toISOString().slice(0,10);
+const topOf=(arr,n)=>arr.slice().sort((a,b)=>b.score-a.score).slice(0,n).map(({name,score,di})=>({name,score,di}));
+const rankIn=(arr,score)=>{ let r=1; for(const x of arr) if(x.score>score) r++; return r; };
+const errLog=[];
 function top(n){ return scores.slice().sort((a,b)=>b.score-a.score).slice(0,n).map(({name,score,di})=>({name,score,di})); }
 function rankOf(score){ let r=1; for(const s of scores) if(s.score>score) r++; return r; }
 const server=http.createServer((req,res)=>{
@@ -59,23 +69,43 @@ const server=http.createServer((req,res)=>{
         for(const [oid,c] of r.clients) if(oid!==id) sse(c,'state',jj);
         return send(res,200,{ok:true}); });
       return; } }
-  if(u.pathname==='/api/top'){ const n=Math.min(100,Math.max(1,+u.searchParams.get('n')||25)); return send(res,200,{top:top(n)}); }
+  if(u.pathname==='/api/top'){ const n=Math.min(100,Math.max(1,+u.searchParams.get('n')||25)), mode=u.searchParams.get('mode');
+    if(mode==='co') return send(res,200,{top:topOf(extra.co,n)});
+    if(mode==='daily'){ const day=dayKey(); return send(res,200,{day,top:topOf(extra.daily[day]||[],n)}); }
+    return send(res,200,{top:top(n)}); }
+  if(u.pathname==='/api/err'&&req.method==='POST'){
+    if(limited(ip+'e',20,60000)) return send(res,429,{error:'slow down'});
+    let body=''; req.on('data',c=>{ body+=c; if(body.length>3000) req.destroy(); });
+    req.on('end',()=>{ let j; try{ j=JSON.parse(body); }catch(e){ return send(res,400,{error:'bad json'}); }
+      const ua=String(req.headers['user-agent']||''), dev=(ua.match(/iPhone|iPad|Android|Windows|Macintosh|Linux/)||['?'])[0];
+      const rec={t:new Date().toISOString(),m:String(j.m||'').slice(0,300),s:String(j.s||'').slice(0,500),u:String(j.u||'').slice(0,80),dev};
+      errLog.push(rec); if(errLog.length>100) errLog.shift(); console.log('CLIENT_ERR',JSON.stringify(rec)); return send(res,200,{ok:true}); });
+    return; }
+  if(u.pathname==='/api/errors') return send(res,200,{count:errLog.length,errors:errLog.slice(-30)});
   if(u.pathname==='/api/run'){ if(limited(ip,30,60000)) return send(res,429,{error:'slow down'}); const sc0=Math.max(0,Math.min(60000,Math.floor(+u.searchParams.get('sc0'))||0)); return send(res,200,{tok:mkTok(sc0)}); }
   if(u.pathname==='/api/score'&&req.method==='POST'){
     if(limited(ip,12,60000)) return send(res,429,{error:'slow down'});
     let body=''; req.on('data',c=>{ body+=c; if(body.length>2000) req.destroy(); });
     req.on('end',()=>{
       let j; try{ j=JSON.parse(body); }catch(e){ return send(res,400,{error:'bad json'}); }
-      let name=clean(j.name)||'ROHNIN'; if(BAD.test(name)) name='ROHNIN';
+      const mode=j.mode==='co'?'co':j.mode==='daily'?'daily':'solo', M=mode==='co'?2:1;
+      let name=mode==='co'?String(j.team||'').replace(/[^\w .\-!&+]/g,'').trim().slice(0,30):clean(j.name)||'ROHNIN'; if(BAD.test(name)) name=mode==='co'?'':'ROHNIN';
+      if(!name) return send(res,400,{error:'bad team'});
       const score=Math.floor(+j.score), dist=Math.floor(+j.dist), di=Math.floor(+j.di)||0, kills=Math.floor(+j.kills)||0;
       if(!(score>=50)||!(dist>=0)||!isFinite(score)) return send(res,400,{error:'bad score'});
       // soft plausibility check: score is mostly distance plus boss/kill bonuses
-      if(score>dist*45+kills*900+60000) return send(res,400,{error:'implausible'});
+      if(score>(dist*45+kills*900+60000)*M) return send(res,400,{error:'implausible'});
       // the run must have really been running: score gained needs real elapsed time
       const tk=readTok(j.tok); const el=tk?(Date.now()-tk.t0)/1000:0;
-      if(!tk&&score>6000) return send(res,400,{error:'no run token'});
-      if(tk&&(el>8*3600||score>tk.sc0+el*320+3000)) return send(res,400,{error:'implausible time'});
-      const key=name.toLowerCase(); let e=scores.find(s=>s.key===key);
+      if(!tk&&(score>6000||mode!=='solo')) return send(res,400,{error:'no run token'});
+      if(tk&&(el>8*3600||score>(tk.sc0+el*320+3000)*M)) return send(res,400,{error:'implausible time'});
+      const key=name.toLowerCase();
+      if(mode!=='solo'){ const list=mode==='co'?extra.co:(extra.daily[dayKey()]=extra.daily[dayKey()]||[]); let e=list.find(s=>s.key===key);
+        if(!e){ e={key,name,score:0,di:0,t:Date.now()}; list.push(e); }
+        if(score>e.score){ e.score=score; e.di=di; e.name=name; e.t=Date.now(); xdirty=true; }
+        if(mode==='daily'){ const ks=Object.keys(extra.daily).sort(); while(ks.length>14) delete extra.daily[ks.shift()]; }
+        return send(res,200,{rank:rankIn(list,e.score),total:list.length,best:e.score}); }
+      let e=scores.find(s=>s.key===key);
       if(!e){ e={key,name,score:0,di:0,t:Date.now()}; scores.push(e); }
       if(score>e.score){ e.score=score; e.di=di; e.name=name; e.t=Date.now(); dirty=true; }
       return send(res,200,{rank:rankOf(e.score),total:scores.length,best:e.score});
@@ -111,4 +141,4 @@ server.on('upgrade',(req,sock)=>{
   sock.on('close',gone); sock.on('error',gone); sock.on('end',gone);
 });
 server.listen(PORT,()=>console.log('Rohnin\'s Rooftop Heist on :'+PORT));
-process.on('SIGTERM',()=>{ try{ fs.writeFileSync(FILE,JSON.stringify(scores)); }catch(e){} process.exit(0); });
+process.on('SIGTERM',()=>{ try{ fs.writeFileSync(FILE,JSON.stringify(scores)); }catch(e){} saveExtra(); process.exit(0); });

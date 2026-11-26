@@ -48,6 +48,17 @@
   .stat .v{font-family:'Bebas Neue',Impact,sans-serif;font-size:clamp(34px,7vw,54px);line-height:1;color:#fff}
   .stat .l{font-size:12px;letter-spacing:.18em;color:rgba(255,255,255,.55);text-transform:uppercase}
   .newbest{color:#7dffb0;font-weight:700;letter-spacing:.3em;font-size:14px;height:18px;text-shadow:0 0 12px rgba(125,255,176,.7)}
+  #chat{position:fixed;left:10px;top:44%;z-index:6;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+  #chat button{font:600 13px system-ui,sans-serif;letter-spacing:.04em;color:#fff;background:rgba(8,14,28,.72);border:1px solid rgba(123,232,255,.55);border-radius:999px;padding:7px 12px;touch-action:manipulation}
+  #chat #chbtn{width:42px;height:42px;padding:0;font-size:20px;border-radius:50%}
+  #chat button:active{background:rgba(123,232,255,.35)}
+  #achToast{position:fixed;top:max(14px,env(safe-area-inset-top));left:50%;transform:translate(-50%,-140%);z-index:70;background:rgba(10,14,24,.95);border:1px solid #ffd35a;color:#fff;border-radius:12px;padding:10px 16px;font:700 14px system-ui,sans-serif;letter-spacing:.04em;transition:transform .4s;max-width:90vw;text-align:center}
+  #achToast.on{transform:translate(-50%,0)}
+  .lbtabs{display:flex;gap:8px;margin-top:10px}
+  .lbtabs .btn{padding:8px 16px 6px;font-size:18px}
+  .lbtabs .btn.sel{outline:2px solid #7be8ff}
+  .skrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
+  .menu2{display:flex;gap:10px;margin-top:12px}
   #btns{position:fixed;top:max(10px,env(safe-area-inset-top));right:10px;display:flex;gap:8px;z-index:5}
   #btns button{width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(10,6,20,.55);color:#fff;cursor:pointer;display:grid;place-items:center;padding:0;backdrop-filter:blur(4px)}
   #btns button:hover{background:rgba(255,207,74,.25)}
@@ -137,6 +148,7 @@
   #coop .help{max-width:420px;font-size:13px}
   @media (max-height:660px){ #coop h2{font-size:40px!important} #coop .cocode{font-size:52px;margin:0 0 4px} #coop .copl{padding:5px 12px;font-size:18px;margin:2px 0} #coop .help{display:none} #coop .sub{margin:2px 0 8px!important;font-size:14px} #coop .best{margin:4px 0 8px!important} #coop .btn{font-size:20px;padding:8px 24px 6px} }
 </style>
+<meta property="og:title" content="Rohnin's Rooftop Heist"><meta property="og:description" content="A neon spy rooftop runner. Solo or 2-player co-op. Free, plays in your browser."><meta property="og:image" content="https://rohninsheist.com/share.png"><meta property="og:url" content="https://rohninsheist.com/"><meta property="og:type" content="website"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://rohninsheist.com/share.png">
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -165,8 +177,8 @@
   <button id="go" class="btn">START THE HEIST</button>
   <button id="cont" class="btn alt hid" style="margin-top:12px"></button>
   <button id="coopbtn" class="btn alt" style="margin-top:12px">CO-OP &middot; 2 PLAYERS</button>
-  <button id="shopbtn" class="btn alt" style="margin-top:12px">ARMOURY</button>
-  <button id="lbbtn" class="btn alt hid" style="margin-top:12px">LEADERBOARD</button>
+  <div class="menu2"><button id="daybtn" class="btn alt">DAILY HEIST</button><button id="achbtn" class="btn alt">TROPHIES</button></div>
+  <div class="menu2"><button id="shopbtn" class="btn alt">ARMOURY</button><button id="lbbtn" class="btn alt hid">LEADERBOARD</button></div>
   <input id="pname" class="nm hid" maxlength="14" placeholder="YOUR NAME" autocomplete="off" spellcheck="false">
   <div class="help hg">
     <span class="hl">MOVE</span><span><b>←</b><b>→</b> or <b>A</b><b>D</b> lane &nbsp;<b>↑</b> jump &nbsp;<b>↓</b> slide</span>
@@ -227,7 +239,11 @@
 </div>
 
 <div id="lbm" class="ov hidden scroll">
-  <h2>LEADERBOARD</h2><div id="lb-list" style="margin:10px 0 18px"></div><button id="lb-back" class="btn alt">BACK</button>
+  <h2>LEADERBOARD</h2><div class="lbtabs" id="lb-tabs"><button class="btn alt sel" data-m="solo">SOLO</button><button class="btn alt" data-m="co">DUO</button><button class="btn alt" data-m="daily">DAILY</button></div><div id="lb-list" style="margin:10px 0 18px"></div><button id="lb-back" class="btn alt">BACK</button>
+</div>
+
+<div id="achm" class="ov hidden scroll">
+  <h2>TROPHIES</h2><div id="ach-sum" class="best" style="margin:0 0 8px"></div><div id="ach-list" style="margin:6px 0 18px;width:min(460px,92vw)"></div><button id="ach-back" class="btn alt">BACK</button>
 </div>
 
 <div id="shop" class="ov hidden scroll">
@@ -237,6 +253,8 @@
   <button id="shop-back" class="btn" style="margin:24px 0 34px">BACK</button>
 </div>
 
+<div id="achToast"></div>
+<div id="chat" class="hid"><div id="chrow" class="hid"><button data-c="0">GO LEFT</button><button data-c="1">GO RIGHT</button><button data-c="2">COVER ME</button><button data-c="3">NICE!</button><button data-c="4">REVIVE ME</button></div><button id="chbtn" aria-label="Quick chat">&#128172;</button></div>
 <script>
 (()=>{
 'use strict';
@@ -306,9 +324,9 @@ let raceSeed=0, rngS=null;
 const mulberry=a=>()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; };
 function withSeed(fn){ return function(){ if(!rngS) return fn.apply(null,arguments); const o=Math.random; Math.random=rngS; try{ return fn.apply(null,arguments); } finally{ Math.random=o; } }; }
 const SAVE_KEY='rooftopAgentSave1';
-const save={bank:0,up:{fire:0,dmg:0,shield:0,mag:0,jet:0,x2:0,gad:0,amm:0},owned:['pistol'],weapon:'pistol',bosses:0,minis:0,cp:null};
+const save={bank:0,up:{fire:0,dmg:0,shield:0,mag:0,jet:0,x2:0,gad:0,amm:0},owned:['pistol'],weapon:'pistol',bosses:0,minis:0,cp:null,skin:'classic',skins:['classic'],ach:{},bestDist:0,dailies:0};
 try{ const j=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');
-  if(j&&typeof j==='object'){ save.bank=+j.bank||0; Object.assign(save.up,j.up||{}); if(Array.isArray(j.owned)&&j.owned.length) save.owned=j.owned; save.weapon=j.weapon||'pistol'; save.bosses=+j.bosses||0; save.minis=+j.minis||0; save.cp=j.cp||null; } }catch(e){}
+  if(j&&typeof j==='object'){ save.bank=+j.bank||0; Object.assign(save.up,j.up||{}); if(Array.isArray(j.owned)&&j.owned.length) save.owned=j.owned; save.weapon=j.weapon||'pistol'; save.bosses=+j.bosses||0; save.minis=+j.minis||0; save.cp=j.cp||null; if(Array.isArray(j.skins)&&j.skins.length) save.skins=j.skins; save.skin=j.skin||'classic'; if(j.ach&&typeof j.ach==='object') save.ach=j.ach; save.bestDist=+j.bestDist||0; save.dailies=+j.dailies||0; } }catch(e){}
 if(save.owned.indexOf(save.weapon)<0) save.weapon='pistol';
 const persist=()=>{ try{ localStorage.setItem(SAVE_KEY,JSON.stringify(save)); }catch(e){} toHost({t:'save',save}); };
 const UPS=[
@@ -615,6 +633,24 @@ function die(msg,fell){
   const sc=Math.floor(G.sc); G.newBest=sc>G.best; if(G.newBest){ G.best=sc; try{ localStorage.setItem('rooftopAgentBest',String(sc)); }catch(e){} }
 }
 function setMsg(title,sub,col,t){ G.msg={title,sub,col,t,t0:t}; }
+const ACH=[
+  {id:'blood',name:'First Blood',desc:'Destroy your first target',r:30,t:()=>G.kills>=1},
+  {id:'mini1',name:'Mini Menace',desc:'Defeat a mini-boss',r:80,t:()=>save.minis>=1},
+  {id:'boss1',name:'Boss Slayer',desc:'Defeat a boss (unlocks Ghost skin)',r:150,t:()=>save.bosses>=1,skin:'ghost'},
+  {id:'allboss',name:'Midnight Score',desc:'Defeat all six bosses (unlocks Phantom skin)',r:600,t:()=>save.bosses>=6,skin:'phantom'},
+  {id:'d1000',name:'Rooftop Runner',desc:'Run 1,000 m in one heist',r:60,t:()=>G.dist>=1000},
+  {id:'d5000',name:'Marathon',desc:'Run 5,000 m in one heist',r:200,t:()=>G.dist>=5000},
+  {id:'sc20',name:'High Scorer',desc:'Score 20,000 in one heist',r:100,t:()=>G.sc>=20000},
+  {id:'sc100',name:'Legend',desc:'Score 100,000 in one heist',r:400,t:()=>G.sc>=100000},
+  {id:'armed',name:'Armed & Dangerous',desc:'Own 5 different guns',r:120,t:()=>save.owned.length>=5},
+  {id:'rich',name:'High Roller',desc:'Bank 2,000 chips',r:100,t:()=>save.bank>=2000},
+  {id:'team',name:'Team Player',desc:'Bring your partner back with a boss kill',r:150,t:()=>false},
+  {id:'daily',name:'Daily Grind',desc:'Finish a Daily Heist',r:100,t:()=>false}
+];
+let achQ=[],achBusy=false;
+function achToast(t){ achQ.push(t); if(achBusy) return; achBusy=true; const el=$('achToast'); (function next(){ const m=achQ.shift(); if(!m){ achBusy=false; return; } el.textContent=m; el.classList.add('on'); try{ sfx.victory(true); }catch(e){} setTimeout(()=>{ el.classList.remove('on'); setTimeout(next,450); },3000); })(); }
+function ach(id){ const a=ACH.find(x=>x.id===id); if(!a||save.ach[id]) return; save.ach[id]=1; save.bank+=a.r; if(a.skin&&save.skins.indexOf(a.skin)<0) save.skins.push(a.skin); persist(); achToast('TROPHY: '+a.name.toUpperCase()+'  +'+a.r+' CHIPS'+(a.skin?'  ·  NEW SKIN':'')); }
+function checkAch(){ for(const a of ACH) if(!save.ach[a.id]&&a.t()) ach(a.id); }
 function pop(x,y,z,text,col,rel){ pops.push({x,y,z,text,col:col||'#fff',t:1.2,rel:!!rel}); if(pops.length>30) pops.shift(); }
 function explode(x,y,z,col){ spawn(x,y,z,22,col,11,0.8,0.15,6); spawn(x,y,z,10,'#fff',8,0.4,0.08,3); G.shake=Math.max(G.shake,0.12); }
 function stumbleOrDie(msg){
@@ -820,7 +856,7 @@ function finishBoss(win){
     let idx; if(mini){ idx=save.minis; save.minis++; } else { idx=save.bosses; save.bosses++; }
     const wid=WORDER.find(id=>mini?WEAPONS[id].mini===idx:WEAPONS[id].boss===idx);
     if(wid&&save.owned.indexOf(wid)<0){ save.owned.push(wid); save.weapon=wid; sub+='  ·  NEW WEAPON: '+WEAPONS[wid].name.toUpperCase(); sfx.unlock(); } else sfx.power();
-    persist(); victoryFX(mini); setMsg(mini?'MINI-BOSS DOWN':'BOSS DEFEATED',sub,[120,255,170],5);
+    persist(); victoryFX(mini); checkAch(); if(NC.active&&NC.rv&&NC.rv.n>0) ach('team'); setMsg(mini?'MINI-BOSS DOWN':'BOSS DEFEATED',sub,[120,255,170],5);
     if(!mini) ['shield','mag'].forEach((t,i)=>addPow(i%NL,G.dist+PZ+34+i*16,t)); for(let i=0;i<2;i++){ const id=randAmmoW(); if(id) addAmmo((i+1)%NL,G.dist+PZ+30+i*9,id); }
   } else setMsg(mini?'MINI-BOSS FLED':'BOSS ESCAPED','Better luck next time',[255,200,80],3.2);
   if(win) ncGrantRevive(mini,di);
@@ -1491,6 +1527,16 @@ function drawParticles(){
 }
 
 /* ======================= drawing: the agent ======================= */
+const SKINS=[
+  {id:'classic',name:'Classic Tux',cost:0,col:{}},
+  {id:'neon',name:'Neon Runner',cost:300,col:{jacket:'#0b2a3a',pants:'#07161f',hair:'#7be8ff',shirt:'#7be8ff'}},
+  {id:'crimson',name:'Crimson Ace',cost:600,col:{jacket:'#5a0f1c',pants:'#2b0810',hair:'#14141f',shirt:'#ff8da1'}},
+  {id:'gold',name:'High Roller',cost:900,col:{jacket:'#6b4f12',pants:'#2b2008',hair:'#2b1d15',shirt:'#ffe27a'}},
+  {id:'ghost',name:'Ghost',ach:'boss1',col:{jacket:'#d8dde8',pants:'#aab2c2',hair:'#ffffff',shirt:'#7be8ff'}},
+  {id:'phantom',name:'Phantom',ach:'allboss',col:{jacket:'#1a0b2e',pants:'#0e0618',hair:'#c79bff',shirt:'#c79bff'}}
+];
+const skinById=id=>SKINS.find(s=>s.id===id)||SKINS[0];
+const skinCol=id=>Object.assign({},COL_AGENT,skinById(id).col);
 const COL_AGENT={jacket:'#14141f',pants:'#0e0e16',hair:'#2b1d15',skin:'#e0ac86',shirt:'#f4f4f4',shoe:'#050507',kase:true};
 const COL_GUARD={jacket:'#2f3846',pants:'#1c222d',hair:'#101010',skin:'#c99372',shirt:'#9aa4b4',shoe:'#0a0a0c',cap:'#1d232c'};
 function drawAgent(sx,sy,s,o){
@@ -1523,7 +1569,7 @@ function drawPlayer(){
   const s=F/PZ, sx=px(pl.x,PZ), gy=py(0,PZ), sy=py(pl.y,PZ);
   const sh=0.5/(1+Math.max(0,pl.y)*0.5); if(!pl.falling||pl.y>-0.3){ ctx.fillStyle=`rgba(0,0,0,${sh*0.6})`; ctx.beginPath(); ctx.ellipse(sx,gy,0.5*s*(1-Math.min(0.4,pl.y*0.1)),0.11*s,0,0,Math.PI*2); ctx.fill(); }
   const dead=G.state==='dead'&&!G.fell;
-  drawAgent(sx,sy,s,{col:COL_AGENT,ph:pl.ph,air:(pl.y>0.15||pl.falling)&&pl.jet<=0,slide:pl.slide>0&&pl.y<0.15,jet:pl.jet>0,tilt:pl.tilt,stum:pl.stumT/0.5,alpha:pl.inv>0&&G.state==='playing'?0.55+0.45*Math.sin(G.t*45):dead?0.8:1,tails:true});
+  drawAgent(sx,sy,s,{col:skinCol(save.skin),ph:pl.ph,air:(pl.y>0.15||pl.falling)&&pl.jet<=0,slide:pl.slide>0&&pl.y<0.15,jet:pl.jet>0,tilt:pl.tilt,stum:pl.stumT/0.5,alpha:pl.inv>0&&G.state==='playing'?0.55+0.45*Math.sin(G.t*45):dead?0.8:1,tails:true});
 }
 function drawChaser(){
   if(G.state==='dead'&&!G.fell&&G.cause.indexOf('caught')<0&&G.cause.indexOf('Security')<0) return;
@@ -1698,7 +1744,7 @@ function postFX(dt){
 }
 
 /* ======================= v6: online co-op (state replication) ======================= */
-const NC={active:false,tr:null,mode:'',code:'',id:(()=>{ try{ let v=sessionStorage.getItem('heistNcId'); if(!v){ v=Math.random().toString(36).slice(2,8); sessionStorage.setItem('heistNcId',v); } return v; }catch(e){ return Math.random().toString(36).slice(2,8); } })(),jt:0,nm:'',phase:'',runId:'',myGo:null,seenGo:'',used:0,max:3,out:false,seq:0,sendT:0,peers:new Map(),peer:null,member:true,isHost:true,pend:{},seenBd:{},bdOut:{},rb:1,peerUsed:0,lastFire:-9,view:'',starting:false,uiT:0,hadPeer:false,tracT:0,rv:{n:0},seenRv:0,lobT:0,_hostCb:null};
+const NC={active:false,tr:null,mode:'',code:'',id:(()=>{ try{ let v=sessionStorage.getItem('heistNcId'); if(!v){ v=Math.random().toString(36).slice(2,8); sessionStorage.setItem('heistNcId',v); } return v; }catch(e){ return Math.random().toString(36).slice(2,8); } })(),jt:0,nm:'',phase:'',runId:'',myGo:null,seenGo:'',used:0,max:3,out:false,seq:0,sendT:0,peers:new Map(),peer:null,member:true,isHost:true,pend:{},seenBd:{},bdOut:{},rb:1,peerUsed:0,lastFire:-9,view:'',starting:false,uiT:0,hadPeer:false,tracT:0,rv:{n:0},seenRv:0,lobT:0,ch:{n:0,k:0},_hostCb:null};
 function trBC(code){ const ch=new BroadcastChannel('heist-coop-'+code), seen=new Map();
   ch.onmessage=e=>{ const s=e.data; if(s&&s.id&&s.id!==NC.id) seen.set(s.id,s); };
   return {name:'tab',send:s=>ch.postMessage(s),peers:()=>[...seen.values()],close:()=>{ try{ ch.close(); }catch(e){} }}; }
@@ -1739,7 +1785,7 @@ function trAuto(code){ let cur=null; const useSSE=()=>{ try{ cur.close(); }catch
   return {name:'online',status:()=>cur.status?cur.status():{ok:true,kind:'?'},send:st=>cur.send(st),peers:()=>cur.peers(),close:()=>cur.close()}; }
 const livesLeft=()=>Math.max(0,NC.max-NC.used-NC.peerUsed);
 NC.livesLeft=livesLeft;
-function ncState(){ return {id:NC.id,nm:NC.nm,jt:NC.jt,t:++NC.seq,ph:NC.phase,rn:NC.runId,go:NC.myGo,z:+G.dist.toFixed(1),x:+pl.x.toFixed(2),y:+Math.max(-14,pl.y).toFixed(2),v:+G.speed.toFixed(1),sl:pl.slide>0?1:0,f:(G.t-NC.lastFire<0.3)?1:0,dn:NC.out?2:0,sc:Math.floor(G.sc),di:G.di,u:NC.used,bd:NC.bdOut,rv:NC.rv}; }
+function ncState(){ return {id:NC.id,nm:NC.nm,jt:NC.jt,t:++NC.seq,ph:NC.phase,rn:NC.runId,go:NC.myGo,z:+G.dist.toFixed(1),x:+pl.x.toFixed(2),y:+Math.max(-14,pl.y).toFixed(2),v:+G.speed.toFixed(1),sl:pl.slide>0?1:0,f:(G.t-NC.lastFire<0.3)?1:0,dn:NC.out?2:0,sc:Math.floor(G.sc),di:G.di,u:NC.used,bd:NC.bdOut,rv:NC.rv,ch:NC.ch,kl:G.kills,sk:save.skin}; }
 function ncBd(d){ const k=(boss.mini?'m':'b')+boss.di; NC.bdOut[k]=+((NC.bdOut[k]||0)+d).toFixed(2); }
 function ncDrain(){ const k=(boss.mini?'m':'b')+boss.di, pd=NC.pend[k];
   if(pd>0&&boss.invT<=0){ NC.pend[k]=0; boss.hp-=pd; boss.hitF=Math.max(boss.hitF,0.45); boss.hx=rand(-1.2,1.2); boss.hy=rand(-0.6,0.4); spawn(boss.x+rand(-1,1),boss.y+rand(-0.5,0.5),G.dist+boss.dz-1.3,3,'#7be8ff',5,0.35,0.1,0); } }
@@ -1756,10 +1802,10 @@ function startCoop(seed,k){
 }
 function ncTick(dt){
   if(!NC.tr) return; const now=performance.now();
-  NC.sendT-=dt; if(NC.sendT<=0){ NC.sendT=NC.phase==='run'?0.2:0.5; try{ NC.tr.send(ncState()); }catch(e){} }
+  chatSync(); NC.sendT-=dt; if(NC.sendT<=0){ NC.sendT=NC.phase==='run'?0.2:0.5; try{ NC.tr.send(ncState()); }catch(e){} }
   for(const s of NC.tr.peers()){ if(!s||!s.id||s.id===NC.id) continue;
-    let r=NC.peers.get(s.id); if(!r){ r={id:s.id,lastT:-1,chg:now,rcv:now,gz:s.z||0,gx:s.x||0,gy:0,ph:0,s:s,sawLobby:false,tr:0}; NC.peers.set(s.id,r); }
-    if(s.t!==r.lastT){ r.lastT=s.t; r.chg=now; r.rcv=now; r.s=s; if(s.ph==='lobby'||s.ph==='over') r.sawLobby=true;
+    let r=NC.peers.get(s.id); if(!r){ r={id:s.id,lastT:-1,chg:now,rcv:now,gz:s.z||0,gx:s.x||0,gy:0,ph:0,s:s,sawLobby:false,tr:0,tt:0,chN:(s.ch&&s.ch.n)||0}; NC.peers.set(s.id,r); }
+    if(s.t!==r.lastT){ r.lastT=s.t; r.chg=now; r.rcv=now; r.s=s; if(s.ch&&s.ch.n>r.chN){ r.chN=s.ch.n; if(NC.active&&G.state!=='menu') chatShow((s.nm||'PARTNER').slice(0,8)+': ',s.ch.k,'#7be8ff'); } if(s.ph==='lobby'||s.ph==='over') r.sawLobby=true;
       if(s.rn&&s.rn===NC.runId&&s.bd){ for(const k in s.bd){ const d=s.bd[k]-(NC.seenBd[k]||0); if(d>0.0001){ NC.seenBd[k]=s.bd[k]; NC.pend[k]=(NC.pend[k]||0)+d; } } } } }
   for(const [id,r] of NC.peers) if(now-r.chg>(NC.mode==='sse'?22000:6000)) NC.peers.delete(id);
   const pr=[...NC.peers.values()], fresh=pr.filter(r=>now-r.chg<10000), cand=fresh.length?fresh:pr; const all=cand.map(r=>({jt:r.s.jt||0,id:r.id,r})); all.push({jt:NC.jt,id:NC.id,me:true});
@@ -1774,6 +1820,7 @@ function ncTick(dt){
     if(NC.isHost===false&&s.go&&s.go.k&&s.go.k!==NC.seenGo&&s.ph==='run'&&r.sawLobby&&NC.phase!=='run'&&(NC.view==='lobby'||NC.phase==='lobby'||NC.phase==='over')){ r.sawLobby=false; startCoop(s.go.seed,s.go.k); return; }
     const same=s.rn&&s.rn===NC.runId;
     NC.rb=1; if(NC.active&&same&&s.ph==='run'&&s.dn!==2&&G.state==='playing'&&!boss.on&&!G.arena){ const gap=r.gz-G.dist; if(gap>14) NC.rb=1+Math.min(0.16,(gap-14)*0.006); else if(gap<-14) NC.rb=1-Math.min(0.12,(-gap-14)*0.005); }
+    r.tt-=dt; if(NC.active&&same&&s.ph==='run'&&r.tt<=0&&G.state==='playing'){ r.tt=0.07; parts.push({x:r.gx,y:Math.max(0,r.gy)+0.9,z:r.gz+PZ,vx:0,vy:0.3,vz:0,life:0.55,max:0.55,col:'#7be8ff',size:0.11,g:0}); }
     r.tr-=dt; if(NC.active&&same&&s.f&&r.tr<=0&&G.state==='playing'){ r.tr=0.13; parts.push({x:r.gx,y:Math.max(0,r.gy)+1.1,z:r.gz+PZ+1,vx:0,vy:0,vz:46,life:0.5,max:0.5,col:'#7be8ff',size:0.09,g:0}); }
   } else { NC.rb=1; if(had&&NC.active&&G.state==='playing') pop(pl.x,pl.y+2.8,PZ,'PARTNER LEFT','#ff9a9a',true); }
   if(NC.active&&NC.out&&G.state==='dead'&&G.deadT>2.5){ const ps=NC.peer&&NC.peer.s, same=ps&&ps.rn===NC.runId; if(!NC.peer||(same&&(ps.dn===2||ps.ph==='over'))){ NC.lobT+=dt; if(NC.lobT>4){ NC.lobT=0; $('coagain').click(); } } else NC.lobT=0; } else NC.lobT=0;
@@ -1853,8 +1900,14 @@ $('co-back').addEventListener('click',()=>{ ncClose(); NC.code=''; NC.view=''; c
 $('co-start').addEventListener('click',()=>{ if($('co-start').disabled||!NC.peer) return; const seed=(Math.random()*4294967295)>>>0||1, k=Math.random().toString(36).slice(2,8); NC.myGo={k,seed}; startCoop(seed,k); });
 $('homebtn').addEventListener('click',e=>{ e.currentTarget.blur(); NC.code=''; toMenu(); });
 $('coagain').addEventListener('click',()=>{ if(!NC.tr&&NC.code){ ncOpen(NC.code); } $('over').classList.add('hidden'); NC.phase='lobby'; NC.out=false; NC.active=false; NC.myGo=null; NC.sendT=0; coOpenUI(); });
+const CHAT=['GO LEFT','GO RIGHT','COVER ME','NICE!','REVIVE ME'];
+function chatShow(pre,k,col){ pop(pl.x,pl.y+3.4,PZ,pre+CHAT[k|0],col||'#ffe27a',true); try{ sfx.pingChat(); }catch(e){} }
+let chatVis=null;
+function chatSync(){ const v=!!NC.active&&(G.state==='playing'||G.state==='dead'); if(v===chatVis) return; chatVis=v; $('chat').classList.toggle('hid',!v); if(!v) $('chrow').classList.add('hid'); }
+$('chbtn').addEventListener('click',e=>{ e.stopPropagation(); $('chrow').classList.toggle('hid'); });
+$('chrow').addEventListener('click',e=>{ e.stopPropagation(); const b=e.target.closest('[data-c]'); if(!b) return; const k=+b.dataset.c; NC.ch={n:(NC.ch.n||0)+1,k}; NC.sendT=0; chatShow('',k,'#ffe27a'); $('chrow').classList.add('hid'); });
 function ncOverText(){ const el=$('o-team'); if(!NC.active&&!NC.runId){ el.classList.add('hid'); return; } const s=NC.peer&&NC.peer.s, same=s&&s.rn===NC.runId;
-  el.classList.remove('hid'); el.textContent='TEAM SCORE '+Math.floor(G.sc+(same?s.sc||0:0)).toLocaleString()+(same?(s.dn===2||s.ph==='over'?' · PARTNER OUT':' · DEFEAT A BOSS TO BRING YOUR TEAM BACK IN'):'')+(NC.lobT>0?' · LOBBY IN '+Math.max(1,Math.ceil(4-NC.lobT)):''); }
+  el.classList.remove('hid'); el.textContent='TEAM SCORE '+Math.floor(G.sc+(same?s.sc||0:0)).toLocaleString()+(same?' · YOU '+Math.floor(G.sc).toLocaleString()+' / '+((s.nm||'PARTNER').slice(0,8))+' '+Math.floor(s.sc||0).toLocaleString()+' · KILLS '+(G.kills+(s.kl||0)):'')+(same?(s.dn===2||s.ph==='over'?' · PARTNER OUT':' · DEFEAT A BOSS TO BRING YOUR TEAM BACK IN'):'')+(NC.lobT>0?' · LOBBY IN '+Math.max(1,Math.ceil(4-NC.lobT)):''); }
 
 function drawWet(dt){
   if(!QL.lit||G.state==='menu'&&false) return; const pal=PAL[G.di%PAL.length]; if(pal.wx!=='rain') return;
@@ -1900,6 +1953,7 @@ function showOver(){
   $('o-score').textContent=Math.floor(G.sc).toLocaleString(); $('o-chips').textContent=G.coins; $('o-dist').textContent=Math.floor(G.dist); $('o-best').textContent=G.best.toLocaleString();
   $('newbest').textContent=G.newBest?'NEW PERSONAL BEST':'';
   $('o-bank').textContent=`+${G.bankGain} chips banked · ${G.kills} targets destroyed · bank ${save.bank.toLocaleString()}`;
+  if(G.dist>save.bestDist){ save.bestDist=Math.floor(G.dist); persist(); } if(G.daily&&G.sc>=500){ save.dailies=(save.dailies||0)+1; ach('daily'); } checkAch();
   const cp=save.cp, rb=$('resumecp'); $('o-rank').textContent='';
   if(cp&&cp.di>0){ rb.classList.remove('hid'); const c=cpCost(cp); rb.textContent='RESUME DISTRICT '+(cp.di+1)+' · '+c+' CHIPS'; rb.disabled=save.bank<c; rb.style.opacity=save.bank<c?0.45:1; } else rb.classList.add('hid');
   if(NC.active){ NC.phase='over'; NC.sendT=0; } ncOverText(); $('coagain').classList.toggle('hid',!(NC.tr||NC.code));
@@ -1916,9 +1970,10 @@ function saveCheckpoint(){
   pop(pl.x,pl.y+3.2,PZ,'CHECKPOINT SAVED','#7dff9a',true);
 }
 const cpCost=cp=>120+cp.di*80;
+let dailyFlag=false;
 function startGame(cp){
   if(NC.starting) NC.starting=false; else if(NC.tr){ ncClose(); coEl.classList.add('hidden'); }
-  auInit(); setMute(AU.muted); rngS=raceSeed?mulberry(raceSeed):null; G.race=!!raceSeed; raceSeed=0; resetGame(false);
+  auInit(); setMute(AU.muted); rngS=raceSeed?mulberry(raceSeed):null; G.race=!!raceSeed; G.daily=dailyFlag; dailyFlag=false; raceSeed=0; resetGame(false);
   if(cp&&cp.di>0){ warpTo(cp.di); G.sc=cp.sc; G.kills=cp.kills||0; pl.shield=Math.max(pl.shield,cp.shield||0); for(const id of WORDER) if(id!=='pistol'&&cp.ammo&&cp.ammo[id]!=null) ammo[id]=Math.max(ammo[id],Math.min(ammoMax(id),cp.ammo[id])); if(save.owned.indexOf(cp.w)>=0&&hasAmmo(cp.w)) save.weapon=cp.w; pl.inv=2.5; }
   else { save.cp=null; persist(); } G.state='playing'; G.speed=12; AU.on=true; AU.step=0; AU.next=0; G.bannerT=3.4; wheelDirty=true;
   fireKeys.clear(); btnHeld=false; shopOpen=false; wakeLock(); getRunTok(G.sc);
@@ -1932,17 +1987,21 @@ let shopOpen=false, shopFrom='menu', fireHeld=false, btnHeld=false, autoFire=fal
 const fireKeys=new Set();
 try{ autoFire=!!(window.matchMedia&&matchMedia('(pointer:coarse)').matches); }catch(e){}
 const LB={on:false,name:''}; try{ LB.name=localStorage.getItem('rohninName')||''; }catch(e){}
-function lbRows(list,me){ const d=document.createElement('div'); list.forEach((r,i)=>{ const e=document.createElement('div'); e.className='lbrow'+(me&&r.name===me?' me':''); const a=document.createElement('b'); a.textContent='#'+(i+1); const n=document.createElement('span'); n.textContent=r.name; const s=document.createElement('em'); s.style.fontStyle='normal'; s.textContent=(+r.score).toLocaleString(); e.append(a,n,s); d.appendChild(e); }); return d; }
+function lbRows(list,me){ const d=document.createElement('div'); list.forEach((r,i)=>{ const e=document.createElement('div'); e.className='lbrow'+(me&&(r.name===me||r.name.split(' + ').indexOf(me)>=0)?' me':''); const a=document.createElement('b'); a.textContent='#'+(i+1); const n=document.createElement('span'); n.textContent=r.name; const s=document.createElement('em'); s.style.fontStyle='normal'; s.textContent=(+r.score).toLocaleString(); e.append(a,n,s); d.appendChild(e); }); return d; }
 const apiU=p=>window.HEIST_NET?String(window.HEIST_NET).replace(/\/$/,'')+'/'+p:p;
+(function(){ let n=0; const rep=(m,s)=>{ if(EMB||!/^https?:/.test(location.protocol)||n++>5) return; try{ fetch(apiU('api/err'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({m:String(m),s:String(s||''),u:location.pathname}),keepalive:true}).catch(()=>{}); }catch(e){} };
+  addEventListener('error',e=>rep(e.message,(e.error&&e.error.stack)||(e.filename+':'+e.lineno))); addEventListener('unhandledrejection',e=>rep('rejection: '+((e.reason&&e.reason.message)||e.reason),(e.reason&&e.reason.stack)||'')); })();
 async function lbPing(){ try{ const r=await fetch(apiU('api/ping'),{cache:'no-store'}); const j=await r.json(); LB.on=!!(j&&j.ok); LB.rooms=!!(j&&j.rooms); }catch(e){ LB.on=false; } $('lbbtn').classList.toggle('hid',!LB.on); $('pname').classList.toggle('hid',!LB.on); $('pname').value=LB.name; }
-async function openLB(){ const box=$('lb-list'); box.textContent='Loading...'; $('lbm').classList.remove('hidden');
-  try{ const r=await fetch(apiU('api/top?n=25'),{cache:'no-store'}); const j=await r.json(); box.textContent=''; box.appendChild(j.top&&j.top.length?lbRows(j.top,LB.name):document.createTextNode('No scores yet. Be the first.')); }catch(e){ box.textContent='Leaderboard offline.'; } }
+async function openLB(mode){ mode=mode||'solo'; const box=$('lb-list'); box.textContent='Loading...'; $('lbm').classList.remove('hidden'); for(const b of $('lb-tabs').children) b.classList.toggle('sel',b.dataset.m===mode);
+  try{ const r=await fetch(apiU('api/top?n=25&mode='+mode),{cache:'no-store'}); const j=await r.json(); box.textContent=''; if(mode==='daily'&&j.day){ const h=document.createElement('div'); h.className='best'; h.style.marginBottom='8px'; h.textContent="TODAY'S HEIST · "+j.day; box.appendChild(h); } box.appendChild(j.top&&j.top.length?lbRows(j.top,LB.name):document.createTextNode(mode==='co'?'No duo scores yet. Grab a partner!':'No scores yet. Be the first.')); }catch(e){ box.textContent='Leaderboard offline.'; } }
 let RUNTOK='';
 async function getRunTok(sc0){ RUNTOK=''; if(!LB.on||EMB) return; try{ const r=await fetch(apiU('api/run?sc0='+Math.floor(sc0||0)),{cache:'no-store'}); const j=await r.json(); RUNTOK=(j&&j.tok)||''; }catch(e){} }
 async function submitScore(){
   if(G.sc>=50) toHost({t:'score',score:Math.floor(G.sc),dist:Math.floor(G.dist),di:G.di,kills:G.kills,race:!!G.race});
   if(!LB.on||G.sc<50) return; const nm=(LB.name||'').trim()||'ROHNIN';
-  try{ const r=await fetch(apiU('api/score'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:nm,score:Math.floor(G.sc),dist:Math.floor(G.dist),di:G.di,kills:G.kills,tok:RUNTOK})}); const j=await r.json();
+  const post=b=>fetch(apiU('api/score'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({name:nm,score:Math.floor(G.sc),dist:Math.floor(G.dist),di:G.di,kills:G.kills,tok:RUNTOK},b||{}))}).then(r=>r.json()).catch(()=>null);
+  try{ if(G.daily) post({mode:'daily'}); const ps=NC.peer&&NC.peer.s; if((NC.active||NC.runId)&&ps&&ps.rn===NC.runId&&ps.nm){ const team=[nm.toUpperCase(),String(ps.nm)].sort().join(' + '); post({mode:'co',team,score:Math.floor(G.sc+(ps.sc||0)),kills:G.kills+(ps.kl||0)}); }
+    const r=await fetch(apiU('api/score'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:nm,score:Math.floor(G.sc),dist:Math.floor(G.dist),di:G.di,kills:G.kills,tok:RUNTOK})}); const j=await r.json();
     if(j&&j.rank){ $('o-rank').textContent='Leaderboard rank #'+j.rank+' of '+j.total; } }catch(e){} }
 function refreshMenu(){
   const cp=save.cp; $('cont').classList.toggle('hid',!(cp&&cp.di>0)); if(cp&&cp.di>0) $('cont').textContent='CONTINUE · DISTRICT '+(cp.di+1); $('mbest').textContent=`Bank ${save.bank.toLocaleString()} chips · Best ${G.best.toLocaleString()} · ${weap().name}`; }
@@ -2014,15 +2073,25 @@ function renderShop(){
     h+=`<div class="card"><div class="cn">${u.name}</div><div class="cd">${u.desc}</div><div class="pips">${'<i class="on"></i>'.repeat(l)+'<i></i>'.repeat(u.max-l)}</div>`
      +(maxed?'<div class="tag">MAXED</div>':`<button class="sbtn" data-buy="${u.k}" ${save.bank<cost?'disabled':''}>${cost} CHIPS</button>`)+'</div>';
   }
+  h+='</div><div class="sec">SKINS</div><div class="grid">';
+  for(const k of SKINS){ const own=save.skins.indexOf(k.id)>=0, eq=save.skin===k.id;
+    h+=`<div class="card ${eq?'eq':''} ${own?'':'lk'}"><div class="cn">${k.name}</div><div class="cd">${k.ach?'Trophy reward':'Cosmetic'}</div>`+(own?(eq?'<div class="tag">EQUIPPED</div>':`<button class="sbtn" data-skin="${k.id}">EQUIP</button>`):(k.ach?`<div class="tag lock">Earn the "${(ACH.find(a=>a.id===k.ach)||{}).name}" trophy</div>`:`<button class="sbtn" data-skbuy="${k.id}" ${save.bank<k.cost?'disabled':''}>${k.cost} CHIPS</button>`))+'</div>'; }
   $('sh-list').innerHTML=h+'</div>';
 }
 function openShop(from){ shopFrom=from; shopOpen=true; $('menu').classList.add('hidden'); $('over').classList.add('hidden'); $('shop').classList.remove('hidden'); renderShop(); $('shop').scrollTop=0; }
 function closeShop(){ shopOpen=false; $('shop').classList.add('hidden'); if(shopFrom==='over') $('over').classList.remove('hidden'); else { $('menu').classList.remove('hidden'); } refreshMenu(); }
+const dayStr=()=>new Date().toISOString().slice(0,10);
+function daySeed(){ let h=2166136261; const s='heist-'+dayStr(); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return (h>>>0)||1; }
+$('daybtn').textContent='DAILY HEIST · '+new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'}).toUpperCase();
+$('daybtn').addEventListener('click',e=>{ e.currentTarget.blur(); auInit(); raceSeed=daySeed(); dailyFlag=true; startGame(); setTimeout(()=>pop(pl.x,pl.y+3,PZ,'DAILY HEIST · SAME ROOFTOPS FOR EVERYONE','#ffd35a',true),400); });
 $('go').addEventListener('click',e=>{ e.currentTarget.blur(); startGame(); });
 $('cont').addEventListener('click',e=>{ e.currentTarget.blur(); if(save.cp) startGame(save.cp); });
 $('resumecp').addEventListener('click',e=>{ e.currentTarget.blur(); const cp=save.cp; if(!cp||save.bank<cpCost(cp)) return; save.bank-=cpCost(cp); persist(); startGame(cp); });
 $('saveq').addEventListener('click',e=>{ e.currentTarget.blur(); if(G.state!=='paused') return; save.bank+=G.coins; G.coins=0; persist(); submitScore(); $('pause').classList.add('hidden'); toMenu(); });
-$('lbbtn').addEventListener('click',e=>{ e.currentTarget.blur(); openLB(); });
+$('lbbtn').addEventListener('click',e=>{ e.currentTarget.blur(); openLB('solo'); });
+$('achbtn').addEventListener('click',e=>{ e.currentTarget.blur(); const l=$('ach-list'); l.textContent=''; let n=0; for(const a of ACH){ const got=!!save.ach[a.id]; if(got) n++; const r=document.createElement('div'); r.className='lbrow'+(got?' me':''); r.style.opacity=got?1:0.6; const b=document.createElement('b'); b.textContent=got?'✓':'🔒'; const s=document.createElement('span'); s.style.textAlign='left'; s.textContent=a.name+' — '+a.desc; const em=document.createElement('em'); em.style.fontStyle='normal'; em.textContent='+'+a.r; r.append(b,s,em); l.appendChild(r); } $('ach-sum').textContent=n+' / '+ACH.length+' UNLOCKED'; $('menu').classList.add('hidden'); $('achm').classList.remove('hidden'); });
+$('ach-back').addEventListener('click',e=>{ e.currentTarget.blur(); $('achm').classList.add('hidden'); $('menu').classList.remove('hidden'); });
+$('lb-tabs').addEventListener('click',e=>{ const b=e.target.closest('[data-m]'); if(b) openLB(b.dataset.m); });
 $('lb-back').addEventListener('click',e=>{ e.currentTarget.blur(); $('lbm').classList.add('hidden'); });
 $('pname').addEventListener('input',e=>{ LB.name=e.target.value.replace(/[^\w .\-!]/g,'').slice(0,14); try{ localStorage.setItem('rohninName',LB.name); }catch(_){} });
 $('pname').addEventListener('keydown',e=>e.stopPropagation());
@@ -2031,6 +2100,7 @@ $('shopbtn').addEventListener('click',e=>{ e.currentTarget.blur(); auInit(); ope
 $('over-shop').addEventListener('click',e=>{ e.currentTarget.blur(); auInit(); openShop('over'); });
 $('shop-back').addEventListener('click',e=>{ e.currentTarget.blur(); closeShop(); });
 $('sh-list').addEventListener('click',e=>{
+  { const b=e.target.closest('[data-skin],[data-skbuy]'); if(b){ if(b.dataset.skin){ save.skin=b.dataset.skin; } else { const k=skinById(b.dataset.skbuy); if(save.bank>=k.cost&&save.skins.indexOf(k.id)<0){ save.bank-=k.cost; save.skins.push(k.id); save.skin=k.id; sfx.buy(); } } persist(); renderShop(); return; } }
   const b=e.target.closest('button'); if(!b||b.disabled) return; auInit();
   if(b.dataset.buy){ const u=UPS.find(x=>x.k===b.dataset.buy), l=save.up[u.k], c=u.cost(l); if(l<u.max&&save.bank>=c){ save.bank-=c; save.up[u.k]++; persist(); sfx.buy(); } }
   else if(b.dataset.eq&&save.owned.indexOf(b.dataset.eq)>=0){ save.weapon=b.dataset.eq; persist(); sfx.power(); }
