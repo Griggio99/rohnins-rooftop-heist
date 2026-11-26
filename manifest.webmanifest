@@ -2,7 +2,7 @@
  "name": "Rohnin's Rooftop Heist",
  "short_name": "Rooftop Heist",
  "description": "Spy-themed rooftop runner with bosses, co-op and a global leaderboard.",
- "start_url": "./",
+ "start_url": "play.html",
  "scope": "./",
  "display": "fullscreen",
  "display_override": [
