@@ -245,7 +245,7 @@
   <div id="o-rank" class="best" style="margin:-8px 0 12px"></div>
   <div id="o-team" class="best hid" style="margin:-4px 0 14px;color:#7be8ff"></div>
   <button id="resumecp" class="btn hid" style="margin-bottom:12px"></button>
-  <div class="row"><button id="again" class="btn">NEW RUN</button><button id="coagain" class="btn alt hid">CO-OP LOBBY</button><button id="over-shop" class="btn alt">ARMOURY</button></div>
+  <div class="row"><button id="again" class="btn">NEW RUN</button><button id="coagain" class="btn alt hid">CO-OP LOBBY</button><button id="over-shop" class="btn alt">ARMOURY</button><button id="share-sc" class="btn alt">SHARE SCORE</button></div>
   <div class="row" style="margin-top:12px"><button id="homebtn" class="btn alt">HOME</button></div>
 </div>
 
@@ -2254,6 +2254,28 @@ function daySeed(){ let h=2166136261; const s='heist-'+dayStr(); for(let i=0;i<s
 try{ loginStreak(); missions(); }catch(e){}
 $('daybtn').textContent='DAILY HEIST · '+new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'}).toUpperCase();
 $('daybtn').addEventListener('click',e=>{ e.currentTarget.blur(); auInit(); raceSeed=daySeed(); dailyFlag=true; startGame(); setTimeout(()=>pop(pl.x,pl.y+3,PZ,'DAILY HEIST · SAME ROOFTOPS FOR EVERYONE','#ffd35a',true),400); });
+
+/* ======================= share card ======================= */
+async function shareScore(){
+  const c=document.createElement('canvas'); c.width=1080; c.height=1350; const x=c.getContext('2d'), pal=PAL[G.di%PAL.length], A=pal.a, B=pal.b;
+  const gr=x.createLinearGradient(0,0,0,1350); gr.addColorStop(0,rgb(pal.top)); gr.addColorStop(0.62,rgb(pal.bot)); gr.addColorStop(1,'#05030a'); x.fillStyle=gr; x.fillRect(0,0,1080,1350);
+  for(let i=0;i<70;i++){ x.fillStyle='rgba(255,255,255,'+(0.2+((i*37)%7)/12)+')'; x.fillRect((i*479)%1080,(i*263)%620,2+(i%3),2+(i%3)); }
+  x.fillStyle='rgba(8,4,16,.88)'; let bx=0; for(let i=0;i<9;i++){ const w=110+((i*53)%70), h=240+((i*97)%260); x.fillRect(bx,1000-h,w,h+350); bx+=w+8; }
+  x.textAlign='center'; x.shadowColor=rgb(A); x.shadowBlur=30; x.fillStyle='#ffe07a'; x.font='110px '+FONT; x.fillText("ROHNIN'S ROOFTOP HEIST",540,170); x.shadowBlur=0;
+  x.fillStyle=rgb(B); x.font='44px '+FONT; x.fillText('MISSION REPORT',540,235);
+  x.fillStyle='#fff'; x.font='300px '+FONT; x.shadowColor=rgb(A); x.shadowBlur=40; x.fillText(Math.floor(G.sc).toLocaleString(),540,560); x.shadowBlur=0;
+  x.fillStyle='#ffe07a'; x.font='54px '+FONT; x.fillText('POINTS',540,625);
+  const o=ctx; ctx=x; try{ G.t=1.3; drawAgent(540,1045,172,{col:skinCol(save.skin),ex:skinById(save.skin).ex,tc:skinById(save.skin).tc,wp:save.weapon,ph:0.8,air:false,slide:false,jet:false,tilt:0,stum:0,alpha:1,tails:true}); }catch(e){} finally{ ctx=o; }
+  x.fillStyle='rgba(8,4,16,.7)'; x.fillRect(90,1060,900,150); x.fillStyle='#fff'; x.font='66px '+FONT;
+  x.fillText('DISTRICT '+(G.di+1)+' · '+pal.name+'  ·  '+Math.floor(G.dist)+' M',540,1135); x.fillStyle=rgb(A); x.font='46px '+FONT; x.fillText((G.kills||0)+' TARGETS DESTROYED'+(G.daily?'  ·  DAILY HEIST':''),540,1190);
+  x.fillStyle='#fff'; x.font='64px '+FONT; x.fillText('CAN YOU BEAT ME?',540,1275); x.fillStyle='#ffe07a'; x.font='44px '+FONT; x.fillText('ROHNINSHEIST.COM',540,1325);
+  const blob=await new Promise(r=>c.toBlob(r,'image/png')); if(!blob) return; const file=new File([blob],'rooftop-heist-score.png',{type:'image/png'});
+  const text='I scored '+Math.floor(G.sc).toLocaleString()+' in Rohnin\'s Rooftop Heist! Can you beat me? https://rohninsheist.com';
+  try{ if(navigator.canShare&&navigator.canShare({files:[file]})){ await navigator.share({files:[file],text,title:"Rohnin's Rooftop Heist"}); return; } }catch(e){ if(e&&e.name==='AbortError') return; }
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='rooftop-heist-score.png'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  try{ await navigator.clipboard.writeText(text); }catch(e){} pop&&0;
+}
+$('share-sc').addEventListener('click',e=>{ e.currentTarget.blur(); const b=e.currentTarget; b.textContent='MAKING IMAGE...'; shareScore().catch(()=>{}).finally(()=>{ b.textContent='SHARE SCORE'; }); });
 $('go').addEventListener('click',e=>{ e.currentTarget.blur(); const go=()=>{ startGame(); setTimeout(()=>{ if(G.state==='playing') quip('start',3.6); },2600); }; if(!save.cine){ save.cine=1; persist(); playCine(go); } else go(); });
 $('cont').addEventListener('click',e=>{ e.currentTarget.blur(); if(save.cp) startGame(save.cp); });
 $('resumecp').addEventListener('click',e=>{ e.currentTarget.blur(); const cp=save.cp; if(!cp||save.bank<cpCost(cp)) return; save.bank-=cpCost(cp); persist(); startGame(cp); });
