@@ -1647,13 +1647,22 @@ function trBC(code){ const ch=new BroadcastChannel('heist-coop-'+code), seen=new
 function trHost(code){ let list=[]; NC.hostAck=false; NC.openAt=performance.now(); NC._hostCb=ps=>{ list=ps; NC.hostAck=true; };
   toHost({t:'net',op:'open',code,id:NC.id});
   return {name:'online',send:s=>toHost({t:'net',op:'pub',s}),peers:()=>list,close:()=>{ NC._hostCb=null; toHost({t:'net',op:'close'}); }}; }
-function trSSE(code){ const seen=new Map(); let busy=false, pending=null, dead=false;
-  const es=new EventSource(apiU('api/room/'+code+'/events?id='+NC.id)); let opened=false; es.onopen=()=>{ opened=true; flush(); };
-  es.addEventListener('state',e=>{ try{ const s=JSON.parse(e.data); if(s&&s.id&&s.id!==NC.id) seen.set(s.id,s); }catch(_){} });
-  es.addEventListener('left',e=>{ seen.delete(e.data); });
+function trSSE(code){ const seen=new Map(); let busy=false, pending=null, dead=false, es=null, opened=false, lastRx=performance.now(), rcT=0;
+  const connect=()=>{ if(dead) return; try{ if(es) es.close(); }catch(e){} opened=false; lastRx=performance.now();
+    es=new EventSource(apiU('api/room/'+code+'/events?id='+NC.id));
+    es.onopen=()=>{ opened=true; lastRx=performance.now(); flush(); };
+    es.addEventListener('state',e=>{ lastRx=performance.now(); try{ const s=JSON.parse(e.data); if(s&&s.id&&s.id!==NC.id) seen.set(s.id,s); }catch(_){} });
+    es.addEventListener('ping',()=>{ lastRx=performance.now(); });
+    es.onerror=()=>{ opened=false; if(es.readyState===2){ clearTimeout(rcT); rcT=setTimeout(connect,1200); } }; };
   const flush=()=>{ if(busy||!pending||dead||!opened) return; const body=pending; pending=null; busy=true;
-    fetch(apiU('api/room/'+code+'/pub'),{method:'POST',headers:{'Content-Type':'text/plain'},body,keepalive:true}).catch(()=>{}).finally(()=>{ busy=false; flush(); }); };
-  return {name:'online',send:s=>{ pending=JSON.stringify(s); flush(); },peers:()=>[...seen.values()],close:()=>{ dead=true; try{ es.close(); }catch(e){} }}; }
+    fetch(apiU('api/room/'+code+'/pub'),{method:'POST',headers:{'Content-Type':'text/plain'},body,keepalive:true}).then(r=>{ if(r.status===409){ opened=false; clearTimeout(rcT); rcT=setTimeout(connect,300); } }).catch(()=>{}).finally(()=>{ busy=false; flush(); }); };
+  // phones suspend and resume pages and change networks: reconnect when the link has gone quiet or the page comes back
+  const wake=()=>{ if(dead) return; if(!opened||performance.now()-lastRx>15000){ clearTimeout(rcT); connect(); } };
+  const watch=setInterval(()=>{ if(!dead&&performance.now()-lastRx>25000){ connect(); } },5000);
+  const beat=setInterval(()=>{ if(!dead&&document.hidden){ try{ pending=JSON.stringify(ncState()); flush(); }catch(e){} } },1000);
+  addEventListener('online',wake); addEventListener('pageshow',wake); document.addEventListener('visibilitychange',()=>{ if(!document.hidden) wake(); });
+  connect();
+  return {name:'online',send:s=>{ pending=JSON.stringify(s); flush(); },peers:()=>[...seen.values()],close:()=>{ dead=true; clearInterval(watch); clearInterval(beat); clearTimeout(rcT); try{ es.close(); }catch(e){} }}; }
 const livesLeft=()=>Math.max(0,NC.max-NC.used-NC.peerUsed);
 NC.livesLeft=livesLeft;
 function ncState(){ return {id:NC.id,nm:NC.nm,jt:NC.jt,t:++NC.seq,ph:NC.phase,rn:NC.runId,go:NC.myGo,z:+G.dist.toFixed(1),x:+pl.x.toFixed(2),y:+Math.max(-14,pl.y).toFixed(2),v:+G.speed.toFixed(1),sl:pl.slide>0?1:0,f:(G.t-NC.lastFire<0.3)?1:0,dn:NC.out?2:0,sc:Math.floor(G.sc),di:G.di,u:NC.used,bd:NC.bdOut}; }
@@ -1678,7 +1687,7 @@ function ncTick(dt){
     let r=NC.peers.get(s.id); if(!r){ r={id:s.id,lastT:-1,chg:now,rcv:now,gz:s.z||0,gx:s.x||0,gy:0,ph:0,s:s,sawLobby:false,tr:0}; NC.peers.set(s.id,r); }
     if(s.t!==r.lastT){ r.lastT=s.t; r.chg=now; r.rcv=now; r.s=s; if(s.ph==='lobby') r.sawLobby=true;
       if(s.rn&&s.rn===NC.runId&&s.bd){ for(const k in s.bd){ const d=s.bd[k]-(NC.seenBd[k]||0); if(d>0.0001){ NC.seenBd[k]=s.bd[k]; NC.pend[k]=(NC.pend[k]||0)+d; } } } } }
-  for(const [id,r] of NC.peers) if(now-r.chg>6000) NC.peers.delete(id);
+  for(const [id,r] of NC.peers) if(now-r.chg>(NC.mode==='sse'?22000:6000)) NC.peers.delete(id);
   const all=[...NC.peers.values()].map(r=>({jt:r.s.jt||0,id:r.id,r})); all.push({jt:NC.jt,id:NC.id,me:true});
   all.sort((a,b)=>(a.jt-b.jt)||(a.id<b.id?-1:1)); const mem=all.slice(0,2);
   NC.member=mem.some(m=>m.me); NC.isHost=!!mem[0].me; const pm=mem.find(m=>!m.me); const had=NC.peer; NC.peer=NC.member&&pm?pm.r:null;

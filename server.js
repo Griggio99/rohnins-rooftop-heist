@@ -22,7 +22,7 @@ const rooms=new Map(); // code -> {clients:Map(id->res), states:Map(id->json), t
 const MAX_ROOMS=500, MAX_PER_ROOM=6;
 function roomOf(code){ let r=rooms.get(code); if(!r){ if(rooms.size>=MAX_ROOMS) return null; r={clients:new Map(),states:new Map(),t:Date.now()}; rooms.set(code,r); } return r; }
 function sse(res,ev,data){ try{ res.write('event: '+ev+'\ndata: '+data+'\n\n'); }catch(e){} }
-setInterval(()=>{ const now=Date.now(); for(const [c,r] of rooms){ for(const [id,res] of r.clients){ try{ res.write(':ka\n\n'); }catch(e){} } for(const [id,st] of r.states) if(now-st.t>15000&&!r.clients.has(id)) r.states.delete(id); if(!r.clients.size&&now-r.t>60000) rooms.delete(c); } },15000);
+setInterval(()=>{ const now=Date.now(); for(const [c,r] of rooms){ for(const [id,res] of r.clients){ try{ res.write('event: ping\ndata: 1\n\n'); }catch(e){} } for(const [id,st] of r.states) if(now-st.t>30000) r.states.delete(id); if(!r.clients.size&&now-r.t>60000) rooms.delete(c); } },8000);
 function top(n){ return scores.slice().sort((a,b)=>b.score-a.score).slice(0,n).map(({name,score,di})=>({name,score,di})); }
 function rankOf(score){ let r=1; for(const s of scores) if(s.score>score) r++; return r; }
 const server=http.createServer((req,res)=>{
@@ -36,9 +36,9 @@ const server=http.createServer((req,res)=>{
         const id=String(u.searchParams.get('id')||'').replace(/[^\w]/g,'').slice(0,12); if(!id) return send(res,400,{error:'id'});
         const r=roomOf(code); if(!r||r.clients.size>=MAX_PER_ROOM) return send(res,503,{error:'room full'});
         res.writeHead(200,Object.assign({'Content-Type':'text/event-stream','Cache-Control':'no-store','Connection':'keep-alive','X-Accel-Buffering':'no'},CORS));
-        res.write('retry: 1500\n\n'); r.clients.set(id,res); r.t=Date.now();
+        res.write('retry: 1500\n\n'); { const old=r.clients.get(id); if(old&&old!==res){ try{ old.end(); }catch(e){} } } r.clients.set(id,res); r.t=Date.now();
         for(const [oid,st] of r.states) if(oid!==id) sse(res,'state',st.j);
-        req.on('close',()=>{ r.clients.delete(id); r.states.delete(id); for(const [oid,c] of r.clients) sse(c,'left',id); });
+        req.on('close',()=>{ if(r.clients.get(id)===res) r.clients.delete(id); });
         return;
       }
       if(limited(ip+':pub',900,60000)) return send(res,429,{error:'slow down'});
