@@ -8,6 +8,12 @@ const HIDE=/^\/(server\.js|package\.json|render\.yaml|data(\/|$)|\.)/;
 fs.mkdirSync(DATA_DIR,{recursive:true});
 let scores=[]; try{ scores=JSON.parse(fs.readFileSync(FILE,'utf8')); }catch(e){ scores=[]; }
 let dirty=false;
+// signed run tokens: server-side proof a run actually started and how long it has been going
+let SECRET; try{ SECRET=fs.readFileSync(path.join(DATA_DIR,'secret'),'utf8').trim(); }catch(e){ SECRET=crypto.randomBytes(24).toString('hex'); try{ fs.writeFileSync(path.join(DATA_DIR,'secret'),SECRET); }catch(_){} }
+const sign=p=>crypto.createHmac('sha256',SECRET).update(p).digest('hex').slice(0,24);
+function mkTok(sc0){ const p=Date.now()+'.'+sc0; return p+'.'+sign(p); }
+function readTok(t){ const a=String(t||'').split('.'); if(a.length!==3) return null; const p=a[0]+'.'+a[1]; if(sign(p)!==a[2]) return null; return {t0:+a[0],sc0:+a[1]}; }
+
 setInterval(()=>{ if(!dirty) return; dirty=false; try{ fs.writeFileSync(FILE+'.tmp',JSON.stringify(scores)); fs.renameSync(FILE+'.tmp',FILE); }catch(e){ console.error('save failed',e.message); } },3000);
 const MIME={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.png':'image/png','.svg':'image/svg+xml','.ico':'image/x-icon','.json':'application/json','.webmanifest':'application/manifest+json'};
 const hits=new Map();
@@ -54,6 +60,7 @@ const server=http.createServer((req,res)=>{
         return send(res,200,{ok:true}); });
       return; } }
   if(u.pathname==='/api/top'){ const n=Math.min(100,Math.max(1,+u.searchParams.get('n')||25)); return send(res,200,{top:top(n)}); }
+  if(u.pathname==='/api/run'){ if(limited(ip,30,60000)) return send(res,429,{error:'slow down'}); const sc0=Math.max(0,Math.min(60000,Math.floor(+u.searchParams.get('sc0'))||0)); return send(res,200,{tok:mkTok(sc0)}); }
   if(u.pathname==='/api/score'&&req.method==='POST'){
     if(limited(ip,12,60000)) return send(res,429,{error:'slow down'});
     let body=''; req.on('data',c=>{ body+=c; if(body.length>2000) req.destroy(); });
@@ -64,6 +71,10 @@ const server=http.createServer((req,res)=>{
       if(!(score>=50)||!(dist>=0)||!isFinite(score)) return send(res,400,{error:'bad score'});
       // soft plausibility check: score is mostly distance plus boss/kill bonuses
       if(score>dist*45+kills*900+60000) return send(res,400,{error:'implausible'});
+      // the run must have really been running: score gained needs real elapsed time
+      const tk=readTok(j.tok); const el=tk?(Date.now()-tk.t0)/1000:0;
+      if(!tk&&score>6000) return send(res,400,{error:'no run token'});
+      if(tk&&(el>8*3600||score>tk.sc0+el*320+3000)) return send(res,400,{error:'implausible time'});
       const key=name.toLowerCase(); let e=scores.find(s=>s.key===key);
       if(!e){ e={key,name,score:0,di:0,t:Date.now()}; scores.push(e); }
       if(score>e.score){ e.score=score; e.di=di; e.name=name; e.t=Date.now(); dirty=true; }

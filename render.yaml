@@ -6,3 +6,10 @@ services:
     buildCommand: "true"
     startCommand: node server.js
     healthCheckPath: /api/ping
+    envVars:
+      - key: DATA_DIR
+        value: /var/data
+    disk:
+      name: heist-data
+      mountPath: /var/data
+      sizeGB: 1

@@ -194,6 +194,7 @@
     <div class="cocode" id="co-codeshow">----</div>
     <div id="co-players"></div>
     <div class="best" id="co-stat" style="margin:10px 0 14px;max-width:340px;line-height:1.5"></div>
+    <button id="co-invite" class="btn alt" style="margin-bottom:10px">SHARE INVITE LINK</button>
     <button id="co-start" class="btn" disabled>START HEIST</button>
   </div>
   <button id="co-back" class="btn alt" style="margin-top:14px">BACK</button>
@@ -1789,6 +1790,7 @@ function coEnter(code){ ncOpen(code); if(!NC.tr){ coStat('Co-op is not available
 $('coopbtn').addEventListener('click',()=>{ auInit(); coOpenUI(); });
 $('co-create').addEventListener('click',()=>coEnter(coRand()));
 $('co-join').addEventListener('click',()=>{ const c=$('co-code').value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,4); if(c.length<4){ $('co-code').focus(); return; } coEnter(c); });
+$('co-invite').addEventListener('click',async()=>{ const url=location.origin+location.pathname+'?room='+NC.code; const b=$('co-invite'); try{ if(navigator.share){ await navigator.share({title:"Rohnin's Rooftop Heist",text:'Join my co-op heist!',url}); return; } }catch(e){ if(e&&e.name==='AbortError') return; } try{ await navigator.clipboard.writeText(url); b.textContent='LINK COPIED'; }catch(e){ b.textContent=url; } setTimeout(()=>{ b.textContent='SHARE INVITE LINK'; },2500); });
 $('co-code').addEventListener('keydown',e=>{ e.stopPropagation(); if(e.key==='Enter') $('co-join').click(); });
 $('co-code').addEventListener('input',e=>{ e.target.value=e.target.value.toUpperCase().replace(/[^A-Z]/g,''); });
 $('co-back').addEventListener('click',()=>{ ncClose(); NC.view=''; coEl.classList.add('hidden'); $('menu').classList.remove('hidden'); });
@@ -1855,7 +1857,7 @@ function startGame(cp){
   auInit(); setMute(AU.muted); rngS=raceSeed?mulberry(raceSeed):null; G.race=!!raceSeed; raceSeed=0; resetGame(false);
   if(cp&&cp.di>0){ warpTo(cp.di); G.sc=cp.sc; G.kills=cp.kills||0; pl.shield=Math.max(pl.shield,cp.shield||0); for(const id of WORDER) if(id!=='pistol'&&cp.ammo&&cp.ammo[id]!=null) ammo[id]=Math.max(ammo[id],Math.min(ammoMax(id),cp.ammo[id])); if(save.owned.indexOf(cp.w)>=0&&hasAmmo(cp.w)) save.weapon=cp.w; pl.inv=2.5; }
   else { save.cp=null; persist(); } G.state='playing'; G.speed=12; AU.on=true; AU.step=0; AU.next=0; G.bannerT=3.4; wheelDirty=true;
-  fireKeys.clear(); btnHeld=false; shopOpen=false; wakeLock();
+  fireKeys.clear(); btnHeld=false; shopOpen=false; wakeLock(); getRunTok(G.sc);
   $('menu').classList.add('hidden'); $('over').classList.add('hidden'); $('pause').classList.add('hidden'); $('shop').classList.add('hidden'); $('btns').classList.remove('off');
 }
 function pauseGame(){ if(G.state!=='playing') return; G.state='paused'; AU.on=false; fireKeys.clear(); btnHeld=false; $('pause').classList.remove('hidden'); }
@@ -1871,10 +1873,12 @@ const apiU=p=>window.HEIST_NET?String(window.HEIST_NET).replace(/\/$/,'')+'/'+p:
 async function lbPing(){ try{ const r=await fetch(apiU('api/ping'),{cache:'no-store'}); const j=await r.json(); LB.on=!!(j&&j.ok); LB.rooms=!!(j&&j.rooms); }catch(e){ LB.on=false; } $('lbbtn').classList.toggle('hid',!LB.on); $('pname').classList.toggle('hid',!LB.on); $('pname').value=LB.name; }
 async function openLB(){ const box=$('lb-list'); box.textContent='Loading...'; $('lbm').classList.remove('hidden');
   try{ const r=await fetch(apiU('api/top?n=25'),{cache:'no-store'}); const j=await r.json(); box.textContent=''; box.appendChild(j.top&&j.top.length?lbRows(j.top,LB.name):document.createTextNode('No scores yet. Be the first.')); }catch(e){ box.textContent='Leaderboard offline.'; } }
+let RUNTOK='';
+async function getRunTok(sc0){ RUNTOK=''; if(!LB.on||EMB) return; try{ const r=await fetch(apiU('api/run?sc0='+Math.floor(sc0||0)),{cache:'no-store'}); const j=await r.json(); RUNTOK=(j&&j.tok)||''; }catch(e){} }
 async function submitScore(){
   if(G.sc>=50) toHost({t:'score',score:Math.floor(G.sc),dist:Math.floor(G.dist),di:G.di,kills:G.kills,race:!!G.race});
   if(!LB.on||G.sc<50) return; const nm=(LB.name||'').trim()||'ROHNIN';
-  try{ const r=await fetch(apiU('api/score'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:nm,score:Math.floor(G.sc),dist:Math.floor(G.dist),di:G.di,kills:G.kills})}); const j=await r.json();
+  try{ const r=await fetch(apiU('api/score'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:nm,score:Math.floor(G.sc),dist:Math.floor(G.dist),di:G.di,kills:G.kills,tok:RUNTOK})}); const j=await r.json();
     if(j&&j.rank){ $('o-rank').textContent='Leaderboard rank #'+j.rank+' of '+j.total; } }catch(e){} }
 function refreshMenu(){
   const cp=save.cp; $('cont').classList.toggle('hid',!(cp&&cp.di>0)); if(cp&&cp.di>0) $('cont').textContent='CONTINUE · DISTRICT '+(cp.di+1); $('mbest').textContent=`Bank ${save.bank.toLocaleString()} chips · Best ${G.best.toLocaleString()} · ${weap().name}`; }
@@ -2026,9 +2030,17 @@ addEventListener('blur',pauseGame);
   if(document.fullscreenEnabled&&IS_TOUCH){ bf.classList.remove('hid'); bf.addEventListener('click',e=>{ e.currentTarget.blur(); try{ if(document.fullscreenElement) document.exitFullscreen(); else de.requestFullscreen({navigationUI:'hide'}).catch(()=>{}); }catch(_){} }); } }
 const cfgReady=new Promise(res=>{ if(EMB||!/^https?:/.test(location.protocol)) return res(); try{ const sc=document.createElement('script'); sc.src='config.js'; sc.onload=sc.onerror=()=>res(); document.head.appendChild(sc); setTimeout(res,2500); }catch(e){ res(); } });
 let wakeL=null; function wakeLock(){ try{ if(navigator.wakeLock&&!wakeL) navigator.wakeLock.request('screen').then(l=>{ wakeL=l; l.addEventListener('release',()=>{ wakeL=null; }); }).catch(()=>{}); }catch(e){} }
+try{ const rc=(new URLSearchParams(location.search).get('room')||'').toUpperCase().replace(/[^A-Z]/g,'').slice(0,4); if(rc.length===4&&!EMB){ setTimeout(()=>{ try{ auInit(); coOpenUI(); $('co-code').value=rc; coEnter(rc); history.replaceState(null,'',location.pathname); }catch(e){} },900); } }catch(e){}
 let instEv=null; addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); instEv=e; $('instbtn').classList.remove('hid'); });
 $('instbtn').addEventListener('click',async()=>{ if(!instEv) return; instEv.prompt(); try{ await instEv.userChoice; }catch(_){} instEv=null; $('instbtn').classList.add('hid'); });
-addEventListener('appinstalled',()=>$('instbtn').classList.add('hid'));
+addEventListener('appinstalled',()=>{ $('instbtn').classList.add('hid'); $('instBar').classList.add('hid'); });
+(function(){ try{ const bar=$('instBar'); if(EMB||!/^https?:/.test(location.protocol)||navigator.standalone||matchMedia('(display-mode: standalone)').matches||localStorage.getItem('heistInstX')) return; const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  const show=()=>setTimeout(()=>{ if(localStorage.getItem('heistInstX')) return; bar.classList.remove('hid'); },20000);
+  if(ios){ $('instTxt').textContent='Play full-screen & stay connected: tap Share, then Add to Home Screen.'; show(); }
+  else addEventListener('beforeinstallprompt',()=>{ $('instTxt').textContent='Install the game for a full-screen, steadier connection.'; $('instGo').style.display=''; show(); });
+  $('instX').onclick=()=>{ bar.classList.add('hid'); try{ localStorage.setItem('heistInstX','1'); }catch(e){} };
+  $('instGo').onclick=()=>{ $('instbtn').click(); bar.classList.add('hid'); };
+}catch(e){} })();
 if(!EMB&&/iphone|ipad|ipod/i.test(navigator.userAgent)&&!navigator.standalone&&/^https?:/.test(location.protocol)) $('iosHint').classList.remove('hid');
 if(!EMB&&/^https?:/.test(location.protocol)){
   try{ for(const [rel,href] of [['manifest','manifest.webmanifest'],['apple-touch-icon','apple-touch-icon.png'],['icon','favicon.png']]){ const l=document.createElement('link'); l.rel=rel; l.href=href; document.head.appendChild(l); } }catch(e){}
@@ -2055,5 +2067,6 @@ requestAnimationFrame(frame);
 if(document.fonts&&document.fonts.load){ document.fonts.load('40px "Bebas Neue"').catch(()=>{}); }
 })();
 </script>
+<div id="instBar" class="hid" style="position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:60;background:rgba(10,14,24,.94);border:1px solid rgba(123,232,255,.5);border-radius:12px;padding:10px 12px;display:flex;gap:10px;align-items:center;color:#fff;font:600 13px system-ui,sans-serif"><span id="instTxt" style="flex:1"></span><button id="instGo" style="display:none;background:#7be8ff;color:#001018;border:0;border-radius:8px;padding:7px 12px;font-weight:700">INSTALL</button><button id="instX" aria-label="Dismiss" style="background:none;border:0;color:#fff;font-size:20px;line-height:1">&times;</button></div>
 </body>
 </html>
