@@ -206,6 +206,8 @@ let toastT=null; function toast(m){ const t=$('toast'); t.textContent=m; t.class
 
 /* ---------- game embed ---------- */
 const frame=$('game'); frame.src='play.html';
+$('stage').style.touchAction='none';
+['touchstart','touchmove'].forEach(ev=>$('stage').addEventListener(ev,e=>{ if(e.touches.length>1) e.preventDefault(); },{passive:false}));
 function fitStage(){ $('stage').classList.toggle('tall',innerWidth<innerHeight&&innerWidth<700); }
 fitStage(); addEventListener('resize',fitStage);
 $('fs').addEventListener('click',()=>{ const s=$('stage'); try{ (s.requestFullscreen||s.webkitRequestFullscreen).call(s).catch(()=>toast('Fullscreen is blocked here')); }catch(e){ toast('Fullscreen is blocked here'); } });
