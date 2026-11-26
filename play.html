@@ -138,6 +138,7 @@
 
   #gads{position:fixed;z-index:4;display:flex;flex-direction:column;gap:8px;right:max(16px,env(safe-area-inset-right));bottom:calc(max(22px,env(safe-area-inset-bottom)) + clamp(70px,16vw,92px) + 12px)}
   #gads.off{display:none}
+  @media(pointer:coarse){#gads{gap:10px}#gads button{width:44px;height:44px;opacity:.82}#btns{opacity:.6}}
   #gads button{position:relative;width:48px;height:48px;border-radius:12px;border:2px solid currentColor;background:rgba(10,6,20,.66);font-family:'Bebas Neue',Impact,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;overflow:hidden;padding:0;cursor:pointer;touch-action:none;backdrop-filter:blur(4px);-webkit-tap-highlight-color:transparent}
   #gads button b{font-size:22px;font-weight:400}
   #gads button span{font-size:9px;letter-spacing:.1em;opacity:.85}
@@ -730,7 +731,7 @@ function physics(dt,pz,auto){
   if(!pl.falling){
     if(pl.y>0||pl.vy!==0||!sup){
       pl.vy-=GRAV*dt; pl.y+=pl.vy*dt;
-      if(pl.y<=0){ if(sup){ const was=pl.vy<-4; pl.y=0; pl.vy=0; if(was) landed(); } else if(pl.y<-0.6) pl.falling=true; }
+      if(pl.y<=0){ if(sup){ const was=pl.vy<-4; pl.y=0; pl.vy=0; if(was) landed(); } else if(pl.y<-0.9) pl.falling=true; }
     }
   } else { pl.vy-=GRAV*dt; pl.y+=pl.vy*dt; }
   if(pl.slide>0) pl.slide-=dt;
@@ -2223,7 +2224,8 @@ function updateWheel(dt){
   const WL=weap(), lab=$('wlabel'); lab.classList.remove('off'); lab.innerHTML='<div class="n" style="color:'+WL.col+'">'+WL.name.toUpperCase()+'</div><div class="c">'+CLS[WL.cls].n+' \u00B7 '+(save.weapon==='pistol'?'INFINITE':ammo[save.weapon]+'/'+ammoMax(save.weapon))+'</div>';
   const W=weap(), wc=wheelEl.querySelector('.wc'); if(wc){ wc.style.setProperty('--c',W.col); wc.querySelector('b').textContent=save.weapon==='pistol'?'\u221E':ammo[save.weapon]; wc.querySelector('small').textContent=W.k; }
 }
-wheelEl.addEventListener('pointerdown',e=>{ const t=e.target.closest('[data-w]'); if(!t) return; e.preventDefault(); e.stopPropagation(); if(t.dataset.w==='cycle') cycleWeapon(); else { const id=t.dataset.w; if(!hasAmmo(id)){ pop(pl.x,pl.y+2.4,PZ,'NO AMMO','#ff6a6a',true); } else equipW(id); } });
+const wheelAct=(t)=>{ if(t.dataset.w==='cycle') cycleWeapon(); else { const id=t.dataset.w; if(!hasAmmo(id)){ pop(pl.x,pl.y+2.4,PZ,'NO AMMO','#ff6a6a',true); } else equipW(id); } };
+if(IS_TOUCH) deliberate(wheelEl,(t)=>wheelAct(t),'[data-w]'); else wheelEl.addEventListener('pointerdown',e=>{ const t=e.target.closest('[data-w]'); if(!t) return; e.preventDefault(); e.stopPropagation(); wheelAct(t); });
 function renderShop(){
   $('sh-bank').textContent=save.bank.toLocaleString();
   let h='<div class="sec">WEAPONS</div><div class="grid">';
@@ -2280,7 +2282,10 @@ $('bm').addEventListener('click',e=>{ e.currentTarget.blur(); auInit(); setMute(
 $('ba').addEventListener('click',e=>{ e.currentTarget.blur(); autoFire=!autoFire; uiSig=''; });
 $('bw').addEventListener('click',e=>{ e.currentTarget.blur(); cycleWeapon(); });
 const gbs={c:$('gc'),v:$('gv'),b:$('gb')};
-for(const kk in gbs){ gbs[kk].addEventListener('pointerdown',e=>{ e.preventDefault(); useGadget(kk); }); gbs[kk].addEventListener('contextmenu',e=>e.preventDefault()); }
+function deliberate(el,fn,sel){ let d=null; el.addEventListener('pointerdown',e=>{ const t=sel?e.target.closest(sel):el; if(!t) return; e.preventDefault(); e.stopPropagation(); d={id:e.pointerId,x:e.clientX,y:e.clientY,t:performance.now(),el:t}; });
+  el.addEventListener('pointerup',e=>{ if(!d||e.pointerId!==d.id) return; const q=d; d=null; if(Math.hypot(e.clientX-q.x,e.clientY-q.y)<14&&performance.now()-q.t<500) fn(q.el,e); });
+  for(const ev of ['pointercancel','pointerleave']) el.addEventListener(ev,()=>{ d=null; }); }
+for(const kk in gbs){ if(IS_TOUCH) deliberate(gbs[kk],()=>useGadget(kk)); else gbs[kk].addEventListener('pointerdown',e=>{ e.preventDefault(); useGadget(kk); }); gbs[kk].addEventListener('contextmenu',e=>e.preventDefault()); }
 function syncGads(){ for(const kk in gbs){ const e=gbs[kk], q=pl.gcd[kk]>0?pl.gcd[kk]/Math.max(0.01,pl.gmax[kk]):0; e.style.setProperty('--p',q.toFixed(3)); e.classList.toggle('ready',q===0); } }
 const fb=$('fire');
 fb.addEventListener('pointerdown',e=>{ e.preventDefault(); btnHeld=true; try{ fb.setPointerCapture(e.pointerId); }catch(_){} });
@@ -2316,8 +2321,8 @@ addEventListener('message',e=>{
 let sw=null;
 cv.addEventListener('pointerdown',e=>{ if(sw) return; sw={id:e.pointerId,x:e.clientX,y:e.clientY,moved:false}; });
 cv.addEventListener('pointermove',e=>{
-  if(!sw||e.pointerId!==sw.id||G.state!=='playing') return; const dx=e.clientX-sw.x, dy=e.clientY-sw.y; if(Math.max(Math.abs(dx),Math.abs(dy))<(IS_TOUCH?20:26)) return;
-  sw.moved=true; sw.x=e.clientX; sw.y=e.clientY; if(Math.abs(dx)>Math.abs(dy)) act(dx<0?'left':'right'); else act(dy<0?'jump':'slide');
+  if(!sw||e.pointerId!==sw.id||G.state!=='playing') return; const dx=e.clientX-sw.x, dy=e.clientY-sw.y, ax=Math.abs(dx), ay=Math.abs(dy); if(Math.max(ax,ay)<(IS_TOUCH?13:26)) return;
+  sw.moved=true; sw.x=e.clientX; sw.y=e.clientY; if(ay>=ax*0.75&&ay>=(IS_TOUCH?13:26)) act(dy<0?'jump':'slide'); else act(dx<0?'left':'right');
 });
 cv.addEventListener('pointerup',e=>{ if(!sw||e.pointerId!==sw.id) return; if(!sw.moved&&G.state==='playing'&&e.pointerType==='touch') act('jump'); sw=null; });
 cv.addEventListener('pointercancel',e=>{ if(sw&&e.pointerId===sw.id) sw=null; });
