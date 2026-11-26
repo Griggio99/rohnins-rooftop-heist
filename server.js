@@ -16,6 +16,9 @@ function readTok(t){ const a=String(t||'').split('.'); if(a.length!==3) return n
 
 setInterval(()=>{ if(!dirty) return; dirty=false; try{ fs.writeFileSync(FILE+'.tmp',JSON.stringify(scores)); fs.renameSync(FILE+'.tmp',FILE); }catch(e){ console.error('save failed',e.message); } },3000);
 const MIME={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.png':'image/png','.svg':'image/svg+xml','.ico':'image/x-icon','.json':'application/json','.webmanifest':'application/manifest+json'};
+const SFILE=path.join(DATA_DIR,'stats.json');
+let stats={runs:0,sumT:0,byDi:{},byDist:{},cause:{},mode:{},pet:{}}; try{ stats=Object.assign(stats,JSON.parse(fs.readFileSync(SFILE,'utf8'))); }catch(e){}
+let sdirty=false; setInterval(()=>{ if(!sdirty) return; sdirty=false; try{ fs.writeFileSync(SFILE+'.tmp',JSON.stringify(stats)); fs.renameSync(SFILE+'.tmp',SFILE); }catch(e){} },20000);
 const hits=new Map();
 function limited(ip,max,winMs){ const now=Date.now(); const a=(hits.get(ip)||[]).filter(t=>now-t<winMs); a.push(now); hits.set(ip,a); return a.length>max; }
 setInterval(()=>{ const now=Date.now(); for(const [k,v] of hits) if(!v.length||now-v[v.length-1]>120000) hits.delete(k); },60000);
@@ -83,6 +86,11 @@ const server=http.createServer((req,res)=>{
       const rec={t:new Date().toISOString(),m:String(j.m||'').slice(0,300),s:String(j.s||'').slice(0,500),u:String(j.u||'').slice(0,80),dev};
       errLog.push(rec); if(errLog.length>100) errLog.shift(); console.log('CLIENT_ERR',JSON.stringify(rec)); return send(res,200,{ok:true}); });
     return; }
+  if(u.pathname==='/api/ev'&&req.method==='POST'){
+    if(limited('ev'+ip,40,60000)) return send(res,429,{error:'slow down'});
+    let b=''; req.on('data',d=>{ b+=d; if(b.length>600) req.destroy(); }); req.on('end',()=>{ try{ const j=JSON.parse(b); if(j&&j.e==='run'&&j.d){ const d=j.d, inc=(o,k)=>{ k=String(k).replace(/[^\w \-.]/g,'').slice(0,40)||'?'; o[k]=(o[k]||0)+1; };
+      stats.runs++; stats.sumT+=Math.min(7200,Math.max(0,+d.t||0)); inc(stats.byDi,Math.min(30,Math.max(0,+d.di||0))); inc(stats.byDist,Math.min(20000,Math.max(0,+d.dist||0))); inc(stats.cause,d.cause); inc(stats.mode,d.mode); if(d.pet) inc(stats.pet,d.pet); sdirty=true; } }catch(e){} send(res,200,{ok:true}); }); return; }
+  if(u.pathname==='/api/stats') return send(res,200,Object.assign({avgSec:stats.runs?Math.round(stats.sumT/stats.runs):0},stats));
   if(u.pathname==='/api/errors') return send(res,200,{count:errLog.length,errors:errLog.slice(-30)});
   if(u.pathname==='/api/run'){ if(limited(ip,30,60000)) return send(res,429,{error:'slow down'}); const sc0=Math.max(0,Math.min(60000,Math.floor(+u.searchParams.get('sc0'))||0)); return send(res,200,{tok:mkTok(sc0)}); }
   if(u.pathname==='/api/score'&&req.method==='POST'){
