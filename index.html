@@ -211,6 +211,26 @@ body>*:not(#fx):not(nav):not(#prog):not(.toast){position:relative;z-index:1}
 footer{background:linear-gradient(180deg,transparent,rgba(255,79,135,.1))}
 @media(prefers-reduced-motion:reduce){.hero .aur i,.marq div,.stage::before{animation:none}.rv{filter:none}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}.rv{opacity:1;transform:none}}
+
+/* v26 hero lift + mobile cleanup */
+.hicon{width:clamp(84px,15vw,128px);margin:0 auto 14px;perspective:600px;animation:rise .9s 0s both}
+.hicon img{width:100%;height:auto;display:block;border-radius:24%;box-shadow:0 18px 50px rgba(255,150,40,.4),0 0 0 1px rgba(255,255,255,.18),0 0 60px rgba(255,79,135,.35);transform:rotateX(var(--ry,0deg)) rotateY(var(--rx,0deg));animation:bob 4s ease-in-out infinite;transition:transform .15s}
+.hero h1{position:relative}
+.hero h1::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.55) 50%,transparent 60%);background-size:250% 100%;mix-blend-mode:overlay;animation:shine 5s 1.5s infinite;pointer-events:none}
+@keyframes shine{0%{background-position:150% 0}60%,100%{background-position:-50% 0}}
+.hero .txt::before{content:"";position:absolute;inset:-6% -30% -4%;z-index:-1;background:radial-gradient(ellipse at 50% 45%,rgba(8,3,18,.72),rgba(8,3,18,0) 68%);pointer-events:none}
+@media(max-width:760px){
+  .hero .txt{margin-top:-10vh;padding:0 14px;width:100%}
+  .kick{letter-spacing:.2em;font-size:11px;line-height:1.7;max-width:300px;margin:0 auto}
+  .tag{letter-spacing:.34em;font-size:13px;margin-top:6px}
+  .hero h1{font-size:clamp(52px,16.5vw,92px)}
+  .ctas{flex-direction:column;align-items:center;gap:10px;margin-top:18px}
+  .ctas .btn{width:min(78vw,300px);padding:14px 20px;font-size:24px}
+  .pills{flex-wrap:nowrap;gap:6px;margin-top:16px;justify-content:center}
+  .pills span{font-size:10.5px;letter-spacing:.08em;padding:7px 10px;white-space:nowrap}
+  .hero .scroll{display:none}
+}
+@media(max-width:380px){.pills span{font-size:9.5px;padding:6px 8px}}
 </style>
 <meta property="og:title" content="Rohnin's Rooftop Heist"><meta property="og:description" content="A neon spy rooftop runner. Solo or 2-player co-op. Free, plays in your browser."><meta property="og:image" content="https://rohninsheist.com/share.png"><meta property="og:url" content="https://rohninsheist.com/"><meta property="og:type" content="website"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://rohninsheist.com/share.png">
 </head>
@@ -225,11 +245,12 @@ footer{background:linear-gradient(180deg,transparent,rgba(255,79,135,.1))}
 <header class="hero" id="top">
   <canvas id="hero"></canvas><div class="aur"><i></i><i></i><i></i></div><div class="vig"></div><div class="scan"></div>
   <div class="txt">
-    <div class="kick">One night · Eight districts · Sixteen bosses</div>
+    <div class="hicon"><img src="icon-512.png" alt="Rohnin's Rooftop Heist app icon" width="112" height="112"></div>
+    <div class="kick">Eight districts · Sixteen bosses</div>
     <h1>ROHNIN'S<span>ROOFTOP HEIST</span></h1>
     <div class="tag">THE MIDNIGHT SCORE</div>
     <div class="ctas"><a class="btn" href="#play">Start the heist</a><a class="btn alt" href="#leaderboard">Leaderboard</a></div>
-    <div class="pills"><span><b>FREE</b> in your browser</span><span><b>2-PLAYER</b> co-op</span><span><b>NEW</b> daily heist</span></div>
+    <div class="pills"><span><b>FREE</b> to play</span><span><b>2-PLAYER</b> co-op</span><span><b>DAILY</b> heist</span></div>
   </div>
   <div class="scroll">Scroll</div>
 </header>
@@ -353,7 +374,7 @@ footer{background:linear-gradient(180deg,transparent,rgba(255,79,135,.1))}
   </div>
 </section>
 
-<footer>Rohnin's Rooftop Heist · Built with Claude</footer>
+<footer>Rohnin's Rooftop Heist · By <a href="https://GarrettRiggio.com" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,224,122,.4)">Garrett Riggio</a></footer>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -466,6 +487,7 @@ nav.querySelectorAll('.links a').forEach(function(a){ a.addEventListener('click'
 var secs=[].slice.call(document.querySelectorAll('section[id]')), links=[].slice.call(nav.querySelectorAll('.links a'));
 if('IntersectionObserver' in window){ var so=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ links.forEach(function(a){ a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id); }); } }); },{rootMargin:'-45% 0px -50% 0px'}); secs.forEach(function(s){ so.observe(s); }); }
 var hero=document.querySelector('.hero'), tx=document.querySelector('.hero .txt');
+var hi=document.querySelector('.hicon img'); if(hi&&matchMedia('(pointer:fine)').matches) hero.addEventListener('pointermove',function(e){ var r=hero.getBoundingClientRect(); hi.style.setProperty('--rx',((e.clientX-r.left)/r.width-.5)*30+'deg'); hi.style.setProperty('--ry',((e.clientY-r.top)/r.height-.5)*-30+'deg'); });
 if(matchMedia('(pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches){
   hero.addEventListener('pointermove',function(e){ var r=hero.getBoundingClientRect(); tx.style.setProperty('--px',((e.clientX-r.left)/r.width-.5)*-18+'px'); tx.style.setProperty('--py',((e.clientY-r.top)/r.height-.5)*-12+'px'); });
   document.addEventListener('pointermove',function(e){ var c=e.target.closest&&e.target.closest('.card'); if(!c) return; var r=c.getBoundingClientRect(), x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height; c.style.setProperty('--mx',x*100+'%'); c.style.setProperty('--my',y*100+'%'); c.style.setProperty('--ry',((x-.5)*7).toFixed(2)+'deg'); c.style.setProperty('--rx',((.5-y)*7).toFixed(2)+'deg'); });
