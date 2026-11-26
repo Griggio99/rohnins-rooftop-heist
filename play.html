@@ -2679,7 +2679,7 @@ function clipStart(){ if(EMB||!window.MediaRecorder||!cv.captureStream||!save.op
 function clipFinish(){ $('clip-btn').classList.add('hid'); const r=CLIP.rec; clearTimeout(CLIP.seg); CLIP.rec=null; if(!r||r.state==='inactive') return; r._fin=res=>{ const pick=(res&&res.d>=4)?res:(CLIP.prev||res); CLIP.prev=null; if(pick){ CLIP.last=pick; $('clip-btn').classList.remove('hid'); } }; try{ r.stop(); }catch(_){} }
 $('clip-btn').addEventListener('click',async e=>{ const b=e.currentTarget; b.blur(); const c=CLIP.last; if(!c) return; const ext=c.blob.type.indexOf('mp4')>=0?'mp4':'webm', f=new File([c.blob],'rooftop-heist-'+Math.floor(G.sc)+'.'+ext,{type:c.blob.type}); try{ if(navigator.canShare&&navigator.canShare({files:[f]})){ await navigator.share({files:[f],text:'My Rooftop Heist run: '+Math.floor(G.sc).toLocaleString()+' pts! '+chalLink()}); return; } }catch(_){ return; } const u=URL.createObjectURL(c.blob), a=document.createElement('a'); a.href=u; a.download=f.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),4000); b.textContent='CLIP SAVED'; setTimeout(()=>{ b.textContent='SAVE CLIP'; },2500); });
 if(EVENT&&$('evtag')) $('evtag').classList.remove('hid');
-function startGame(cp){ clipStart();
+function startGame(cp){ resetInput(); clipStart();
   if(NC.starting) NC.starting=false; else if(NC.tr){ ncClose(); coEl.classList.add('hidden'); }
   auInit(); setMute(AU.muted); const useChal=!!(chal&&!raceSeed&&!dailyFlag&&!weeklyFlag&&!NC.active); const sd=raceSeed||(useChal?chal.seed:(((Math.random()*4294967295)>>>0)||1)); G.seed=sd; G.chal=useChal?chal:null; rngS=mulberry(sd); G.race=!!raceSeed; { const cb=$('chbanner'); if(cb) cb.classList.add('hid'); } if(useChal) setTimeout(()=>{ if(G.state==='playing') pop(pl.x,pl.y+3,PZ,'BEAT '+chal.by.toUpperCase()+': '+chal.beat.toLocaleString(),'#ff6bd6',true); },900); G.daily=dailyFlag; dailyFlag=false; G.weekly=weeklyFlag; weeklyFlag=false; applyMod(G.weekly?wkMod().id:''); if(G.weekly&&G.mod==='pistol'){ G.prevW=save.weapon; save.weapon='pistol'; } raceSeed=0; resetGame(false);
   if(cp&&cp.di>0){ warpTo(cp.di); G.sc=cp.sc; G.kills=cp.kills||0; pl.shield=Math.max(pl.shield,cp.shield||0); for(const id of WORDER) if(id!=='pistol'&&cp.ammo&&cp.ammo[id]!=null) ammo[id]=Math.max(ammo[id],Math.min(ammoMax(id),cp.ammo[id])); if(save.owned.indexOf(cp.w)>=0&&hasAmmo(cp.w)) save.weapon=cp.w; pl.inv=2.5; }
@@ -2688,7 +2688,7 @@ function startGame(cp){ clipStart();
   $('menu').classList.add('hidden'); $('over').classList.add('hidden'); $('pause').classList.add('hidden'); $('shop').classList.add('hidden'); $('btns').classList.remove('off');
 }
 function pauseGame(){ if(G.state!=='playing') return; G.state='paused'; AU.on=false; fireKeys.clear(); btnHeld=false; $('pause').classList.remove('hidden'); }
-function resumeGame(){ if(G.state!=='paused') return; G.state='playing'; AU.on=true; AU.next=0; $('pause').classList.add('hidden'); }
+function resumeGame(){ if(G.state!=='paused') return; resetInput(); G.state='playing'; AU.on=true; AU.next=0; $('pause').classList.add('hidden'); }
 { const g0=genAhead, c0=closeArena; genAhead=withSeed(g0); closeArena=withSeed(c0); }
 function toMenu(){ if(NC.active||NC.tr){ ncClose(); NC.view=''; } G.state='menu'; resetGame(true); $('menu').classList.remove('hidden'); $('over').classList.add('hidden'); $('btns').classList.add('off'); }
 let shopOpen=false, shopFrom='menu', fireHeld=false, btnHeld=false, autoFire=false, uiSig='';
@@ -2999,7 +2999,7 @@ $('ba').addEventListener('click',e=>{ e.currentTarget.blur(); autoFire=!autoFire
 $('bw').addEventListener('click',e=>{ e.currentTarget.blur(); cycleWeapon(); });
 const gbs={c:$('gc'),v:$('gv'),b:$('gb')};
 function deliberate(el,fn,sel){ let d=null; el.addEventListener('pointerdown',e=>{ const t=sel?e.target.closest(sel):el; if(!t) return; e.preventDefault(); e.stopPropagation(); d={id:e.pointerId,x:e.clientX,y:e.clientY,t:performance.now(),el:t}; });
-  el.addEventListener('pointerup',e=>{ if(!d||e.pointerId!==d.id) return; const q=d; d=null; if(Math.hypot(e.clientX-q.x,e.clientY-q.y)<14&&performance.now()-q.t<500) fn(q.el,e); });
+  el.addEventListener('pointerup',e=>{ if(!d||e.pointerId!==d.id) return; const q=d; d=null; if(Math.hypot(e.clientX-q.x,e.clientY-q.y)<26&&performance.now()-q.t<1100) fn(q.el,e); });
   for(const ev of ['pointercancel','pointerleave']) el.addEventListener(ev,()=>{ d=null; }); }
 for(const kk in gbs){ if(IS_TOUCH) deliberate(gbs[kk],()=>useGadget(kk)); else gbs[kk].addEventListener('pointerdown',e=>{ e.preventDefault(); useGadget(kk); }); gbs[kk].addEventListener('contextmenu',e=>e.preventDefault()); }
 function syncGads(){ for(const kk in gbs){ const e=gbs[kk], q=pl.gcd[kk]>0?pl.gcd[kk]/Math.max(0.01,pl.gmax[kk]):0; e.style.setProperty('--p',q.toFixed(3)); e.classList.toggle('ready',q===0); } }
@@ -3036,7 +3036,7 @@ addEventListener('message',e=>{
   else if(d.t==='pause'&&G.state==='playing'){ pauseGame(); }
 });
 let sw=null;
-cv.addEventListener('pointerdown',e=>{ if(sw) return; sw={id:e.pointerId,x:e.clientX,y:e.clientY,moved:false}; });
+cv.addEventListener('pointerdown',e=>{ sw={id:e.pointerId,x:e.clientX,y:e.clientY,moved:false}; });
 cv.addEventListener('pointermove',e=>{
   if(!sw||e.pointerId!==sw.id||G.state!=='playing') return; const dx=e.clientX-sw.x, dy=e.clientY-sw.y, ax=Math.abs(dx), ay=Math.abs(dy); if(Math.max(ax,ay)<(IS_TOUCH?13:26)) return;
   sw.moved=true; sw.x=e.clientX; sw.y=e.clientY; if(ay>=ax*0.75&&ay>=(IS_TOUCH?13:26)) act(dy<0?'jump':'slide'); else act(dx<0?'left':'right');
@@ -3050,7 +3050,10 @@ document.addEventListener('touchmove',e=>{ if(e.touches.length>1||e.scale&&e.sca
 document.addEventListener('dblclick',e=>e.preventDefault());
 let wheelCool=0;
 document.addEventListener('wheel',e=>{ if(e.ctrlKey){ e.preventDefault(); return; } if(G.state!=='playing'||IS_TOUCH||shopOpen) return; const now=performance.now(); if(now<wheelCool||Math.abs(e.deltaY)<4) return; wheelCool=now+220; const L=ownedList(); if(L.length<2) return; const d=e.deltaY>0?1:-1; let i=L.indexOf(save.weapon); for(let n=1;n<=L.length;n++){ const id=L[(i+d*n+L.length*9)%L.length]; if(hasAmmo(id)){ equipW(id); return; } } },{passive:false});
-addEventListener('blur',pauseGame);
+function resetInput(){ try{ sw=null; btnHeld=false; fireHeld=false; fireKeys.clear(); }catch(e){} }
+for(const ev of ['touchend','touchcancel']) document.addEventListener(ev,e=>{ if(!e.touches||e.touches.length===0){ sw=null; btnHeld=false; } },{passive:true});
+addEventListener('pageshow',resetInput); addEventListener('focus',resetInput); addEventListener('pagehide',resetInput);
+addEventListener('blur',()=>{ resetInput(); pauseGame(); });
 { const bf=$('bf'), de=document.documentElement;
   if(document.fullscreenEnabled&&IS_TOUCH){ bf.classList.remove('hid'); bf.addEventListener('click',e=>{ e.currentTarget.blur(); try{ if(document.fullscreenElement) document.exitFullscreen(); else de.requestFullscreen({navigationUI:'hide'}).catch(()=>{}); }catch(_){} }); } }
 const cfgReady=new Promise(res=>{ if(EMB||!/^https?:/.test(location.protocol)) return res(); try{ const sc=document.createElement('script'); sc.src='config.js'; sc.onload=sc.onerror=()=>res(); document.head.appendChild(sc); setTimeout(res,2500); }catch(e){ res(); } });
@@ -3073,7 +3076,7 @@ if(!EMB&&/^https?:/.test(location.protocol)){
   
   if('serviceWorker' in navigator) addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
 }
-document.addEventListener('visibilitychange',()=>{ if(document.hidden) pauseGame(); else if(G.state==='playing') wakeLock(); });
+document.addEventListener('visibilitychange',()=>{ resetInput(); if(document.hidden) pauseGame(); else if(G.state==='playing') wakeLock(); });
 
 function resize(){
   DPR=Math.min(IS_TOUCH?2.25:2.5,window.devicePixelRatio||1)*QL.res; W=innerWidth; H=innerHeight; BZ=W<H?1.5:1; document.documentElement.style.setProperty('--ws',(W<H?clamp(W/460,0.62,1):clamp(H/560,0.6,1)).toFixed(3)); cv.width=Math.round(W*DPR); cv.height=Math.round(H*DPR); ctx.setTransform(DPR,0,0,DPR,0,0);
