@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#05030a">
@@ -101,6 +102,9 @@
   .lbtabs .btn.sel{outline:2px solid #7be8ff}
   .skrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
   .menu2{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;justify-content:center}
+  .menu3{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;justify-content:center;max-width:min(560px,94vw)}
+  .menu3 .btn{flex:1 1 calc(33.3% - 8px);min-width:0;font-size:clamp(12px,3.4vw,18px);letter-spacing:.06em;padding:9px 6px 7px;white-space:nowrap}
+  @media(pointer:coarse){.help.hg{display:none}}
   .menu2 .btn{font-size:clamp(14px,2.6vw,20px);padding:8px 14px 6px}
   #btns{position:fixed;top:max(10px,env(safe-area-inset-top));right:10px;display:flex;gap:8px;z-index:5}
   #btns button{width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(10,6,20,.55);color:#fff;cursor:pointer;display:grid;place-items:center;padding:0;backdrop-filter:blur(4px)}
@@ -222,8 +226,8 @@
   <button id="go" class="btn">START THE HEIST</button>
   <button id="cont" class="btn alt hid" style="margin-top:12px"></button>
   <button id="coopbtn" class="btn alt" style="margin-top:12px">CO-OP &middot; 2 PLAYERS</button>
-  <div class="menu2"><button id="wkbtn" class="btn alt" style="border-color:#7be8ff;color:#7be8ff"></button><button id="daybtn" class="btn alt">DAILY HEIST</button><button id="achbtn" class="btn alt">TROPHIES</button></div>
-  <div class="menu2"><button id="shopbtn" class="btn alt">ARMOURY</button><button id="lbbtn" class="btn alt hid">LEADERBOARD</button><button id="optbtn" class="btn alt">OPTIONS</button><button id="guidebtn" class="btn alt">FIELD GUIDE</button></div>
+  <div class="menu2"><button id="wkbtn" class="btn alt" style="border-color:#7be8ff;color:#7be8ff"></button><button id="daybtn" class="btn alt">DAILY HEIST</button></div>
+  <div class="menu3"><button id="achbtn" class="btn alt">TROPHIES</button><button id="shopbtn" class="btn alt">ARMOURY</button><button id="lbbtn" class="btn alt hid">LEADERBOARD</button><button id="optbtn" class="btn alt">OPTIONS</button><button id="guidebtn" class="btn alt">FIELD GUIDE</button></div>
   <input id="pname" class="nm hid" maxlength="14" placeholder="YOUR NAME" autocomplete="off" spellcheck="false">
   <div class="help hg">
     <span class="hl">MOVE</span><span><b>←</b><b>→</b> or <b>A</b><b>D</b> lane &nbsp;<b>↑</b> jump &nbsp;<b>↓</b> slide</span>
@@ -2572,7 +2576,7 @@ const GUIDE=[
  {f:'guide-gamble',t:'RED GAMBLE PORTAL',d:'A red ! orb. Double chips, but lasers and arcs guard the path. Jump or slide to cash in.'},
  {f:'guide-trap',t:'TRAP WALL',d:'Late districts only. A red, glitchy phantom wall is a trap. Dodge it like a real wall.'},
  {f:'guide-dream',t:'DREAM SEQUENCE',d:'The world bends and the colours melt. It is only a vision, so trust your lanes.'}];
-$('guidebtn').addEventListener('click',e=>{ e.currentTarget.blur(); const l=$('gd-list'); l.textContent=''; for(const g of GUIDE){ const c=document.createElement('div'); c.className='gcard'; const v=document.createElement('video'); v.muted=true; v.loop=true; v.playsInline=true; v.setAttribute('playsinline',''); v.preload='none'; v.src=g.f+'.mp4'; const d=document.createElement('div'); const b=document.createElement('b'); b.textContent=g.t; const p=document.createElement('p'); p.textContent=g.d; d.append(b,p); c.append(v,d); l.appendChild(c); }
+$('guidebtn').addEventListener('click',e=>{ e.currentTarget.blur(); const l=$('gd-list'); l.textContent=''; for(const g of GUIDE){ const c=document.createElement('div'); c.className='gcard'; const v=document.createElement('video'); v.muted=true; v.loop=true; v.playsInline=true; v.setAttribute('playsinline',''); v.preload='metadata'; v.poster=g.f+'.jpg'; v.setAttribute('muted',''); v.src=g.f+'.mp4'; v.addEventListener('click',()=>{ if(v.paused) v.play().catch(()=>{}); else v.pause(); }); const d=document.createElement('div'); const b=document.createElement('b'); b.textContent=g.t; const p=document.createElement('p'); p.textContent=g.d; d.append(b,p); c.append(v,d); l.appendChild(c); }
   $('menu').classList.add('hidden'); $('guide').classList.remove('hidden'); try{ const io=new IntersectionObserver(es=>{ es.forEach(en=>{ if(en.isIntersecting) en.target.play().catch(()=>{}); else en.target.pause(); }); },{threshold:.4}); l.querySelectorAll('video').forEach(v=>io.observe(v)); }catch(er){} });
 $('gd-back').addEventListener('click',e=>{ e.currentTarget.blur(); $('guide').classList.add('hidden'); $('gd-list').textContent=''; $('menu').classList.remove('hidden'); });
 $('ach-back').addEventListener('click',e=>{ e.currentTarget.blur(); $('achm').classList.add('hidden'); $('menu').classList.remove('hidden'); });

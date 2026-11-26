@@ -231,7 +231,10 @@ footer{background:linear-gradient(180deg,transparent,rgba(255,79,135,.1))}
   .hero .scroll{display:none}
 }
 @media(max-width:380px){.pills span{font-size:9.5px;padding:6px 8px}}
+@media(max-width:760px){.stage{aspect-ratio:9/14;max-height:none}.keys{display:none}.tools{flex-wrap:wrap}}
+.gv{width:100%;aspect-ratio:16/7.2;object-fit:cover;border-radius:10px;display:block;background:#0b0618;margin-bottom:10px}#demov{aspect-ratio:16/7.2;object-fit:cover;background:#0b0618}
 </style>
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
 <meta name="description" content="Rohnin's Rooftop Heist is a free neon spy rooftop runner with 2-player online co-op, secret passages, boss fights, daily heists and weekly trophies. Plays in your browser.">
 <link rel="canonical" href="https://rohninsheist.com/">
 <meta name="theme-color" content="#0a0612">
@@ -285,12 +288,12 @@ footer{background:linear-gradient(180deg,transparent,rgba(255,79,135,.1))}
     <div class="eyebrow" style="margin-top:46px">Field guide</div>
     <h2>SECRETS &amp; SHORTCUTS</h2>
     <div class="grid g3" id="fg">
-      <div class="card rv"><video muted loop playsinline preload="none" data-src="guide-portal.mp4" style="width:100%;border-radius:10px"></video><h3>SECRET PORTAL</h3><p>Fly through the gold ring to drop into a bonus vault stuffed with chips.</p></div>
-      <div class="card rv"><video muted loop playsinline preload="none" data-src="guide-phantom.mp4" style="width:100%;border-radius:10px"></video><h3>PHANTOM WALLS</h3><p>Some walls are fake. Run straight through to find a hidden stash.</p></div>
-      <div class="card rv"><video muted loop playsinline preload="none" data-src="guide-bonus.mp4" style="width:100%;border-radius:10px"></video><h3>BONUS ZONES</h3><p>Snake the lanes, hop the arcs and grab the jackpot at the end.</p></div>
-      <div class="card rv"><video muted loop playsinline preload="none" data-src="guide-gamble.mp4" style="width:100%;border-radius:10px"></video><h3>HIGH-STAKES BYPASS</h3><p>The red portal doubles the chips and adds lasers. Risk it for the biscuit.</p></div>
-      <div class="card rv"><video muted loop playsinline preload="none" data-src="guide-trap.mp4" style="width:100%;border-radius:10px"></video><h3>TRAP WALLS</h3><p>Deeper districts hide walls that bite. Look for the red tint.</p></div>
-      <div class="card rv"><video muted loop playsinline preload="none" data-src="guide-dream.mp4" style="width:100%;border-radius:10px"></video><h3>DREAM SEQUENCE</h3><p>The world goes rainbow. Trust your lanes and keep running.</p></div>
+      <div class="card rv"><video muted loop playsinline preload="metadata" poster="guide-portal.jpg" data-src="guide-portal.mp4" class="gv"></video><h3>SECRET PORTAL</h3><p>Fly through the gold ring to drop into a bonus vault stuffed with chips.</p></div>
+      <div class="card rv"><video muted loop playsinline preload="metadata" poster="guide-phantom.jpg" data-src="guide-phantom.mp4" class="gv"></video><h3>PHANTOM WALLS</h3><p>Some walls are fake. Run straight through to find a hidden stash.</p></div>
+      <div class="card rv"><video muted loop playsinline preload="metadata" poster="guide-bonus.jpg" data-src="guide-bonus.mp4" class="gv"></video><h3>BONUS ZONES</h3><p>Snake the lanes, hop the arcs and grab the jackpot at the end.</p></div>
+      <div class="card rv"><video muted loop playsinline preload="metadata" poster="guide-gamble.jpg" data-src="guide-gamble.mp4" class="gv"></video><h3>HIGH-STAKES BYPASS</h3><p>The red portal doubles the chips and adds lasers. Risk it for the biscuit.</p></div>
+      <div class="card rv"><video muted loop playsinline preload="metadata" poster="guide-trap.jpg" data-src="guide-trap.mp4" class="gv"></video><h3>TRAP WALLS</h3><p>Deeper districts hide walls that bite. Look for the red tint.</p></div>
+      <div class="card rv"><video muted loop playsinline preload="metadata" poster="guide-dream.jpg" data-src="guide-dream.mp4" class="gv"></video><h3>DREAM SEQUENCE</h3><p>The world goes rainbow. Trust your lanes and keep running.</p></div>
     </div>
   </div>
 </section>
@@ -525,6 +528,6 @@ function loop(){ if(!vis) return; x.clearRect(0,0,W,H); x.globalCompositeOperati
 loop();
 })();
 </script>
-<script>(function(){var vs=[].slice.call(document.querySelectorAll('#demov,#fg video'));if(!('IntersectionObserver' in window))return;var io=new IntersectionObserver(function(es){es.forEach(function(e){var v=e.target;if(e.isIntersecting){if(v.dataset.src&&!v.src){v.src=v.dataset.src}v.play().catch(function(){})}else v.pause()})},{threshold:.35});vs.forEach(function(v){io.observe(v)})})();</script>
+<script>(function(){var vs=[].slice.call(document.querySelectorAll('#demov,#fg video'));if(!('IntersectionObserver' in window))return;var io=new IntersectionObserver(function(es){es.forEach(function(e){var v=e.target;if(e.isIntersecting){if(v.dataset.src&&!v.getAttribute('src')){v.setAttribute('src',v.dataset.src);v.load()}var p=v.play();if(p&&p.catch)p.catch(function(){})}else v.pause()})},{threshold:.35});vs.forEach(function(v){io.observe(v);v.addEventListener('click',function(){if(v.paused){if(v.dataset.src&&!v.getAttribute('src')){v.setAttribute('src',v.dataset.src);v.load()}v.play().catch(function(){})}else v.pause()})})})();</script>
 </body>
 </html>
