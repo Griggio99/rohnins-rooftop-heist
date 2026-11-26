@@ -232,6 +232,14 @@ footer{background:linear-gradient(180deg,transparent,rgba(255,79,135,.1))}
 }
 @media(max-width:380px){.pills span{font-size:9.5px;padding:6px 8px}}
 @media(max-width:760px){.stage{aspect-ratio:9/14;max-height:none}.keys{display:none}.tools{flex-wrap:wrap}}
+.mplay{display:none}
+body.mob .mplay{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:10px;text-align:center;min-height:420px;margin-top:26px;padding:26px 20px;border-radius:22px;border:2px solid rgba(255,224,122,.5);background-size:cover;background-position:center;box-shadow:0 0 0 6px rgba(255,255,255,.04),0 24px 70px rgba(0,0,0,.6),0 0 60px rgba(255,79,135,.3);text-decoration:none;color:#fff}
+body.mob .stage,body.mob .tools,body.mob .keys{display:none}
+.mp-k{font:700 13px 'Rajdhani',sans-serif;letter-spacing:.3em;color:#ff4f87}
+.mp-t{font:400 clamp(40px,12vw,58px)/.95 'Bebas Neue',Impact,sans-serif;color:#ffe07a;text-shadow:0 0 24px rgba(255,200,80,.45)}
+.mp-b{display:block;width:100%;max-width:340px;padding:16px 10px 12px;border-radius:14px;background:linear-gradient(180deg,#ffd35a,#f0a020);color:#1a1026;font:400 28px 'Bebas Neue',Impact,sans-serif;letter-spacing:.12em;box-shadow:0 6px 0 #9a6410,0 12px 30px rgba(0,0,0,.5);animation:mpp 1.8s ease-in-out infinite}
+.mp-s{font-size:13px;opacity:.8;max-width:300px}
+@keyframes mpp{50%{transform:scale(1.04)}}
 .gv{width:100%;aspect-ratio:16/7.2;object-fit:cover;border-radius:10px;display:block;background:#0b0618;margin-bottom:10px}#demov{aspect-ratio:16/7.2;object-fit:cover;background:#0b0618}
 </style>
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
@@ -256,7 +264,7 @@ footer{background:linear-gradient(180deg,transparent,rgba(255,79,135,.1))}
     <div class="kick">Eight districts · Sixteen bosses</div>
     <h1>ROHNIN'S<span>ROOFTOP HEIST</span></h1>
     <div class="tag">THE MIDNIGHT SCORE</div>
-    <div class="ctas"><a class="btn" href="#play">Start the heist</a><a class="btn alt" href="#leaderboard">Leaderboard</a></div>
+    <div class="ctas"><a class="btn" id="herogo" href="#play">Start the heist</a><a class="btn alt" href="#leaderboard">Leaderboard</a></div>
     <div class="pills"><span><b>FREE</b> to play</span><span><b>2-PLAYER</b> co-op</span><span><b>DAILY</b> heist</span></div>
   </div>
   <div class="scroll">Scroll</div>
@@ -268,6 +276,7 @@ footer{background:linear-gradient(180deg,transparent,rgba(255,79,135,.1))}
     <div class="eyebrow">Play it right here</div>
     <h2>HIT THE ROOFS</h2>
     <p class="lead">Sprint across rooftops, dodge lasers, shoot drones, and take down a boss at the end of every district. Ammo is scarce, so swap guns to hit each boss where it's weak. Checkpoints save at every district and your progress follows you.</p>
+    <a class="mplay" id="mplay" href="play.html" style="background-image:linear-gradient(180deg,rgba(10,6,18,.15),rgba(10,6,18,.92)),url(gameplay-poster.jpg)"><span class="mp-k">BEST ON YOUR PHONE</span><span class="mp-t">TAP TO PLAY<br>FULL SCREEN</span><span class="mp-b">&#9654; START THE HEIST</span><span class="mp-s">Opens the full game. Tip: Share &rarr; Add to Home Screen to play like an app.</span></a>
     <div class="stage" id="stage">
       <iframe id="game" title="Rohnin's Rooftop Heist" allow="fullscreen; autoplay"></iframe>
       <div class="cd" id="cd"></div>
@@ -412,7 +421,7 @@ const fmt=n=>(+n||0).toLocaleString();
 let toastT=null; function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),3200); }
 
 /* ---------- game embed ---------- */
-const frame=$('game'); frame.src='play.html';
+const frame=$('game'); const MOB=window.matchMedia('(max-width:760px)').matches||window.matchMedia('(pointer:coarse)').matches; if(MOB&&!location.search){ document.body.classList.add('mob'); $('herogo').setAttribute('href','play.html'); } else frame.src='play.html';
 $('stage').style.touchAction='none';
 ['touchstart','touchmove'].forEach(ev=>$('stage').addEventListener(ev,e=>{ if(e.touches.length>1) e.preventDefault(); },{passive:false}));
 function fitStage(){ $('stage').classList.toggle('tall',innerWidth<innerHeight&&innerWidth<700); }
