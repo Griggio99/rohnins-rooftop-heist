@@ -55,6 +55,15 @@
   #chat #chbtn{width:42px;height:42px;padding:0;font-size:20px;border-radius:50%}
   #chat button:active{background:rgba(123,232,255,.35)}
 
+  #bcard{position:fixed;left:50%;top:50%;z-index:45;transform:translate(-50%,-40%) scale(.85);opacity:0;pointer-events:none;text-align:center;width:min(520px,90vw);padding:16px 20px 14px;border-radius:20px;background:linear-gradient(180deg,rgba(40,16,70,.94),rgba(8,4,18,.96));border:2px solid #ffe07a;box-shadow:0 0 60px rgba(255,170,40,.45),0 20px 70px rgba(0,0,0,.7);color:#fff;font-family:system-ui,sans-serif;transition:transform .4s cubic-bezier(.2,1.3,.3,1),opacity .3s}
+  #bcard.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  #bcard .bt{font:400 clamp(40px,9vw,64px)/1 'Bebas Neue',Impact,sans-serif;letter-spacing:.1em;background:linear-gradient(180deg,#fff7d6,#ffcf4a,#e0901a);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(255,170,40,.6))}
+  #bcard .bs{font-size:12px;letter-spacing:.3em;color:#6be6ff;font-weight:800;margin:2px 0 8px}
+  #bcard .bq{display:flex;gap:14px;justify-content:center;align-items:flex-end}
+  #bcard .bq svg{height:min(16vh,110px);width:auto}
+  #bcard .bq p{margin:0;font-size:10px;letter-spacing:.2em;color:#ffe07a}
+  #bcard .bj{font-size:15px;font-weight:700;margin-top:8px;line-height:1.3}
+  #bcard .bj b{color:#ffe07a;letter-spacing:.14em}
   #comm{position:fixed;left:max(10px,env(safe-area-inset-left));top:max(56px,calc(env(safe-area-inset-top) + 46px));z-index:40;display:flex;gap:10px;align-items:center;max-width:min(420px,62vw);background:linear-gradient(180deg,rgba(14,10,28,.92),rgba(8,6,18,.92));border:1px solid rgba(255,224,122,.55);border-radius:14px;padding:6px 14px 6px 6px;font:700 13px/1.25 system-ui,sans-serif;color:#fff;box-shadow:0 6px 24px rgba(0,0,0,.5);transform:translateX(-120%);transition:transform .35s cubic-bezier(.2,.8,.2,1);pointer-events:none}
   #comm.on{transform:none}
   #comm svg{width:46px;height:56px;flex:none;border-radius:10px;background:rgba(255,255,255,.06)}
@@ -274,6 +283,7 @@
 
 <div id="achToast"></div>
 <div id="comm"></div>
+<div id="bcard"></div>
 <div id="cine" class="hidden"><div class="sk">SKIP</div><div class="pf" id="cpf"></div><div class="who" id="cwho"></div><div class="tx" id="ctx"></div><div class="hint">TAP TO CONTINUE</div></div>
 <div id="chat" class="hid"><div id="chrow" class="hid"><button data-c="0">GO LEFT</button><button data-c="1">GO RIGHT</button><button data-c="2">COVER ME</button><button data-c="3">NICE!</button><button data-c="4">REVIVE ME</button></div><button id="chbtn" aria-label="Quick chat">&#128172;</button></div>
 <script>
@@ -526,7 +536,7 @@ function gapAhead(z){ for(const s of segs) if(s.z1>z-0.5&&s.z1<z+80) return s.z1
 
 function resetGame(menu){
   G.dist=0;G.t=0;G.sc=0;G.coins=0;G.speed=menu?18:12;G.di=0;G.cause='';G.deadT=0;G.flash=0;G.shake=0;G.fell=false;G.bannerT=0;G.newBest=false;
-  ammoInit(); wheelDirty=true; G.combo=0;G.comboT=0;G.arena=null;G.lastBossDi=-1;G.lastMiniDi=-1;G.overShown=false;G.msg=null;G.bankGain=0;G.kills=0;G.ts=1;G.bt=0;G.dash=0;G.ring=0;NL=3;
+  ammoInit(); wheelDirty=true; G.combo=0;G.comboT=0;G.mile=0;G.lq=-99;G.arena=null;G.lastBossDi=-1;G.lastMiniDi=-1;G.overShown=false;G.msg=null;G.bankGain=0;G.kills=0;G.ts=1;G.bt=0;G.dash=0;G.ring=0;NL=3;
   Object.assign(pl,{lane:1,x:0,y:0,vy:0,slide:0,falling:false,stumble:0,inv:0,pen:0,jet:0,mag:0,x2:0,jb:0,sb:0,tilt:0,ph:0,dust:0,stumT:0,shield:menu?0:save.up.shield,rapid:0,triple:0,fcd:0,nl:3,phase:0,gcd:{c:0,v:0,b:0},gmax:{c:1,v:1,b:1}});
   camX=0;camY=CAMH; for(const a of [segs,obs,coins,pows,parts,skys,pbs,ebs,zones,pops]) a.length=0;
   boss.on=false;boss.state='';
@@ -706,12 +716,13 @@ function loginStreak(){ const d=dayStr0(); if(save.lastDay===d) return; const y=
 function pop(x,y,z,text,col,rel){ pops.push({x,y,z,text,col:col||'#fff',t:1.2,rel:!!rel}); if(pops.length>30) pops.shift(); }
 function explode(x,y,z,col){ spawn(x,y,z,22,col,11,0.8,0.15,6); spawn(x,y,z,10,'#fff',8,0.4,0.08,3); G.shake=Math.max(G.shake,0.12); }
 function stumbleOrDie(msg){
-  vib(28);
+  vib(28); if(pl.stumble<=0) quip('stumble',3);
   if(pl.stumble>0){ die(msg||'Security caught up with you'); return; }
   pl.stumble=6; pl.inv=0.8; pl.pen=0.3; pl.stumT=0.5; G.flash=1; G.shake=0.4; sfx.hit();
   spawn(pl.x,pl.y+0.8,G.dist+PZ,16,'#ffb02e',8,0.6,0.1);
 }
 function absorb(){
+  quip('shield',3);
   pl.shield--; pl.inv=1.0; G.flash=0.25; G.shake=0.2; sfx.shield();
   spawn(pl.x,pl.y+0.9,G.dist+PZ,22,'#6be6ff',7,0.6,0.1); pop(pl.x,pl.y+2.3,PZ,'SHIELD BLOCK','#6be6ff',true);
 }
@@ -794,7 +805,7 @@ function hitTarget(r,dmg,cls){
   const x=r.sky?r.x:objX(r), y=r.sky?r.y:(r.y0+r.y1)/2, z=r.sky?r.z:(r.z0+r.z1)/2;
   r.hp-=dmg; spawn(x,y,z,4,'#ffd35a',5,0.3,0.08);
   if(r.hp>0) return;
-  r.dead=true; G.kills++; const val=r.sky?(r.arm?260:r.gun?160:100):r.type==='tank'?300:r.type==='sentry'?200:r.type==='bot'?150:75, m0=pl.x2>0?2:1; G.combo=(G.combo||0)+1; G.comboT=3.5; const m=m0*(1+Math.min(4,Math.floor(G.combo/3))*0.5); G.sc+=Math.round(val*m);
+  r.dead=true; G.kills++; const val=r.sky?(r.arm?260:r.gun?160:100):r.type==='tank'?300:r.type==='sentry'?200:r.type==='bot'?150:75, m0=pl.x2>0?2:1; G.combo=(G.combo||0)+1; G.comboT=3.5; if(G.combo===10||G.combo===20) quip('combo',3.4,true); else if(G.kills%15===0) quip('kills',3.4); const m=m0*(1+Math.min(4,Math.floor(G.combo/3))*0.5); G.sc+=Math.round(val*m);
   pop(x,y+0.7,z,'+'+Math.round(val*m),'#ffe27a'); explode(x,y,z,r.sky?'#7be8ff':'#ff7a3c'); sfx.boom(); loot(x,y,z,r.sky?0.65:(r.type==='tank'||r.type==='sentry')?0.5:r.type==='bot'?0.35:0.2);
 }
 function updateBullets(dt,L){
@@ -938,7 +949,7 @@ function updateBoss(dt){
     if(boss.volN>0){ boss.volT-=dt; if(boss.volT<=0){ boss.volT=0.4; boss.volN--; boss.flash=1;
       const r=Math.random(), ty=r<0.45?0.35:r<0.8?1.4:0.9, tm=(boss.dz-PZ)/16;
       ebs.push({x:boss.x,y:ty,dz:boss.dz-1.2,vz:16,vx:(plx()-boss.x)/tm}); sfx.eshot(); } }
-    if(boss.hp<=0){ boss.state='dying'; setTimeout(()=>quip('win',3.4),700); boss.dieT=0; ebs.length=0; zones.length=0; G.shake=0.6; G.bt=Math.max(G.bt,1.6); boss.core=false; boss.invT=0; bigBlast(1); }
+    if(boss.hp<=0){ boss.state='dying'; setTimeout(()=>{ if(boss.mini) quip('win',3.6,true); else bossCard('BOSS DOWN',boss.name); },900); boss.dieT=0; ebs.length=0; zones.length=0; G.shake=0.6; G.bt=Math.max(G.bt,1.6); boss.core=false; boss.invT=0; bigBlast(1); }
     else if(boss.timer>(boss.mini?30:46)){ boss.state='leave'; ebs.length=0; zones.length=0; }
   } else if(boss.state==='dying'){
     boss.dieT+=dt; boss.y-=dt*0.9; G.shake=Math.max(G.shake,0.25);
@@ -982,7 +993,7 @@ function pickup(dt,pz,pzOld){
     if(c.z<pzOld-0.7||c.z>pz+0.7) continue;
     if(Math.abs(c.x-pl.x)>(jet?1.7:0.85)) continue;
     if(jet? c.y>5 : !(c.y>pl.y-0.35&&c.y<pl.y+ph+0.35)) continue;
-    c.got=true; G.coins+=(G.mod==='rich'?3:1); G.sc+=10*(pl.x2>0?2:1); sfx.coin(); spawn(c.x,c.y,c.z,4,'#ffd35a',3,0.4,0.07,2);
+    c.got=true; G.coins+=(G.mod==='rich'?3:1); if(G.coins%60===0) quip('coins',3); G.sc+=10*(pl.x2>0?2:1); sfx.coin(); spawn(c.x,c.y,c.z,4,'#ffd35a',3,0.4,0.07,2);
   }
   for(const p of pows){
     if(p.got||p.z<pzOld-1||p.z>pz+1||Math.abs(p.x-pl.x)>1.1) continue;
@@ -1031,6 +1042,7 @@ function updatePlaying(dt){
   if(!pl.falling&&pl.fcd<=0&&(fireHeld||(autoFire&&tg))){ fire(tg); NC.lastFire=G.t; }
   updateBullets(dt,L); updateSkys(dt); updateSentries(dt); updateBoss(dt); updateEnemy(dt);
   const di=Math.floor(G.dist/DLEN); if(di!==G.di&&!G.arena&&!boss.on){ G.di=di; G.bannerT=3.4; saveCheckpoint(); if(di>0) quip('dist',3.2); }
+  { const ml=Math.floor(G.dist/1000); if(ml>(G.mile||0)){ G.mile=ml; if(ml>0) quip('mile',3.6); } }
   genAhead(); cullT-=dt; if(cullT<=0){ cullT=0.5; cull(); }
 }
 function updateMenu(dt){
@@ -1643,19 +1655,28 @@ function drawParticles(){
 
 
 /* ======================= makers: comms + cutscene ======================= */
-const MK={G:`<svg viewBox="22 14 156 190" role="img" aria-label="Cartoon of Garrett: swept-up ginger hair, big grin, silver chain"><rect x="22" y="196" width="156" height="54" rx="26" fill="#1c2230"/><path d="M78 196 L100 232 L122 196Z" fill="#f4f4f4"/><path d="M84 196 L100 222 L116 196" fill="none" stroke="#c9d3e6" stroke-width="2"/><path d="M82 200 Q100 236 118 200" fill="none" stroke="#e9eef7" stroke-width="2.5"/><circle cx="100" cy="221" r="2.6" fill="#fff"/><rect x="84" y="168" width="32" height="32" rx="10" fill="#e8a98a"/><ellipse cx="100" cy="116" rx="62" ry="68" fill="#f0b496"/><ellipse cx="38" cy="122" rx="9" ry="14" fill="#e8a98a"/><ellipse cx="162" cy="122" rx="9" ry="14" fill="#e8a98a"/><path d="M36 100 Q30 40 100 36 Q172 38 166 100 Q158 62 132 58 Q112 54 74 62 Q44 68 36 100Z" fill="#c8641f"/><path d="M60 52 Q96 -2 156 30 Q132 22 118 40 Q96 18 60 52Z" fill="#d9772a"/><path d="M70 48 Q100 14 140 30" fill="none" stroke="#f0a35a" stroke-width="4" stroke-linecap="round" opacity=".7"/><path d="M62 96 Q76 86 90 94" fill="none" stroke="#b5561a" stroke-width="6" stroke-linecap="round"/><path d="M110 94 Q124 86 138 96" fill="none" stroke="#b5561a" stroke-width="6" stroke-linecap="round"/><ellipse cx="76" cy="110" rx="9" ry="7" fill="#fff"/><ellipse cx="124" cy="110" rx="9" ry="7" fill="#fff"/><circle cx="78" cy="111" r="4.6" fill="#4a3a2a"/><circle cx="126" cy="111" r="4.6" fill="#4a3a2a"/><circle cx="79.5" cy="109" r="1.5" fill="#fff"/><circle cx="127.5" cy="109" r="1.5" fill="#fff"/><path d="M100 114 Q94 134 102 138" fill="none" stroke="#d88f6f" stroke-width="3" stroke-linecap="round"/><path d="M78 146 Q100 142 122 146 Q116 152 100 150 Q84 152 78 146Z" fill="#c8641f" opacity=".85"/><path d="M68 150 Q100 196 132 150 Q100 170 68 150Z" fill="#fff"/><path d="M68 150 Q100 196 132 150" fill="none" stroke="#a8553a" stroke-width="3" stroke-linecap="round"/><path d="M64 140 Q70 178 100 184 Q130 178 136 140" fill="none" stroke="#c8641f" stroke-width="7" opacity=".28" stroke-linecap="round"/><ellipse cx="64" cy="140" rx="9" ry="6" fill="#ff8f8f" opacity=".35"/><ellipse cx="136" cy="140" rx="9" ry="6" fill="#ff8f8f" opacity=".35"/><path d="M72 198 Q100 238 128 198" fill="none" stroke="#dfe6f2" stroke-width="2.2"/></svg>`,R:`<svg viewBox="22 14 156 190" role="img" aria-label="Cartoon of Rohnin: blond swoopy hair, tongue out, white shirt and blue checkered tie"><rect x="22" y="196" width="156" height="54" rx="26" fill="#f4f6fa"/><path d="M76 196 L100 214 L124 196 L112 190 L88 190Z" fill="#fff" stroke="#d3dae6" stroke-width="2"/><path d="M93 196 L107 196 L112 244 L100 250 L88 244Z" fill="#26478f"/><g fill="#a9d4ff"><rect x="93" y="200" width="7" height="7"/><rect x="100" y="207" width="7" height="7"/><rect x="93" y="214" width="7" height="7"/><rect x="100" y="221" width="7" height="7"/><rect x="93" y="228" width="7" height="7"/><rect x="100" y="235" width="7" height="7"/></g><rect x="84" y="168" width="32" height="32" rx="10" fill="#f6c9ae"/><ellipse cx="100" cy="116" rx="60" ry="66" fill="#fbd5bb"/><ellipse cx="40" cy="124" rx="9" ry="14" fill="#f6c9ae"/><ellipse cx="160" cy="124" rx="9" ry="14" fill="#f6c9ae"/><path d="M38 112 Q26 44 100 38 Q176 40 164 108 Q156 74 132 66 Q96 60 68 70 Q44 82 38 112Z" fill="#d8b56a"/><path d="M46 80 Q70 20 140 34 Q176 46 168 96 Q150 52 106 56 Q70 58 46 80Z" fill="#e6c882"/><path d="M56 62 Q92 24 150 44" fill="none" stroke="#f6e2a6" stroke-width="5" stroke-linecap="round" opacity=".75"/><path d="M60 96 Q76 90 90 96" fill="none" stroke="#b78f4a" stroke-width="4.5" stroke-linecap="round"/><path d="M110 96 Q124 90 140 96" fill="none" stroke="#b78f4a" stroke-width="4.5" stroke-linecap="round"/><ellipse cx="76" cy="110" rx="10" ry="8" fill="#fff"/><ellipse cx="124" cy="110" rx="10" ry="8" fill="#fff"/><circle cx="78" cy="111" r="5.2" fill="#3b2a1d"/><circle cx="126" cy="111" r="5.2" fill="#3b2a1d"/><circle cx="80" cy="109" r="1.7" fill="#fff"/><circle cx="128" cy="109" r="1.7" fill="#fff"/><path d="M100 116 Q95 130 102 133" fill="none" stroke="#e5ab8c" stroke-width="3" stroke-linecap="round"/><path d="M70 142 Q100 134 130 142 Q124 170 100 170 Q76 170 70 142Z" fill="#8a2f3a"/><path d="M74 143 Q100 137 126 143 L124 150 Q100 146 76 150Z" fill="#fff"/><path d="M86 160 Q100 190 114 160 Q100 168 86 160Z" fill="#ff7f93"/><path d="M100 164 L100 178" stroke="#e25f78" stroke-width="2" stroke-linecap="round"/><ellipse cx="62" cy="136" rx="9" ry="6" fill="#ff9a9a" opacity=".4"/><ellipse cx="138" cy="136" rx="9" ry="6" fill="#ff9a9a" opacity=".4"/></svg>`,gn:'BIG G',rn:'ROHNIN'};
+const MK={G:`<svg viewBox="22 14 156 190" role="img" aria-label="Cartoon of Garrett: swept-up ginger hair, big grin, silver chain"><rect x="22" y="196" width="156" height="54" rx="26" fill="#1c2230"/><path d="M78 196 L100 232 L122 196Z" fill="#f4f4f4"/><path d="M84 196 L100 222 L116 196" fill="none" stroke="#c9d3e6" stroke-width="2"/><path d="M82 200 Q100 236 118 200" fill="none" stroke="#e9eef7" stroke-width="2.5"/><circle cx="100" cy="221" r="2.6" fill="#fff"/><rect x="84" y="168" width="32" height="32" rx="10" fill="#e8a98a"/><ellipse cx="100" cy="116" rx="62" ry="68" fill="#f0b496"/><ellipse cx="38" cy="122" rx="9" ry="14" fill="#e8a98a"/><ellipse cx="162" cy="122" rx="9" ry="14" fill="#e8a98a"/><path d="M36 100 Q30 40 100 36 Q172 38 166 100 Q158 62 132 58 Q112 54 74 62 Q44 68 36 100Z" fill="#c8641f"/><path d="M60 52 Q96 -2 156 30 Q132 22 118 40 Q96 18 60 52Z" fill="#d9772a"/><path d="M70 48 Q100 14 140 30" fill="none" stroke="#f0a35a" stroke-width="4" stroke-linecap="round" opacity=".7"/><path d="M62 96 Q76 86 90 94" fill="none" stroke="#b5561a" stroke-width="6" stroke-linecap="round"/><path d="M110 94 Q124 86 138 96" fill="none" stroke="#b5561a" stroke-width="6" stroke-linecap="round"/><ellipse cx="76" cy="110" rx="9" ry="7" fill="#fff"/><ellipse cx="124" cy="110" rx="9" ry="7" fill="#fff"/><circle cx="78" cy="111" r="4.6" fill="#4a3a2a"/><circle cx="126" cy="111" r="4.6" fill="#4a3a2a"/><circle cx="79.5" cy="109" r="1.5" fill="#fff"/><circle cx="127.5" cy="109" r="1.5" fill="#fff"/><path d="M100 114 Q94 134 102 138" fill="none" stroke="#d88f6f" stroke-width="3" stroke-linecap="round"/><path d="M78 146 Q100 142 122 146 Q116 152 100 150 Q84 152 78 146Z" fill="#c8641f" opacity=".85"/><path d="M68 150 Q100 196 132 150 Q100 170 68 150Z" fill="#fff"/><path d="M68 150 Q100 196 132 150" fill="none" stroke="#a8553a" stroke-width="3" stroke-linecap="round"/><path d="M64 140 Q70 178 100 184 Q130 178 136 140" fill="none" stroke="#c8641f" stroke-width="7" opacity=".28" stroke-linecap="round"/><ellipse cx="64" cy="140" rx="9" ry="6" fill="#ff8f8f" opacity=".35"/><ellipse cx="136" cy="140" rx="9" ry="6" fill="#ff8f8f" opacity=".35"/><path d="M72 198 Q100 238 128 198" fill="none" stroke="#dfe6f2" stroke-width="2.2"/></svg>`,R:`<svg viewBox="22 14 156 190" role="img" aria-label="Cartoon of Rohnin: blond swoopy hair, tongue out, white shirt and blue checkered tie"><rect x="22" y="196" width="156" height="54" rx="26" fill="#f4f6fa"/><path d="M76 196 L100 214 L124 196 L112 190 L88 190Z" fill="#fff" stroke="#d3dae6" stroke-width="2"/><path d="M93 196 L107 196 L112 244 L100 250 L88 244Z" fill="#26478f"/><g fill="#a9d4ff"><rect x="93" y="200" width="7" height="7"/><rect x="100" y="207" width="7" height="7"/><rect x="93" y="214" width="7" height="7"/><rect x="100" y="221" width="7" height="7"/><rect x="93" y="228" width="7" height="7"/><rect x="100" y="235" width="7" height="7"/></g><rect x="84" y="168" width="32" height="32" rx="10" fill="#f6c9ae"/><ellipse cx="100" cy="116" rx="60" ry="66" fill="#fbd5bb"/><ellipse cx="40" cy="124" rx="9" ry="14" fill="#f6c9ae"/><ellipse cx="160" cy="124" rx="9" ry="14" fill="#f6c9ae"/><path d="M38 112 Q26 44 100 38 Q176 40 164 108 Q156 74 132 66 Q96 60 68 70 Q44 82 38 112Z" fill="#d8b56a"/><path d="M46 80 Q70 20 140 34 Q176 46 168 96 Q150 52 106 56 Q70 58 46 80Z" fill="#e6c882"/><path d="M56 62 Q92 24 150 44" fill="none" stroke="#f6e2a6" stroke-width="5" stroke-linecap="round" opacity=".75"/><path d="M60 96 Q76 90 90 96" fill="none" stroke="#b78f4a" stroke-width="4.5" stroke-linecap="round"/><path d="M110 96 Q124 90 140 96" fill="none" stroke="#b78f4a" stroke-width="4.5" stroke-linecap="round"/><ellipse cx="76" cy="110" rx="10" ry="8" fill="#fff"/><ellipse cx="124" cy="110" rx="10" ry="8" fill="#fff"/><circle cx="78" cy="111" r="5.2" fill="#3b2a1d"/><circle cx="126" cy="111" r="5.2" fill="#3b2a1d"/><circle cx="80" cy="109" r="1.7" fill="#fff"/><circle cx="128" cy="109" r="1.7" fill="#fff"/><path d="M100 116 Q95 130 102 133" fill="none" stroke="#e5ab8c" stroke-width="3" stroke-linecap="round"/><path d="M70 142 Q100 134 130 142 Q124 170 100 170 Q76 170 70 142Z" fill="#8a2f3a"/><path d="M74 143 Q100 137 126 143 L124 150 Q100 146 76 150Z" fill="#fff"/><path d="M86 160 Q100 190 114 160 Q100 168 86 160Z" fill="#ff7f93"/><path d="M100 164 L100 178" stroke="#e25f78" stroke-width="2" stroke-linecap="round"/><ellipse cx="62" cy="136" rx="9" ry="6" fill="#ff9a9a" opacity=".4"/><ellipse cx="138" cy="136" rx="9" ry="6" fill="#ff9a9a" opacity=".4"/></svg>`,gn:'FUNKLE',rn:'ROHNIN'};
 const commEl=document.getElementById('comm'); let commTm=0;
 function comm(who,text,dur){ if(!commEl) return; commEl.innerHTML=MK[who]+'<div><b>'+MK[who.toLowerCase()+'n']+'</b>'+text+'</div>'; commEl.classList.add('on'); clearTimeout(commTm); commTm=setTimeout(()=>commEl.classList.remove('on'),(dur||3.6)*1000); }
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const QUIPS={
- start:[['R','Eyes up, Uncle G! Tap fire and keep moving.'],['G','Slide under the lasers, kid. Jump the gaps.'],['R','Grab every coin. Coins buy cooler guns!'],['G','Stay close to your partner in co-op.']],
- boss:[['R','It is HUGE! Aim for the glowing core!'],['G','Swap guns. Check what it is weak to.'],['R','You got this. Do not stop shooting!'],['G','Dodge first, shoot second.']],
- win:[['R','BOOM! Boss down! Bring it in, family!'],['G','Clean work. Next district, let us go.'],['R','That was SO cool!']],
- lose:[['R','Ouch! Shake it off and run it back.'],['G','Every heist takes a few tries. Again!'],['R','Tell a friend to jump in with you!']],
- dist:[['G','New district. Different tricks, same you.'],['R','Whoa, look at that sky!']]
+ start:[['R','Okay chat, we are LOCKED IN.'],['G','Funkle on the mic. These rooftops are about to get cooked.'],['R','No cap, this is gonna be the best run ever.'],['G','Rule one: do not fall. Rule two: see rule one.'],['R','Auto-fire is on. Be like water, Funkle.'],['G','I stretched for this. Mentally.'],['R','Main character energy only.']],
+ boss:[['R','That thing is NOT in the group chat.'],['G','Big boss, bigger health bar. Standard Tuesday.'],['R','Find the weak spot, Funkle! It is giving glass chin.'],['G','Rohnin, did you check what it is weak to?'],['R','Skill issue incoming... for the boss.'],['G','Dodge first, shoot second, panic third.']],
+ win:[['R','BOSS DELETED. Ratio\'d by a rooftop.'],['G','And that, kids, is called a W.'],['R','We cooked. Funkle cooked. I cooked more.'],['G','Somebody tell the boss we said GG.'],['R','That was lowkey legendary.'],['G','Rohnin, clip that. Send it to the family chat.'],['R','Boss: 0. Us: absolutely cinema.']],
+ lose:[['R','Skill issue... JUST KIDDING. Run it back!'],['G','Heists are 90% falling and 10% style.'],['R','Funkle blamed lag. We all saw it.'],['G','Plot twist: the floor was lava the whole time.'],['R','Delulu is the solulu. Again!'],['G','That was not a fall, that was a dramatic exit.']],
+ dist:[['G','New district, who dis?'],['R','The vibes just changed. Chat, are we cooked?'],['G','The city is getting weirder. I respect it.'],['R','Whoa, look at that sky!']],
+ shield:[['R','Shield said NOT TODAY.'],['G','Bonk! Denied. Nice try, rooftop.'],['R','Plot armor activated.']],
+ combo:[['R','COMBO!! You are cooking! Funkle is cooking!'],['G','Going viral with cartoon violence.'],['R','That is a lot of aura points.']],
+ kills:[['G','Another one down. Rohnin is counting. So am I.'],['R','Bro is farming aura.'],['G','These drones had families. Small robot families.']],
+ mile:[['R','1000 meters! Touch grass? Nah. Touch rooftops.'],['G','We are basically professional parkour now.'],['R','Another thousand! Someone clip this.']],
+ best:[['R','NEW PERSONAL BEST. Add it to the resume.'],['G','That score is going on the fridge.']],
+ stumble:[['G','Ow. I felt that in my soul.'],['R','Bro stubbed the whole city.']],
+ coins:[['R','Coins! Funkle\'s love language.'],['G','Rich era unlocked. Spend it all on skins.']]
 };
-function quip(k,dur){ const q=pick(QUIPS[k]); comm(q[0],q[1],dur); }
-const CINE=[['G','Welcome to the rooftops. I am Big G, and this is my nephew.'],['R','I am Rohnin! This whole heist is named after me.'],['G','We make games to bring families and friends together.'],['R','So grab someone, share a room code, and pull off the biggest heist ever!'],['G','Run. Jump. Slide. Shoot. Have fun. Go!']];
+function quip(k,dur,force){ if(!force&&G.t-(G.lq===undefined?-99:G.lq)<9) return; const q=pick(QUIPS[k]); G.lq=G.t; comm(q[0],q[1],dur); }
+const bcEl=document.getElementById('bcard'); let bcTm=0;
+function bossCard(title,sub){ if(!bcEl) return; const q=pick(QUIPS.win); G.lq=G.t; bcEl.innerHTML='<div class="bt">'+title+'</div><div class="bs">'+sub+'</div><div class="bq">'+MK.G+'<p><b>FUNKLE</b></p>'+MK.R+'<p><b>ROHNIN</b></p></div><div class="bj"><b>'+(q[0]==='G'?'FUNKLE':'ROHNIN')+':</b> '+q[1]+'</div>'; bcEl.classList.add('on'); clearTimeout(bcTm); bcTm=setTimeout(()=>bcEl.classList.remove('on'),3800); }
+const CINE=[['G','Welcome to the rooftops. They call me Funkle. Also Uncle G. Also Big G. Pick one.'],['R','I am Rohnin! This whole heist is named after me. You are welcome.'],['G','We make games to bring families and friends together.'],['R','So grab someone, share a room code, and pull off the biggest heist ever!'],['G','Run. Jump. Slide. Shoot. Have fun. Funkle out. Wait, Funkle in. GO!']];
 function playCine(done){
   const el=document.getElementById('cine'); if(!el){ done(); return; }
   let i=0, ended=false; const pf=document.getElementById('cpf'); pf.innerHTML=MK.G+MK.R;
@@ -1676,7 +1697,7 @@ const SKINS=[
   {id:'ghost',name:'Ghost',ach:'boss1',ex:'ghost',tc:'#7be8ff',col:{jacket:'#d8dde8',pants:'#aab2c2',hair:'#ffffff',shirt:'#7be8ff'}},
   {id:'astro',name:'Astro',ach:'orbit',ex:'astro',tc:'#8ff5e0',col:{jacket:'#e8ecf5',pants:'#c7cde0',hair:'#2b1d15',shirt:'#7be8ff'}},
   {id:'cosmic',name:'Cosmic',ach:'rift',ex:'cosmic',tc:'#ff9bff',col:{jacket:'#120626',pants:'#0a0316',hair:'#ff9bff',shirt:'#8ff5e0'}},
-  {id:'garrett',name:'Big G',crew:1,ex:'garrett',tc:'#ffb347',col:{jacket:'#1c2230',pants:'#10131c',hair:'#c8641f',shirt:'#f4f4f4'}},
+  {id:'garrett',name:'Funkle',crew:1,ex:'garrett',tc:'#ffb347',col:{jacket:'#1c2230',pants:'#10131c',hair:'#c8641f',shirt:'#f4f4f4'}},
   {id:'rohnin',name:'Rohnin',crew:1,ex:'rohnin',tc:'#6bb6ff',col:{jacket:'#f2f4f8',pants:'#1b2a4a',hair:'#d8b56a',shirt:'#f4f4f4'}},
   {id:'phantom',name:'Phantom',ach:'allboss',ex:'phantom',tc:'#c79bff',col:{jacket:'#1a0b2e',pants:'#0e0618',hair:'#c79bff',shirt:'#c79bff'}}
 ];
@@ -2135,7 +2156,7 @@ function render(dt){
 
 /* ======================= UI & input ======================= */
 function showOver(){
-  G.overShown=true; if(G.prevW){ save.weapon=G.prevW; G.prevW=''; persist(); }
+  G.overShown=true; if(G.newBest) quip('best',4,true); if(G.prevW){ save.weapon=G.prevW; G.prevW=''; persist(); }
   $('cause').textContent=G.cause||'Mission failed';
   $('o-score').textContent=Math.floor(G.sc).toLocaleString(); $('o-chips').textContent=G.coins; $('o-dist').textContent=Math.floor(G.dist); $('o-best').textContent=G.best.toLocaleString();
   $('newbest').textContent=G.newBest?'NEW PERSONAL BEST':'';

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Meet the Creators · Funkle &amp; Rohnin · Rohnin's Rooftop Heist</title>
+<meta name="description" content="Meet Funkle (Uncle G) and Rohnin, the uncle and nephew who make Rohnin's Rooftop Heist to bring families and friends together.">
+<meta property="og:title" content="Meet Funkle &amp; Rohnin"><meta property="og:description" content="An uncle and his nephew make games to bring families and friends together."><meta property="og:image" content="https://rohninsheist.com/share.png"><meta property="og:url" content="https://rohninsheist.com/creators.html"><meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0a0612">
+<link rel="icon" href="favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#ffe07a;--gold2:#f0a81e;--pink:#ff4f87;--cyan:#6be6ff;--bg:#0a0612;--card:rgba(255,255,255,.055);--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:#fff;font-family:'Rajdhani',system-ui,sans-serif;font-weight:500;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.bebas{font-family:'Bebas Neue',Impact,sans-serif;font-weight:400;letter-spacing:.06em;margin:0}
+a{color:inherit}
+nav{position:fixed;z-index:50;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px max(18px,env(safe-area-inset-right)) 12px max(18px,env(safe-area-inset-left));background:linear-gradient(180deg,rgba(10,6,18,.85),rgba(10,6,18,0));backdrop-filter:blur(6px)}
+nav .logo{font-family:'Bebas Neue',Impact,sans-serif;font-size:22px;letter-spacing:.14em;color:var(--gold);text-decoration:none;white-space:nowrap}
+nav .links{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+nav .links a{font-size:15px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;padding:7px 12px;border-radius:99px;opacity:.85;transition:.2s;font-weight:700}
+nav .links a:hover{background:rgba(255,255,255,.1);opacity:1}
+nav .links a.cta{background:linear-gradient(180deg,var(--gold),var(--gold2));color:#1a0d00;opacity:1}
+/* hero */
+.hero{position:relative;height:100vh;min-height:560px;overflow:hidden;display:flex;align-items:center;justify-content:center;text-align:center}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero .txt{position:relative;z-index:2;padding:0 18px;margin-top:-6vh}
+.kick{font-size:clamp(12px,2.4vw,16px);letter-spacing:.42em;color:var(--gold);text-transform:uppercase;font-weight:700;opacity:0;animation:rise .9s .1s forwards}
+.hero h1{font-size:clamp(54px,13vw,170px);line-height:.88;margin:10px 0 6px;background:linear-gradient(180deg,#fff7d6 0%,var(--gold) 40%,var(--gold2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 22px rgba(255,170,40,.45));opacity:0;animation:rise 1s .25s forwards}
+.hero h1 span{display:block;background-size:200% 100%;animation:none}
+.tag{font-size:clamp(14px,3vw,24px);letter-spacing:.55em;color:var(--pink);text-shadow:0 0 18px rgba(255,79,135,.7);opacity:0;animation:rise 1s .5s forwards;font-weight:700}
+.ctas{margin-top:30px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;opacity:0;animation:rise 1s .75s forwards}
+.btn{font-family:'Bebas Neue',Impact,sans-serif;font-size:clamp(22px,3.8vw,30px);letter-spacing:.16em;padding:12px 34px;border-radius:12px;border:0;cursor:pointer;color:#1a0d00;background:linear-gradient(180deg,var(--gold),var(--gold2));box-shadow:0 0 0 2px rgba(255,255,255,.15),0 10px 40px rgba(255,160,30,.35);text-decoration:none;display:inline-block;transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 0 0 2px rgba(255,255,255,.3),0 14px 50px rgba(255,160,30,.55)}
+.btn.alt{background:rgba(255,255,255,.08);color:var(--gold);box-shadow:0 0 0 2px rgba(255,224,122,.4)}
+.btn.sm{font-size:20px;padding:8px 22px}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.scroll{position:absolute;z-index:2;bottom:22px;left:50%;transform:translateX(-50%);font-size:12px;letter-spacing:.4em;opacity:.7;animation:bob 1.8s infinite;text-transform:uppercase}
+@keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,8px)}}
+/* sections */
+section{padding:clamp(64px,10vw,120px) clamp(16px,4vw,48px);position:relative}
+.wrap{max-width:1160px;margin:0 auto}
+.eyebrow{font-size:14px;letter-spacing:.4em;color:var(--pink);text-transform:uppercase;font-weight:700}
+h2{font-size:clamp(40px,7vw,84px);line-height:.95;margin:8px 0 16px;color:var(--gold);text-shadow:0 0 30px rgba(255,170,40,.25)}
+.lead{font-size:clamp(17px,2.4vw,21px);max-width:680px;opacity:.82;line-height:1.5}
+.rv{opacity:0;transform:translateY(34px);transition:opacity .8s,transform .8s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+.grid{display:grid;gap:16px;margin-top:34px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 22px;position:relative;overflow:hidden;transition:transform .25s,border-color .25s}
+.card:hover{transform:translateY(-4px);border-color:rgba(255,224,122,.5)}
+.card h3{font-size:28px;color:#fff;letter-spacing:.1em}
+.card p{margin:6px 0 0;opacity:.78;line-height:1.45}
+.card .ic{font-size:30px;margin-bottom:8px}
+.stats{display:flex;gap:clamp(18px,5vw,60px);flex-wrap:wrap;margin-top:30px}
+.stat .v{font-family:'Bebas Neue',Impact,sans-serif;font-size:clamp(46px,8vw,86px);color:#fff;line-height:1}
+.stat .l{font-size:13px;letter-spacing:.3em;opacity:.65;text-transform:uppercase}
+/* game */
+#play{background:radial-gradient(ellipse at 50% 0,rgba(255,79,135,.14),transparent 60%)}
+.stage{position:relative;margin-top:30px;border-radius:20px;overflow:hidden;border:2px solid rgba(255,224,122,.45);box-shadow:0 0 0 6px rgba(255,255,255,.04),0 30px 90px rgba(0,0,0,.6),0 0 80px rgba(255,79,135,.25);background:#000;aspect-ratio:16/10;max-height:84vh}
+.stage iframe{width:100%;height:100%;border:0;display:block}
+.stage.tall{aspect-ratio:9/15;max-width:460px;margin-left:auto;margin-right:auto}
+.stage:fullscreen{aspect-ratio:auto;max-height:none;border-radius:0;border:0}
+.tools{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
+.keys{display:flex;gap:10px 22px;flex-wrap:wrap;margin-top:16px;font-size:15px;opacity:.9}
+.keys b{font-family:'Bebas Neue',Impact,sans-serif;letter-spacing:.06em;background:rgba(255,224,122,.1);border:1px solid rgba(255,224,122,.45);color:var(--gold);padding:1px 9px;border-radius:6px;font-weight:400;margin-right:3px;font-size:16px}
+.cd{position:absolute;inset:0;display:none;align-items:center;justify-content:center;z-index:5;background:rgba(10,6,18,.55);font-family:'Bebas Neue',Impact,sans-serif;font-size:clamp(90px,22vw,240px);color:var(--gold);text-shadow:0 0 50px rgba(255,170,40,.8);pointer-events:none}
+.cd.on{display:flex}
+.racehud{position:absolute;z-index:4;top:10px;left:50%;transform:translateX(-50%);background:rgba(10,6,18,.78);border:1px solid var(--line);border-radius:99px;padding:5px 16px;font-family:'Bebas Neue',Impact,sans-serif;letter-spacing:.14em;font-size:20px;color:var(--gold);display:none;pointer-events:none;white-space:nowrap}
+.racehud.on{display:block}
+/* leaderboard */
+.lb{display:grid;grid-template-columns:1fr;gap:28px;margin-top:30px}
+@media(min-width:900px){.lb{grid-template-columns:1.1fr .9fr}}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:10px;height:260px}
+.pod{flex:1;max-width:170px;text-align:center;display:flex;flex-direction:column;justify-content:flex-end}
+.pod .nm{font-family:'Bebas Neue',Impact,sans-serif;font-size:22px;letter-spacing:.1em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pod .sc{font-size:15px;opacity:.8;margin-bottom:6px;font-weight:700}
+.pod .bar{border-radius:12px 12px 0 0;display:grid;place-items:center;font-family:'Bebas Neue',Impact,sans-serif;font-size:54px;color:rgba(0,0,0,.55);transition:height 1s cubic-bezier(.2,.8,.2,1);height:0}
+.pod.p1 .bar{background:linear-gradient(180deg,#ffe07a,#c98a10)}
+.pod.p2 .bar{background:linear-gradient(180deg,#e6edf5,#8d9bb0)}
+.pod.p3 .bar{background:linear-gradient(180deg,#f0b27a,#a8642b)}
+.rows{display:flex;flex-direction:column;gap:6px}
+.row{display:flex;gap:12px;align-items:center;padding:9px 14px;border-radius:12px;background:rgba(255,255,255,.055);font-size:18px;opacity:0;transform:translateX(18px);animation:slide .5s forwards}
+.row.me{background:rgba(255,224,122,.16);outline:1px solid rgba(255,224,122,.5)}
+.row .rk{font-family:'Bebas Neue',Impact,sans-serif;color:var(--gold);min-width:34px;font-size:22px}
+.row .n{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+.row .s{font-family:'Bebas Neue',Impact,sans-serif;font-size:24px;letter-spacing:.06em}
+.row .d{opacity:.6;font-size:13px;letter-spacing:.1em;min-width:44px;text-align:right}
+@keyframes slide{to{opacity:1;transform:none}}
+.note{font-size:14px;opacity:.65;margin-top:12px;line-height:1.45}
+input.in{font-family:'Bebas Neue',Impact,sans-serif;font-size:22px;letter-spacing:.14em;color:var(--gold);background:rgba(10,6,20,.6);border:2px solid rgba(255,224,122,.35);border-radius:10px;padding:8px 14px;outline:none;width:min(240px,100%);text-transform:uppercase}
+input.in:focus{border-color:var(--gold)}
+.toast{position:fixed;z-index:80;left:50%;bottom:24px;transform:translate(-50%,40px);background:rgba(20,14,32,.95);border:1px solid var(--gold);color:var(--gold);padding:12px 22px;border-radius:14px;font-family:'Bebas Neue',Impact,sans-serif;letter-spacing:.12em;font-size:20px;opacity:0;transition:.35s;pointer-events:none;max-width:92vw;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+/* race */
+.lobby{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:24px}
+.code{font-family:'Bebas Neue',Impact,sans-serif;font-size:56px;letter-spacing:.3em;color:var(--cyan);text-shadow:0 0 24px rgba(107,230,255,.5);margin-right:6px}
+.lane{display:flex;align-items:center;gap:12px;margin:10px 0}
+.lane .who{min-width:120px;font-family:'Bebas Neue',Impact,sans-serif;font-size:22px;letter-spacing:.08em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lane .trk{flex:1;height:22px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
+.lane .fill{height:100%;width:2%;border-radius:99px;transition:width .5s}
+.lane .pts{min-width:90px;text-align:right;font-family:'Bebas Neue',Impact,sans-serif;font-size:22px}
+.winner{margin-top:14px;font-family:'Bebas Neue',Impact,sans-serif;font-size:42px;color:var(--gold);letter-spacing:.1em;text-shadow:0 0 26px rgba(255,170,40,.6)}
+footer{padding:46px 20px 60px;text-align:center;opacity:.6;font-size:14px;letter-spacing:.2em;text-transform:uppercase}
+.guns{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:28px}
+.gun{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;text-align:center;transition:.25s}
+.gun:hover{transform:translateY(-4px) rotate(-1deg);border-color:var(--c)}
+.gun svg{width:100%;height:44px;fill:var(--c);filter:drop-shadow(0 0 8px var(--c))}
+.gun b{display:block;font-family:'Bebas Neue',Impact,sans-serif;font-size:20px;letter-spacing:.1em;margin-top:8px;font-weight:400}
+.gun span{font-size:13px;opacity:.7;letter-spacing:.14em;text-transform:uppercase}
+.bosses{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:22px}
+.boss{display:flex;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+.boss i{width:12px;height:42px;border-radius:6px;background:var(--c);box-shadow:0 0 14px var(--c);flex:none}
+.boss b{font-family:'Bebas Neue',Impact,sans-serif;font-size:21px;letter-spacing:.1em;font-weight:400;display:block}
+.boss span{font-size:13px;opacity:.75}
+.boss span em{font-style:normal;color:#7dff9a}
+.boss span u{text-decoration:none;color:#ff7a7a}
+@media(max-width:700px){.guns{grid-template-columns:repeat(2,1fr)}}
+
+.mk{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;margin-top:26px}
+.mk .card{text-align:center;padding:26px 22px 24px}
+.mk svg{width:min(220px,60%);height:auto;filter:drop-shadow(0 12px 28px rgba(255,170,40,.28));animation:bob 3.2s ease-in-out infinite}
+.mk .card:nth-child(2) svg{animation-delay:-1.6s}
+.mk .role{font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:var(--cyan);font-weight:700;margin-top:6px}
+.mk h3{font-size:44px;margin:2px 0 8px}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-8px) rotate(1deg)}}
+.vow{margin:34px auto 0;max-width:760px;text-align:center;font-size:clamp(18px,2.6vw,24px);line-height:1.5;color:#fff}
+.vow b{color:var(--gold)}
+
+/* ===== v2 glow-up ===== */
+#prog{position:fixed;z-index:70;top:0;left:0;height:3px;width:100%;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--pink),var(--gold),var(--cyan));box-shadow:0 0 14px rgba(255,160,60,.8)}
+nav{transition:background .3s,padding .3s,box-shadow .3s}
+nav.sc{background:rgba(12,8,22,.72);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);box-shadow:0 1px 0 rgba(255,224,122,.18),0 10px 40px rgba(0,0,0,.4);padding-top:8px;padding-bottom:8px}
+nav .links a{position:relative}
+nav .links a.on:not(.cta)::after{content:'';position:absolute;left:14px;right:14px;bottom:2px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--pink),var(--gold))}
+#nb{display:none;width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,224,122,.4);background:rgba(255,255,255,.07);color:var(--gold);cursor:pointer;place-items:center;padding:0}
+#nb i,#nb i::before,#nb i::after{display:block;width:20px;height:2px;border-radius:2px;background:currentColor;position:relative;transition:.25s}
+#nb i::before,#nb i::after{content:'';position:absolute;left:0}
+#nb i::before{top:-6px}#nb i::after{top:6px}
+nav.open #nb i{background:transparent}nav.open #nb i::before{top:0;transform:rotate(45deg)}nav.open #nb i::after{top:0;transform:rotate(-45deg)}
+@media(max-width:760px){
+  nav{padding-top:8px;padding-bottom:8px}
+  nav .logo{font-size:17px}
+  #nb{display:grid}
+  nav .links{position:absolute;top:100%;left:10px;right:10px;flex-direction:column;gap:4px;padding:12px;border-radius:18px;background:rgba(14,9,26,.94);backdrop-filter:blur(18px);border:1px solid rgba(255,224,122,.25);box-shadow:0 24px 60px rgba(0,0,0,.6);opacity:0;transform:translateY(-10px) scale(.98);pointer-events:none;transition:.25s}
+  nav.open .links{opacity:1;transform:none;pointer-events:auto}
+  nav .links a{font-size:19px;padding:13px 16px;text-align:center;border-radius:12px}
+}
+.hero{isolation:isolate}
+.hero .aur{position:absolute;inset:-20%;z-index:1;pointer-events:none;filter:blur(60px);opacity:.75;mix-blend-mode:screen}
+.hero .aur i{position:absolute;border-radius:50%;width:46vmax;height:46vmax;animation:drift 18s ease-in-out infinite alternate}
+.hero .aur i:nth-child(1){background:radial-gradient(circle,rgba(255,79,135,.55),transparent 65%);left:-6%;top:6%}
+.hero .aur i:nth-child(2){background:radial-gradient(circle,rgba(107,230,255,.38),transparent 65%);right:-10%;top:-8%;animation-delay:-6s;animation-duration:22s}
+.hero .aur i:nth-child(3){background:radial-gradient(circle,rgba(255,200,80,.4),transparent 65%);left:30%;bottom:-24%;animation-delay:-11s}
+@keyframes drift{to{transform:translate(8vmax,-5vmax) scale(1.18)}}
+.hero .vig{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 38%,rgba(5,2,12,.78) 100%),linear-gradient(180deg,transparent 70%,var(--bg) 100%)}
+.hero .scan{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.07;background:repeating-linear-gradient(0deg,#fff 0 1px,transparent 1px 3px);mix-blend-mode:overlay}
+.hero .txt{transform:translate3d(var(--px,0px),var(--py,0px),0);transition:transform .12s linear}
+.hero h1{background-size:100% 100%;position:relative}
+.hero h1::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.85) 50%,transparent 65%);background-size:250% 100%;background-position:150% 0;-webkit-background-clip:text;background-clip:text;mix-blend-mode:overlay;animation:glint 5.5s 1.6s infinite}
+@keyframes glint{0%{background-position:150% 0}45%,100%{background-position:-60% 0}}
+.tag{animation:rise 1s .5s forwards,flick 6s 2s infinite}
+@keyframes flick{0%,92%,100%{opacity:1}93%{opacity:.45}94%{opacity:1}96%{opacity:.6}97%{opacity:1}}
+.pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px;opacity:0;animation:rise 1s 1s forwards}
+.pills span{font-size:13px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;padding:7px 14px;border-radius:99px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.07);backdrop-filter:blur(6px)}
+.pills span b{color:var(--gold);font-weight:700}
+.btn{position:relative;overflow:hidden}
+.btn::after{content:'';position:absolute;top:0;left:-70%;width:45%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);transition:left .6s}
+.btn:hover::after{left:130%}
+.ctas .btn:first-child{animation:pulseG 2.6s ease-in-out infinite}
+@keyframes pulseG{0%,100%{box-shadow:0 0 0 2px rgba(255,255,255,.15),0 10px 40px rgba(255,160,30,.35)}50%{box-shadow:0 0 0 2px rgba(255,255,255,.3),0 10px 64px rgba(255,160,30,.7)}}
+.scroll{width:26px;height:42px;border:2px solid rgba(255,255,255,.55);border-radius:14px;font-size:0;letter-spacing:0}
+.scroll::after{content:'';position:absolute;left:50%;top:7px;width:4px;height:8px;margin-left:-2px;border-radius:3px;background:var(--gold);animation:wheel 1.6s infinite}
+@keyframes wheel{0%{opacity:0;transform:translateY(0)}30%{opacity:1}100%{opacity:0;transform:translateY(16px)}}
+.marq{position:relative;z-index:3;overflow:hidden;border-block:1px solid rgba(255,224,122,.25);background:linear-gradient(90deg,rgba(255,79,135,.16),rgba(255,224,122,.12),rgba(107,230,255,.16));transform:rotate(-1.2deg) scale(1.03);margin:-26px 0 10px;box-shadow:0 10px 50px rgba(0,0,0,.5)}
+.marq div{display:flex;width:max-content;animation:mq 34s linear infinite}
+.marq span{font-family:'Bebas Neue',Impact,sans-serif;font-size:clamp(22px,3.4vw,34px);letter-spacing:.2em;padding:12px 26px;white-space:nowrap;color:var(--gold)}
+.marq span:nth-child(even){color:#fff}
+.marq span::after{content:'✦';margin-left:52px;color:var(--pink)}
+@keyframes mq{to{transform:translateX(-50%)}}
+section{overflow:hidden}
+section::before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:56px 56px;-webkit-mask-image:radial-gradient(ellipse at 50% 0,#000 0,transparent 70%);mask-image:radial-gradient(ellipse at 50% 0,#000 0,transparent 70%)}
+section::after{content:'';position:absolute;left:50%;top:-1px;width:min(560px,70%);height:1px;transform:translateX(-50%);background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.6}
+section>.wrap{position:relative;z-index:1}
+#coop{background:radial-gradient(ellipse at 90% 20%,rgba(107,230,255,.12),transparent 55%)}
+#makers{background:radial-gradient(ellipse at 15% 30%,rgba(255,79,135,.15),transparent 55%)}
+#arsenal{background:radial-gradient(ellipse at 85% 70%,rgba(255,200,80,.12),transparent 55%)}
+#more{background:radial-gradient(ellipse at 50% 100%,rgba(140,90,255,.16),transparent 60%)}
+h2{background:linear-gradient(180deg,#fff7d6,var(--gold) 55%,var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 26px rgba(255,170,40,.28))}
+.eyebrow{display:flex;align-items:center;gap:12px}
+.eyebrow::before{content:'';width:38px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--pink),transparent)}
+.card{--mx:50%;--my:0%;background:linear-gradient(160deg,rgba(255,255,255,.075),rgba(255,255,255,.025));backdrop-filter:blur(8px);transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .18s,border-color .25s,box-shadow .3s}
+.card::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(260px circle at var(--mx) var(--my),rgba(255,224,122,.2),transparent 65%);opacity:0;transition:opacity .3s}
+.card:hover::before{opacity:1}
+.card:hover{transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-6px);box-shadow:0 22px 60px rgba(0,0,0,.5),0 0 40px rgba(255,170,60,.18)}
+.card .ic{display:inline-grid;place-items:center;width:54px;height:54px;border-radius:16px;background:linear-gradient(135deg,rgba(255,79,135,.3),rgba(255,200,80,.25));border:1px solid rgba(255,224,122,.35);font-size:28px;box-shadow:0 0 24px rgba(255,120,80,.25)}
+.rv{transform:translateY(40px) scale(.97);filter:blur(6px);transition:opacity .8s,transform .9s cubic-bezier(.2,.7,.2,1),filter .8s}
+.rv.in{filter:none}
+.grid .rv:nth-child(3n+1){transform:translate(-30px,40px) scale(.97)}
+.grid .rv:nth-child(3n){transform:translate(30px,40px) scale(.97)}
+.rv.in,.grid .rv.in{transform:none}
+.card.rv.in{transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg))}
+.gun{backdrop-filter:blur(6px);background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02))}
+.gun:hover{box-shadow:0 0 34px -4px var(--c)}
+.boss{transition:.25s}.boss:hover{transform:translateX(6px);border-color:var(--c);box-shadow:0 0 30px -8px var(--c)}
+.stage{position:relative}
+.stage::before{content:'';position:absolute;inset:-2px;border-radius:22px;z-index:-1;background:conic-gradient(from var(--ang,0deg),var(--pink),var(--gold),var(--cyan),var(--pink));animation:spin 8s linear infinite;filter:blur(18px);opacity:.55}
+@property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes spin{to{--ang:360deg}}
+.stage{overflow:visible}.stage iframe{border-radius:18px}
+#fx{position:fixed;inset:0;z-index:0;pointer-events:none;width:100%;height:100%}
+body>*:not(#fx):not(nav):not(#prog):not(.toast){position:relative;z-index:1}
+footer{background:linear-gradient(180deg,transparent,rgba(255,79,135,.1))}
+@media(prefers-reduced-motion:reduce){.hero .aur i,.marq div,.stage::before{animation:none}.rv{filter:none}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}.rv{opacity:1;transform:none}}
+</style>
+<style>
+.cr-hero{min-height:78vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:120px 18px 40px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 20%,rgba(255,79,135,.28),transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(107,230,255,.18),transparent 55%),radial-gradient(ellipse at 80% 70%,rgba(255,200,80,.2),transparent 55%)}
+.cr-hero h1{font-size:clamp(54px,12vw,150px);line-height:.9;background:linear-gradient(180deg,#fff7d6,var(--gold) 45%,var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 24px rgba(255,170,40,.45));margin:8px 0}
+.duo{display:flex;gap:clamp(8px,4vw,40px);justify-content:center;align-items:flex-end;margin:6px 0 14px}
+.duo svg{width:min(210px,38vw);height:auto;filter:drop-shadow(0 14px 30px rgba(255,170,40,.35));animation:bob 3.2s ease-in-out infinite}
+.duo svg+svg{animation-delay:-1.6s}
+.bio{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;margin-top:30px}
+.bio .card{padding:26px 24px}
+.bio .card svg{width:130px;height:auto;float:right;margin:0 0 8px 14px;filter:drop-shadow(0 10px 22px rgba(255,170,40,.3))}
+.bio h3{font-size:46px;color:var(--gold)}
+.aka{font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:var(--cyan);font-weight:700;margin:2px 0 10px}
+.tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;clear:both}
+.tags span{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;padding:5px 11px;border-radius:99px;border:1px solid rgba(255,224,122,.4);background:rgba(255,224,122,.08);color:var(--gold)}
+.rules{counter-reset:r;display:grid;gap:12px;margin-top:28px;padding:0;list-style:none}
+.rules li{counter-increment:r;display:flex;gap:16px;align-items:flex-start;padding:16px 18px;border-radius:16px;background:var(--card);border:1px solid var(--line);font-size:clamp(17px,2.3vw,20px);line-height:1.4}
+.rules li::before{content:counter(r);font-family:'Bebas Neue',Impact,sans-serif;font-size:38px;line-height:1;color:var(--pink);min-width:34px;text-shadow:0 0 18px rgba(255,79,135,.6)}
+.q{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:28px}
+.q blockquote{margin:0;padding:20px 22px;border-radius:18px;background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid var(--line);font-size:19px;line-height:1.45}
+.q cite{display:block;margin-top:10px;font-style:normal;font-family:'Bebas Neue',Impact,sans-serif;letter-spacing:.14em;color:var(--gold);font-size:20px}
+.big{font-family:'Bebas Neue',Impact,sans-serif;font-size:clamp(34px,6vw,64px);line-height:1.05;text-align:center;max-width:900px;margin:0 auto;color:#fff}
+.big b{color:var(--gold);font-weight:400}
+</style>
+</head>
+<body>
+<div id="prog"></div><canvas id="fx"></canvas>
+<nav id="nav">
+  <a class="logo" href="/">ROHNIN'S ROOFTOP HEIST</a>
+  <button id="nb" aria-label="Menu" aria-expanded="false"><i></i></button>
+  <div class="links"><a href="/#play" class="cta">Play</a><a href="/#leaderboard">Leaderboard</a><a href="/#coop">Co-op</a><a href="/creators.html" class="on">Creators</a><a href="/#arsenal">Arsenal</a></div>
+</nav><header class="cr-hero">
+  <div class="txt" style="position:relative;z-index:2;max-width:1000px">
+    <div class="kick" style="opacity:1;animation:none">The two people behind the heist</div>
+    <div class="duo"><svg viewBox="0 0 200 250" role="img" aria-label="Cartoon of Garrett: swept-up ginger hair, big grin, silver chain">
+<rect x="22" y="196" width="156" height="54" rx="26" fill="#1c2230"/><path d="M78 196 L100 232 L122 196Z" fill="#f4f4f4"/><path d="M84 196 L100 222 L116 196" fill="none" stroke="#c9d3e6" stroke-width="2"/>
+<path d="M82 200 Q100 236 118 200" fill="none" stroke="#e9eef7" stroke-width="2.5"/><circle cx="100" cy="221" r="2.6" fill="#fff"/>
+<rect x="84" y="168" width="32" height="32" rx="10" fill="#e8a98a"/>
+<ellipse cx="100" cy="116" rx="62" ry="68" fill="#f0b496"/>
+<ellipse cx="38" cy="122" rx="9" ry="14" fill="#e8a98a"/><ellipse cx="162" cy="122" rx="9" ry="14" fill="#e8a98a"/>
+<path d="M36 100 Q30 40 100 36 Q172 38 166 100 Q158 62 132 58 Q112 54 74 62 Q44 68 36 100Z" fill="#c8641f"/>
+<path d="M60 52 Q96 -2 156 30 Q132 22 118 40 Q96 18 60 52Z" fill="#d9772a"/>
+<path d="M70 48 Q100 14 140 30" fill="none" stroke="#f0a35a" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+<path d="M62 96 Q76 86 90 94" fill="none" stroke="#b5561a" stroke-width="6" stroke-linecap="round"/><path d="M110 94 Q124 86 138 96" fill="none" stroke="#b5561a" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="76" cy="110" rx="9" ry="7" fill="#fff"/><ellipse cx="124" cy="110" rx="9" ry="7" fill="#fff"/><circle cx="78" cy="111" r="4.6" fill="#4a3a2a"/><circle cx="126" cy="111" r="4.6" fill="#4a3a2a"/><circle cx="79.5" cy="109" r="1.5" fill="#fff"/><circle cx="127.5" cy="109" r="1.5" fill="#fff"/>
+<path d="M100 114 Q94 134 102 138" fill="none" stroke="#d88f6f" stroke-width="3" stroke-linecap="round"/>
+<path d="M78 146 Q100 142 122 146 Q116 152 100 150 Q84 152 78 146Z" fill="#c8641f" opacity=".85"/>
+<path d="M68 150 Q100 196 132 150 Q100 170 68 150Z" fill="#fff"/><path d="M68 150 Q100 196 132 150" fill="none" stroke="#a8553a" stroke-width="3" stroke-linecap="round"/>
+<path d="M64 140 Q70 178 100 184 Q130 178 136 140" fill="none" stroke="#c8641f" stroke-width="7" opacity=".28" stroke-linecap="round"/>
+<ellipse cx="64" cy="140" rx="9" ry="6" fill="#ff8f8f" opacity=".35"/><ellipse cx="136" cy="140" rx="9" ry="6" fill="#ff8f8f" opacity=".35"/>
+<path d="M72 198 Q100 238 128 198" fill="none" stroke="#dfe6f2" stroke-width="2.2"/>
+</svg><svg viewBox="0 0 200 250" role="img" aria-label="Cartoon of Rohnin: blond swoopy hair, tongue out, white shirt and blue checkered tie">
+<rect x="22" y="196" width="156" height="54" rx="26" fill="#f4f6fa"/><path d="M76 196 L100 214 L124 196 L112 190 L88 190Z" fill="#fff" stroke="#d3dae6" stroke-width="2"/>
+<path d="M93 196 L107 196 L112 244 L100 250 L88 244Z" fill="#26478f"/><g fill="#a9d4ff"><rect x="93" y="200" width="7" height="7"/><rect x="100" y="207" width="7" height="7"/><rect x="93" y="214" width="7" height="7"/><rect x="100" y="221" width="7" height="7"/><rect x="93" y="228" width="7" height="7"/><rect x="100" y="235" width="7" height="7"/></g>
+<rect x="84" y="168" width="32" height="32" rx="10" fill="#f6c9ae"/>
+<ellipse cx="100" cy="116" rx="60" ry="66" fill="#fbd5bb"/>
+<ellipse cx="40" cy="124" rx="9" ry="14" fill="#f6c9ae"/><ellipse cx="160" cy="124" rx="9" ry="14" fill="#f6c9ae"/>
+<path d="M38 112 Q26 44 100 38 Q176 40 164 108 Q156 74 132 66 Q96 60 68 70 Q44 82 38 112Z" fill="#d8b56a"/>
+<path d="M46 80 Q70 20 140 34 Q176 46 168 96 Q150 52 106 56 Q70 58 46 80Z" fill="#e6c882"/>
+<path d="M56 62 Q92 24 150 44" fill="none" stroke="#f6e2a6" stroke-width="5" stroke-linecap="round" opacity=".75"/>
+<path d="M60 96 Q76 90 90 96" fill="none" stroke="#b78f4a" stroke-width="4.5" stroke-linecap="round"/><path d="M110 96 Q124 90 140 96" fill="none" stroke="#b78f4a" stroke-width="4.5" stroke-linecap="round"/>
+<ellipse cx="76" cy="110" rx="10" ry="8" fill="#fff"/><ellipse cx="124" cy="110" rx="10" ry="8" fill="#fff"/><circle cx="78" cy="111" r="5.2" fill="#3b2a1d"/><circle cx="126" cy="111" r="5.2" fill="#3b2a1d"/><circle cx="80" cy="109" r="1.7" fill="#fff"/><circle cx="128" cy="109" r="1.7" fill="#fff"/>
+<path d="M100 116 Q95 130 102 133" fill="none" stroke="#e5ab8c" stroke-width="3" stroke-linecap="round"/>
+<path d="M70 142 Q100 134 130 142 Q124 170 100 170 Q76 170 70 142Z" fill="#8a2f3a"/><path d="M74 143 Q100 137 126 143 L124 150 Q100 146 76 150Z" fill="#fff"/>
+<path d="M86 160 Q100 190 114 160 Q100 168 86 160Z" fill="#ff7f93"/><path d="M100 164 L100 178" stroke="#e25f78" stroke-width="2" stroke-linecap="round"/>
+<ellipse cx="62" cy="136" rx="9" ry="6" fill="#ff9a9a" opacity=".4"/><ellipse cx="138" cy="136" rx="9" ry="6" fill="#ff9a9a" opacity=".4"/>
+</svg></div>
+    <h1>FUNKLE &amp; ROHNIN</h1>
+    <div class="tag" style="opacity:1;animation:none">UNCLE. NEPHEW. GAME DEVS.</div>
+    <div class="ctas" style="opacity:1;animation:none"><a class="btn" href="/#play">Play our game</a><a class="btn alt" href="#story">Our story</a></div>
+  </div>
+</header>
+
+<section id="story">
+  <div class="wrap">
+    <div class="eyebrow">Why we do this</div>
+    <h2>GAMES ARE BETTER TOGETHER</h2>
+    <p class="big" style="margin-top:22px">We make games to bring <b>families and friends</b> together. One screen. One room code. <b>One big laugh.</b></p>
+    <p class="lead" style="margin:22px auto 0;text-align:center">Rohnin's Rooftop Heist started as an uncle and his nephew wanting something fun to play together. So we built it: a neon spy runner with a 2-player co-op mode, so you can send a four-letter code to someone you love and pull off the heist side by side. It is free, it runs in your browser, and we keep making it better.</p>
+  </div>
+</section>
+
+<section id="meet">
+  <div class="wrap">
+    <div class="eyebrow">The creators</div>
+    <h2>MEET THE CREW</h2>
+    <div class="bio">
+      <div class="card rv"><svg viewBox="0 0 200 250" role="img" aria-label="Cartoon of Garrett: swept-up ginger hair, big grin, silver chain">
+<rect x="22" y="196" width="156" height="54" rx="26" fill="#1c2230"/><path d="M78 196 L100 232 L122 196Z" fill="#f4f4f4"/><path d="M84 196 L100 222 L116 196" fill="none" stroke="#c9d3e6" stroke-width="2"/>
+<path d="M82 200 Q100 236 118 200" fill="none" stroke="#e9eef7" stroke-width="2.5"/><circle cx="100" cy="221" r="2.6" fill="#fff"/>
+<rect x="84" y="168" width="32" height="32" rx="10" fill="#e8a98a"/>
+<ellipse cx="100" cy="116" rx="62" ry="68" fill="#f0b496"/>
+<ellipse cx="38" cy="122" rx="9" ry="14" fill="#e8a98a"/><ellipse cx="162" cy="122" rx="9" ry="14" fill="#e8a98a"/>
+<path d="M36 100 Q30 40 100 36 Q172 38 166 100 Q158 62 132 58 Q112 54 74 62 Q44 68 36 100Z" fill="#c8641f"/>
+<path d="M60 52 Q96 -2 156 30 Q132 22 118 40 Q96 18 60 52Z" fill="#d9772a"/>
+<path d="M70 48 Q100 14 140 30" fill="none" stroke="#f0a35a" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+<path d="M62 96 Q76 86 90 94" fill="none" stroke="#b5561a" stroke-width="6" stroke-linecap="round"/><path d="M110 94 Q124 86 138 96" fill="none" stroke="#b5561a" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="76" cy="110" rx="9" ry="7" fill="#fff"/><ellipse cx="124" cy="110" rx="9" ry="7" fill="#fff"/><circle cx="78" cy="111" r="4.6" fill="#4a3a2a"/><circle cx="126" cy="111" r="4.6" fill="#4a3a2a"/><circle cx="79.5" cy="109" r="1.5" fill="#fff"/><circle cx="127.5" cy="109" r="1.5" fill="#fff"/>
+<path d="M100 114 Q94 134 102 138" fill="none" stroke="#d88f6f" stroke-width="3" stroke-linecap="round"/>
+<path d="M78 146 Q100 142 122 146 Q116 152 100 150 Q84 152 78 146Z" fill="#c8641f" opacity=".85"/>
+<path d="M68 150 Q100 196 132 150 Q100 170 68 150Z" fill="#fff"/><path d="M68 150 Q100 196 132 150" fill="none" stroke="#a8553a" stroke-width="3" stroke-linecap="round"/>
+<path d="M64 140 Q70 178 100 184 Q130 178 136 140" fill="none" stroke="#c8641f" stroke-width="7" opacity=".28" stroke-linecap="round"/>
+<ellipse cx="64" cy="140" rx="9" ry="6" fill="#ff8f8f" opacity=".35"/><ellipse cx="136" cy="140" rx="9" ry="6" fill="#ff8f8f" opacity=".35"/>
+<path d="M72 198 Q100 238 128 198" fill="none" stroke="#dfe6f2" stroke-width="2.2"/>
+</svg><h3>FUNKLE</h3><div class="aka">Uncle G · Big G · Funkle</div>
+        <p>Chief Heist Officer. Most people call him Funkle, a name that was never planned and is now permanent. He designs the rooftops, argues with the boss health bars and believes every game night should end with someone yelling "ONE MORE RUN."</p>
+        <div class="tags"><span>Level design</span><span>Boss ideas</span><span>Snack supply</span></div></div>
+      <div class="card rv"><svg viewBox="0 0 200 250" role="img" aria-label="Cartoon of Rohnin: blond swoopy hair, tongue out, white shirt and blue checkered tie">
+<rect x="22" y="196" width="156" height="54" rx="26" fill="#f4f6fa"/><path d="M76 196 L100 214 L124 196 L112 190 L88 190Z" fill="#fff" stroke="#d3dae6" stroke-width="2"/>
+<path d="M93 196 L107 196 L112 244 L100 250 L88 244Z" fill="#26478f"/><g fill="#a9d4ff"><rect x="93" y="200" width="7" height="7"/><rect x="100" y="207" width="7" height="7"/><rect x="93" y="214" width="7" height="7"/><rect x="100" y="221" width="7" height="7"/><rect x="93" y="228" width="7" height="7"/><rect x="100" y="235" width="7" height="7"/></g>
+<rect x="84" y="168" width="32" height="32" rx="10" fill="#f6c9ae"/>
+<ellipse cx="100" cy="116" rx="60" ry="66" fill="#fbd5bb"/>
+<ellipse cx="40" cy="124" rx="9" ry="14" fill="#f6c9ae"/><ellipse cx="160" cy="124" rx="9" ry="14" fill="#f6c9ae"/>
+<path d="M38 112 Q26 44 100 38 Q176 40 164 108 Q156 74 132 66 Q96 60 68 70 Q44 82 38 112Z" fill="#d8b56a"/>
+<path d="M46 80 Q70 20 140 34 Q176 46 168 96 Q150 52 106 56 Q70 58 46 80Z" fill="#e6c882"/>
+<path d="M56 62 Q92 24 150 44" fill="none" stroke="#f6e2a6" stroke-width="5" stroke-linecap="round" opacity=".75"/>
+<path d="M60 96 Q76 90 90 96" fill="none" stroke="#b78f4a" stroke-width="4.5" stroke-linecap="round"/><path d="M110 96 Q124 90 140 96" fill="none" stroke="#b78f4a" stroke-width="4.5" stroke-linecap="round"/>
+<ellipse cx="76" cy="110" rx="10" ry="8" fill="#fff"/><ellipse cx="124" cy="110" rx="10" ry="8" fill="#fff"/><circle cx="78" cy="111" r="5.2" fill="#3b2a1d"/><circle cx="126" cy="111" r="5.2" fill="#3b2a1d"/><circle cx="80" cy="109" r="1.7" fill="#fff"/><circle cx="128" cy="109" r="1.7" fill="#fff"/>
+<path d="M100 116 Q95 130 102 133" fill="none" stroke="#e5ab8c" stroke-width="3" stroke-linecap="round"/>
+<path d="M70 142 Q100 134 130 142 Q124 170 100 170 Q76 170 70 142Z" fill="#8a2f3a"/><path d="M74 143 Q100 137 126 143 L124 150 Q100 146 76 150Z" fill="#fff"/>
+<path d="M86 160 Q100 190 114 160 Q100 168 86 160Z" fill="#ff7f93"/><path d="M100 164 L100 178" stroke="#e25f78" stroke-width="2" stroke-linecap="round"/>
+<ellipse cx="62" cy="136" rx="9" ry="6" fill="#ff9a9a" opacity=".4"/><ellipse cx="138" cy="136" rx="9" ry="6" fill="#ff9a9a" opacity=".4"/>
+</svg><h3>ROHNIN</h3><div class="aka">Co-Creator · Head of Playtesting</div>
+        <p>The name on the door and the toughest tester in the family. If a trap can be dodged, Rohnin finds a way to dodge it with style. If it cannot, he reports it loudly. Both are very helpful.</p>
+        <div class="tags"><span>Playtesting</span><span>Tie game</span><span>Quality control</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="rules">
+  <div class="wrap">
+    <div class="eyebrow">Official document</div>
+    <h2>FUNKLE'S RULES OF HEISTING</h2>
+    <ol class="rules">
+      <li class="rv"><span>Do not fall off the roof. If you fall off the roof, it was lag.</span></li>
+      <li class="rv"><span>Always check what the boss is weak to. Then forget it. Then check again.</span></li>
+      <li class="rv"><span>Coins are not optional. Coins are a lifestyle.</span></li>
+      <li class="rv"><span>If your co-op partner gets a higher score, congratulate them. Quietly. Through your teeth.</span></li>
+      <li class="rv"><span>Never trust a drone that is being too quiet.</span></li>
+      <li class="rv"><span>Spend your chips on skins. Spend the rest on more skins.</span></li>
+      <li class="rv"><span>When in doubt, jump. When in more doubt, slide. When in maximum doubt, blame Rohnin.</span></li>
+    </ol>
+  </div>
+</section>
+
+<section id="notes">
+  <div class="wrap">
+    <div class="eyebrow">From the playtest desk</div>
+    <h2>WHAT WE SAY IN THE GROUP CHAT</h2>
+    <div class="q">
+      <blockquote class="rv">"Okay chat, we are locked in."<cite>ROHNIN, EVERY RUN</cite></blockquote>
+      <blockquote class="rv">"I stretched for this. Mentally."<cite>FUNKLE</cite></blockquote>
+      <blockquote class="rv">"That boss is not in the group chat."<cite>ROHNIN</cite></blockquote>
+      <blockquote class="rv">"It was not a fall. It was a dramatic exit."<cite>FUNKLE</cite></blockquote>
+    </div>
+    <p class="lead" style="margin:30px auto 0;text-align:center">You will hear these lines in the game too. Beat a boss, hit a big combo, or wipe out and we will have something to say about it.</p>
+  </div>
+</section>
+
+<section id="join">
+  <div class="wrap" style="text-align:center">
+    <div class="eyebrow" style="justify-content:center">Your turn</div>
+    <h2>BRING SOMEONE YOU LOVE</h2>
+    <p class="lead" style="margin:0 auto 24px">Pick Funkle or Rohnin as your skin in the Armoury (they are free), create a co-op room and send the code.</p>
+    <div class="ctas" style="opacity:1;animation:none;display:flex;justify-content:center;gap:14px;flex-wrap:wrap"><a class="btn" href="/#play">Start the heist</a><button class="btn alt" id="shareBtn" style="font:inherit;cursor:pointer">Share the game</button></div>
+  </div>
+</section>
+
+<footer>Rohnin's Rooftop Heist · Made by Funkle &amp; Rohnin · Built with Claude</footer>
+<script>
+(function(){
+var nav=document.getElementById('nav'),prog=document.getElementById('prog'),nb=document.getElementById('nb');
+function onS(){ var y=scrollY,h=document.documentElement.scrollHeight-innerHeight; prog.style.transform='scaleX('+(h>0?y/h:0)+')'; nav.classList.toggle('sc',y>40); }
+addEventListener('scroll',onS,{passive:true}); onS();
+nb.addEventListener('click',function(){ var o=nav.classList.toggle('open'); nb.setAttribute('aria-expanded',o); });
+nav.querySelectorAll('.links a').forEach(function(a){ a.addEventListener('click',function(){ nav.classList.remove('open'); nb.setAttribute('aria-expanded',false); }); });
+var secs=[].slice.call(document.querySelectorAll('section[id]')), links=[].slice.call(nav.querySelectorAll('.links a'));
+if('IntersectionObserver' in window){ var so=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ links.forEach(function(a){ a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id); }); } }); },{rootMargin:'-45% 0px -50% 0px'}); secs.forEach(function(s){ so.observe(s); }); }
+var hero=document.querySelector('.cr-hero'), tx=document.querySelector('.cr-hero .txt');
+if(hero&&tx&&matchMedia('(pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches){
+  hero.addEventListener('pointermove',function(e){ var r=hero.getBoundingClientRect(); tx.style.setProperty('--px',((e.clientX-r.left)/r.width-.5)*-18+'px'); tx.style.setProperty('--py',((e.clientY-r.top)/r.height-.5)*-12+'px'); });
+  document.addEventListener('pointermove',function(e){ var c=e.target.closest&&e.target.closest('.card'); if(!c) return; var r=c.getBoundingClientRect(), x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height; c.style.setProperty('--mx',x*100+'%'); c.style.setProperty('--my',y*100+'%'); c.style.setProperty('--ry',((x-.5)*7).toFixed(2)+'deg'); c.style.setProperty('--rx',((.5-y)*7).toFixed(2)+'deg'); });
+  document.addEventListener('pointerout',function(e){ var c=e.target.closest&&e.target.closest('.card'); if(c&&!c.contains(e.relatedTarget)){ c.style.setProperty('--rx','0deg'); c.style.setProperty('--ry','0deg'); } });
+}
+/* neon embers */
+var cv=document.getElementById('fx'), x=cv.getContext('2d'), W,H,P=[], DPR=Math.min(devicePixelRatio||1,1.5), cols=['255,79,135','255,224,122','107,230,255'];
+function rs(){ W=cv.width=innerWidth*DPR; H=cv.height=innerHeight*DPR; }
+rs(); addEventListener('resize',rs);
+var N=innerWidth<700?26:48; for(var i=0;i<N;i++) P.push({x:Math.random(),y:Math.random(),r:Math.random()*2+.6,v:Math.random()*.00006+.00002,c:cols[i%3],p:Math.random()*6.28});
+var vis=true; document.addEventListener('visibilitychange',function(){ vis=!document.hidden; if(vis) loop(); });
+function loop(){ if(!vis) return; x.clearRect(0,0,W,H); x.globalCompositeOperation='lighter'; for(var i=0;i<P.length;i++){ var q=P[i]; q.y-=q.v*16; q.p+=.02; if(q.y<-.02){ q.y=1.02; q.x=Math.random(); } var a=.25+.25*Math.sin(q.p); x.fillStyle='rgba('+q.c+','+a+')'; x.beginPath(); x.arc((q.x+Math.sin(q.p)*.01)*W,q.y*H,q.r*DPR,0,6.283); x.fill(); } if(!matchMedia('(prefers-reduced-motion:reduce)').matches) requestAnimationFrame(loop); }
+loop();
+})();
+</script><script>var sb=document.getElementById('shareBtn');sb&&sb.addEventListener('click',async()=>{const d={title:"Rohnin's Rooftop Heist",text:'Free neon spy rooftop runner made by Funkle and Rohnin. Play solo or 2-player co-op!',url:'https://rohninsheist.com'};try{ if(navigator.share) await navigator.share(d); else { await navigator.clipboard.writeText(d.url); document.getElementById('shareBtn').textContent='LINK COPIED!'; } }catch(e){}});
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.15});document.querySelectorAll('.rv').forEach(function(e,i){e.style.transitionDelay=(i%4)*70+'ms';io.observe(e);});</script>
+</body>
+</html>
