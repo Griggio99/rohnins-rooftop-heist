@@ -45,6 +45,15 @@ h2{font-size:clamp(40px,7vw,84px);line-height:.95;margin:8px 0 16px;color:var(--
 .rv.in{opacity:1;transform:none}
 .grid{display:grid;gap:16px;margin-top:34px}
 .g3{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr))}
+#motion{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:720px){#motion{grid-template-columns:1fr}}
+#motion .gv{aspect-ratio:16/7.2}
+.mstats{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:22px auto 0;max-width:880px}
+.mstats div{flex:1 1 110px;background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid var(--line);border-radius:14px;padding:12px 10px;text-align:center}
+.mstats b{display:block;font-family:"Bebas Neue",Impact,sans-serif;font-size:clamp(30px,6vw,44px);line-height:1;color:#ffd35a;letter-spacing:.04em}
+.mstats span{display:block;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.66);margin-top:4px}
+
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 22px;position:relative;overflow:hidden;transition:transform .25s,border-color .25s}
 .card:hover{transform:translateY(-4px);border-color:rgba(255,224,122,.5)}
 .card h3{font-size:28px;color:#fff;letter-spacing:.1em}
@@ -261,7 +270,7 @@ body.mob .stage,body.mob .tools,body.mob .keys{display:none}
   <canvas id="hero"></canvas><div class="aur"><i></i><i></i><i></i></div><div class="vig"></div><div class="scan"></div>
   <div class="txt">
     <div class="hicon"><img src="icon-512.png" alt="Rohnin's Rooftop Heist app icon" width="112" height="112"></div>
-    <div class="kick">Eight districts · Sixteen bosses</div>
+    <div class="kick">Fifteen districts · Sixteen bosses</div>
     <h1>ROHNIN'S<span>ROOFTOP HEIST</span></h1>
     <div class="tag">THE MIDNIGHT SCORE</div>
     <div class="ctas"><a class="btn" id="herogo" href="#play">Start the heist</a><a class="btn alt" href="#leaderboard">Leaderboard</a></div>
@@ -294,6 +303,15 @@ body.mob .stage,body.mob .tools,body.mob .keys{display:none}
     <div class="eyebrow">See it in action</div>
     <h2>WATCH A HEIST</h2>
     <div style="max-width:880px;margin:18px auto 0;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.2);box-shadow:0 20px 60px rgba(0,0,0,.5)"><video id="demov" muted loop playsinline preload="none" poster="gameplay-poster.jpg" style="width:100%;display:block"><source src="gameplay.webm" type="video/webm"><source src="gameplay.mp4" type="video/mp4"></video></div>
+    <div class="eyebrow" style="margin-top:46px">Every run is different</div>
+    <h2>THE HEIST IN MOTION</h2>
+    <div class="mstats rv"><div><b>15</b><span>Districts</span></div><div><b>16</b><span>Bosses</span></div><div><b>8</b><span>Guns</span></div><div><b>3</b><span>Gadgets</span></div><div><b>2P</b><span>Online co-op</span></div></div>
+    <div class="grid g2" id="motion">
+      <div class="card rv"><video muted loop playsinline preload="none" poster="motion-action.jpg" data-src="motion-action.mp4" class="gv"></video><h3>RUN, JUMP, SLIDE, SHOOT</h3><p>Dodge shutters, leap the gaps and blast drones without breaking stride. Short flicks on a phone, WASD on a keyboard.</p></div>
+      <div class="card rv"><video muted loop playsinline preload="none" poster="motion-boss.jpg" data-src="motion-boss.mp4" class="gv"></video><h3>BOSS FIGHTS</h3><p>Every district ends in a boss with its own weakness. The gun wheel shows which gun hurts most, so swap and unload.</p></div>
+      <div class="card rv"><video muted loop playsinline preload="none" poster="motion-districts.jpg" data-src="motion-districts.mp4" class="gv"></video><h3>FIFTEEN DISTRICTS</h3><p>Casino rooftops, Tokyo rain, Arctic ice, sunken Atlantis, Sugar Rush and a haunted hollow, each with its own music and hazards.</p></div>
+      <div class="card rv"><video muted loop playsinline preload="none" poster="motion-gadgets.jpg" data-src="motion-gadgets.mp4" class="gv"></video><h3>GADGETS</h3><p>Slow time with Bullet Time, wipe the screen with an EMP Burst and slip through danger with a Phase Dash.</p></div>
+    </div>
     <div class="eyebrow" style="margin-top:46px">Field guide</div>
     <h2>SECRETS &amp; SHORTCUTS</h2>
     <div class="grid g3" id="fg">
@@ -384,7 +402,7 @@ body.mob .stage,body.mob .tools,body.mob .keys{display:none}
     <p class="lead">Every gun except the pistol runs on limited ammo. Each boss resists some gun types and is weak to others, so read the weapon wheel and swap at the right moment.</p>
     <div class="guns" id="guns"></div>
     <div class="grid g3">
-      <div class="card rv"><div class="ic">🏙️</div><h3>NINE DISTRICTS</h3><p>Casino rooftops to Orbit Station, the Nebula Rift and the Pyramid Vaults of Giza. Every district has its own sky, hazards, music and more lanes.</p></div>
+      <div class="card rv"><div class="ic">🏙️</div><h3>FIFTEEN DISTRICTS</h3><p>Monte Carlo casinos to Tokyo neon, Atlantis, Sugar Rush, Haunted Hollow and Storm Peak. Every district has its own sky, hazards, music and more lanes.</p></div>
       <div class="card rv"><div class="ic">👾</div><h3>MINI-BOSSES + BOSSES</h3><p>A mini-boss with a unique trick, then a full boss, in every district. They get tougher as you upgrade.</p></div>
       <div class="card rv"><div class="ic">⚡</div><h3>NEW HAZARDS</h3><p>Trip-lasers, awnings, shootable mines, flame vents and spinning saws. Jump, slide, shoot or dodge.</p></div>
       <div class="card rv"><div class="ic">💾</div><h3>CHECKPOINTS</h3><p>Reach a new district and it saves. Continue later, or pay chips to resume after a wipe-out.</p></div>
@@ -522,6 +540,6 @@ function loop(){ if(!vis) return; x.clearRect(0,0,W,H); x.globalCompositeOperati
 loop();
 })();
 </script>
-<script>(function(){var vs=[].slice.call(document.querySelectorAll('#demov,#fg video'));if(!('IntersectionObserver' in window))return;var io=new IntersectionObserver(function(es){es.forEach(function(e){var v=e.target;if(e.isIntersecting){if(v.dataset.src&&!v.getAttribute('src')){v.setAttribute('src',v.dataset.src);v.load()}var p=v.play();if(p&&p.catch)p.catch(function(){})}else v.pause()})},{threshold:.35});vs.forEach(function(v){io.observe(v);v.addEventListener('click',function(){if(v.paused){if(v.dataset.src&&!v.getAttribute('src')){v.setAttribute('src',v.dataset.src);v.load()}v.play().catch(function(){})}else v.pause()})})})();</script>
+<script>(function(){var vs=[].slice.call(document.querySelectorAll('#demov,#fg video,#motion video'));if(!('IntersectionObserver' in window))return;var io=new IntersectionObserver(function(es){es.forEach(function(e){var v=e.target;if(e.isIntersecting){if(v.dataset.src&&!v.getAttribute('src')){v.setAttribute('src',v.dataset.src);v.load()}var p=v.play();if(p&&p.catch)p.catch(function(){})}else v.pause()})},{threshold:.35});vs.forEach(function(v){io.observe(v);v.addEventListener('click',function(){if(v.paused){if(v.dataset.src&&!v.getAttribute('src')){v.setAttribute('src',v.dataset.src);v.load()}v.play().catch(function(){})}else v.pause()})})})();</script>
 </body>
 </html>

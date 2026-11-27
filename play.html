@@ -307,6 +307,28 @@
   #ctl .sub,#opts .sub{margin-bottom:6px}
   #ctl .btn.srow{margin-top:0!important}
   #opts .sub[style*="font-size:13px"],#ctl .sub[style*="font-size:13px"]{color:rgba(255,255,255,.55)!important;text-transform:none;letter-spacing:.02em!important;font-family:Rajdhani,system-ui,sans-serif;font-size:13px!important;max-width:var(--mw)!important;opacity:1!important}
+  /* v62 Field Guide */
+  .tabbar{position:sticky;top:0;z-index:5;width:min(760px,100%);display:flex;align-items:center;margin:10px 0 4px;padding:max(8px,env(safe-area-inset-top)) 0 8px 56px;box-sizing:border-box;background:linear-gradient(180deg,rgba(10,5,22,.97) 70%,rgba(10,5,22,0));backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+  @media(min-width:900px){ .tabbar{padding-left:0} }
+  .tabbar .tabs{flex:1;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px}
+  .tabbar .tabs::-webkit-scrollbar{display:none}
+  .tabbar button{flex:1 0 auto;font:16px 'Bebas Neue',Impact,sans-serif;letter-spacing:.12em;color:rgba(255,255,255,.72);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:8px 12px 6px;cursor:pointer;transition:background .2s,color .2s;-webkit-tap-highlight-color:transparent}
+  .tabbar button.on{color:#12090a;background:linear-gradient(180deg,#ffe07a,#f0a81e);border-color:#ffe07a;box-shadow:0 0 16px rgba(255,200,60,.35)}
+  @media(max-width:520px){ .tabbar button{font-size:14px;padding:7px 9px 5px;letter-spacing:.08em} }
+  #gd-list{width:min(760px,100%)!important;display:block!important}
+  .gsec{width:100%;scroll-margin-top:70px;margin-bottom:6px}
+  .glist{display:flex;flex-direction:column;gap:8px}
+  .grow{--c:#ffc83d;display:flex;align-items:center;gap:12px;background:rgba(20,12,34,.82);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 12px;text-align:left}
+  .grow .gb{flex:1;min-width:0}
+  .grow .gt{font:20px 'Bebas Neue',Impact,sans-serif;letter-spacing:.06em;color:#fff;line-height:1.05}
+  .grow .gd{font-size:13.5px;color:rgba(255,255,255,.68);line-height:1.3;margin-top:3px}
+  .grow .gk{flex:0 0 auto;font:13px 'Bebas Neue',Impact,sans-serif;letter-spacing:.1em;color:var(--c);border:1px solid color-mix(in srgb,var(--c) 55%,transparent);background:color-mix(in srgb,var(--c) 12%,transparent);border-radius:999px;padding:5px 10px 3px;white-space:nowrap;max-width:34%;overflow:hidden;text-overflow:ellipsis}
+  @media(max-width:420px){ .grow .gk{font-size:11.5px;padding:4px 7px 2px} .grow{gap:10px;padding:9px 10px} }
+  .gvids{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+  .gvids .gcard{display:flex;flex-direction:column;text-align:left;background:rgba(20,12,34,.82);border:1px solid rgba(255,224,122,.24);border-radius:12px;overflow:hidden}
+  .gvids video{width:100%;aspect-ratio:16/7.2;object-fit:cover;display:block;background:#0b0618}
+  .gvids b{font:19px 'Bebas Neue',Impact,sans-serif;letter-spacing:.08em;color:#ffe07a;padding:9px 12px 0}
+  .gvids p{font-size:13.5px;color:rgba(255,255,255,.7);line-height:1.3;margin:3px 12px 12px}
   .tag{font-size:14px;letter-spacing:.2em;color:#7dffb0;font-weight:700;padding:6px 0}.tag.lock{color:#ff8da1;letter-spacing:.05em;font-weight:500}
   #btns button.txt{width:auto;border-radius:21px;padding:0 13px;font-family:'Bebas Neue',Impact,sans-serif;letter-spacing:.12em;font-size:16px}
   #btns button.on{background:rgba(125,255,176,.22);border-color:#7dffb0;color:#7dffb0}
@@ -441,7 +463,7 @@
 
 <div id="menu" class="ov">
  <div class="mL">
-  <div class="kicker">One night // Eight districts // Sixteen bosses</div>
+  <div class="kicker">One night // Fifteen districts // Sixteen bosses</div>
   <h1 style="font-size:clamp(34px,min(10.2vw,12vh),112px)">ROHNIN'S<br>ROOFTOP HEIST</h1>
   <div class="sub">THE MIDNIGHT SCORE</div>
   <div id="lvtag" role="button" tabindex="0" style="cursor:pointer;font-family:'Bebas Neue',Impact,sans-serif;letter-spacing:.2em;color:#7be8ff;font-size:clamp(13px,3.6vw,16px);margin:-6px 0 6px;opacity:.95"></div>
@@ -572,7 +594,7 @@
   <h2>LEADERBOARD</h2><div class="lbtabs" id="lb-tabs"><button class="btn alt sel" data-m="solo">SOLO</button><button class="btn alt" data-m="co">DUO</button><button class="btn alt" data-m="daily">DAILY</button><button class="btn alt" data-m="weekly">WEEKLY</button></div><div id="lb-list" style="margin:10px 0 18px"></div><button id="lb-back" class="btn alt">BACK</button>
 </div>
 
-<div id="guide" class="ov hidden scroll"><button class="topback" data-back="gd-back" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><h2>FIELD GUIDE</h2><div class="best" style="margin:0 0 10px">SECRETS, BYPASSES &amp; TRICKS</div><div id="gd-list"></div><button id="gd-back" class="btn alt" style="margin:14px 0 20px">BACK</button></div>
+<div id="guide" class="ov hidden scroll"><button class="topback" data-back="gd-back" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><h2 style="font-size:clamp(40px,8vw,64px)">FIELD GUIDE</h2><div class="best" style="margin:0 0 4px">EVERYTHING YOU NEED FOR THE HEIST</div><nav id="gd-nav" class="tabbar" aria-label="Field guide sections"><div class="tabs"><button data-g="basics">BASICS</button><button data-g="danger">DANGERS</button><button data-g="power">POWER</button><button data-g="secrets">SECRETS</button><button data-g="modes">MODES</button></div></nav><div id="gd-list"></div><button id="gd-back" class="btn alt" style="margin:14px 0 20px">BACK</button></div>
 
 <div id="achm" class="ov hidden scroll"><button class="topback" data-back="ach-back" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
   <h2>TROPHIES</h2><div id="ach-sum" class="best" style="margin:0 0 8px"></div><div id="ach-list" style="margin:6px 0 18px;width:min(460px,92vw)"></div><button id="ach-back" class="btn alt">BACK</button>
@@ -3803,8 +3825,78 @@ const GUIDE=[
  {f:'guide-gamble',t:'RED GAMBLE PORTAL',d:'A red ! orb. Double chips, but lasers and arcs guard the path. Jump or slide to cash in.'},
  {f:'guide-trap',t:'TRAP WALL',d:'Late districts only. A red, glitchy phantom wall is a trap. Dodge it like a real wall.'},
  {f:'guide-dream',t:'DREAM SEQUENCE',d:'The world bends and the colours melt. It is only a vision, so trust your lanes.'}];
-$('guidebtn').addEventListener('click',e=>{ e.currentTarget.blur(); const l=$('gd-list'); l.textContent=''; for(const g of GUIDE){ const c=document.createElement('div'); c.className='gcard'; const v=document.createElement('video'); v.muted=true; v.loop=true; v.playsInline=true; v.setAttribute('playsinline',''); v.preload='metadata'; v.poster=g.f+'.jpg'; v.setAttribute('muted',''); v.src=g.f+'.mp4'; v.addEventListener('click',()=>{ if(v.paused) v.play().catch(()=>{}); else v.pause(); }); const d=document.createElement('div'); const b=document.createElement('b'); b.textContent=g.t; const p=document.createElement('p'); p.textContent=g.d; d.append(b,p); c.append(v,d); l.appendChild(c); }
-  $('menu').classList.add('hidden'); $('guide').classList.remove('hidden'); try{ const io=new IntersectionObserver(es=>{ es.forEach(en=>{ if(en.isIntersecting) en.target.play().catch(()=>{}); else en.target.pause(); }); },{threshold:.4}); l.querySelectorAll('video').forEach(v=>io.observe(v)); }catch(er){} });
+const GI={ /* small line icons, same family as the Armoury */
+ lane:'<svg viewBox="0 0 40 40"><path class="a1" d="M15 12l-8 8 8 8"/><path class="a3" d="M25 12l8 8-8 8"/></svg>',
+ jump:'<svg viewBox="0 0 40 40"><path class="bob1" d="M12 22l8-9 8 9"/><path d="M8 32h8M24 32h8" opacity=".5"/></svg>',
+ slide:'<svg viewBox="0 0 40 40"><path d="M6 12h28" stroke-dasharray="3 3" opacity=".6"/><path class="bob1" d="M12 18l8 9 8-9"/></svg>',
+ fire:'<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="11"/><path d="M20 4v8M20 28v8M4 20h8M28 20h8"/><circle class="ring" cx="20" cy="20" r="3"/></svg>',
+ swap:'<svg viewBox="0 0 40 40"><path d="M9 15h20l-5-5M31 25H11l5 5"/></svg>',
+ gad:'<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="13" opacity=".3"/><circle class="fillr" pathLength="82" cx="20" cy="20" r="13"/><path d="M21 12l-5 9h5l-2 7 6-10h-5z"/></svg>',
+ gap:'<svg viewBox="0 0 40 40"><path d="M4 26h12M24 26h12"/><path d="M6 26l4-4M10 26l4-4M26 26l4-4M30 26l4-4" opacity=".7"/><circle class="blip fl" cx="16" cy="14" r="2.4"/><circle class="blip fl" cx="24" cy="14" r="2.4"/></svg>',
+ wall:'<svg viewBox="0 0 40 40"><rect x="10" y="6" width="20" height="28" rx="2"/><path d="M10 13h20M10 20h20M10 27h20" opacity=".55"/></svg>',
+ low:'<svg viewBox="0 0 40 40"><rect x="9" y="22" width="22" height="12" rx="2"/><path class="bob1" d="M14 16l6-6 6 6"/></svg>',
+ high:'<svg viewBox="0 0 40 40"><path d="M6 8h28v8H6z"/><path d="M10 8l4 8M18 8l4 8M26 8l4 8" opacity=".6"/><path class="bob1" d="M14 24l6 6 6-6"/></svg>',
+ timed:'<svg viewBox="0 0 40 40"><circle cx="20" cy="21" r="13"/><g class="spin"><path d="M20 21V11"/></g><path d="M16 4h8"/></svg>',
+ chase:'<svg viewBox="0 0 40 40"><circle cx="27" cy="11" r="4"/><path d="M27 15v9l-5 8M27 24l5 8M21 19h12"/><path class="a1" d="M6 20h6M4 26h8" /></svg>',
+ bot:'<svg viewBox="0 0 40 40"><rect x="10" y="11" width="20" height="17" rx="5"/><circle class="blip fl" cx="16" cy="19" r="2"/><circle class="blip fl" cx="24" cy="19" r="2"/><path d="M14 28v6M26 28v6M20 11V6"/></svg>',
+ chip:'<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="12"/><circle cx="20" cy="20" r="6" opacity=".6"/><path class="twk" d="M31 4v10M26 9h10"/></svg>',
+ shield:'<svg viewBox="0 0 40 40"><path d="M20 5l12 5v9c0 8-5 13-12 16C13 32 8 27 8 19v-9z" opacity=".45"/><path class="trace" pathLength="100" d="M20 5l12 5v9c0 8-5 13-12 16C13 32 8 27 8 19v-9z"/></svg>',
+ boss:'<svg viewBox="0 0 40 40"><path d="M8 30l3-18 6 7 3-11 3 11 6-7 3 18z"/><path d="M8 34h24"/></svg>',
+ combo:'<svg viewBox="0 0 40 40"><path d="M7 15l10 12M17 15L7 27"/><path d="M22 27V13l8 14V13" /></svg>',
+ daily:'<svg viewBox="0 0 40 40"><rect x="7" y="9" width="26" height="24" rx="3"/><path d="M7 16h26M14 5v7M26 5v7"/><circle class="blip fl" cx="20" cy="25" r="3"/></svg>',
+ week:'<svg viewBox="0 0 40 40"><path d="M20 6l4 9 10 1-7 7 2 10-9-5-9 5 2-10-7-7 10-1z"/></svg>',
+ coop:'<svg viewBox="0 0 40 40"><circle cx="14" cy="14" r="5"/><circle cx="27" cy="14" r="5"/><path d="M5 33c1-7 5-10 9-10s8 3 9 10M18 33c1-7 5-10 9-10s8 3 9 10"/></svg>',
+ chal:'<svg viewBox="0 0 40 40"><path d="M9 34V6M9 7h20l-5 6 5 6H9"/></svg>',
+ save:'<svg viewBox="0 0 40 40"><path d="M8 8h20l4 4v20H8z"/><path d="M13 8v8h12V8M13 32v-9h14v9"/></svg>',
+ lvl:'<svg viewBox="0 0 40 40"><path class="rise" d="M20 30V10M13 17l7-7 7 7"/><path d="M8 34h24"/></svg>'
+};
+const GT=IS_TOUCH;
+const GSEC=[
+ {id:'basics',t:'BASICS',s:'How to move, shoot and survive',rows:[
+  ['lane','#7be8ff','Change lanes',GT?'Swipe left or right. Short fast flicks work best.':'Press A / D or the arrow keys.',GT?'SWIPE ← →':'A D'],
+  ['jump','#7dff9a','Jump','Over gaps, crates, trip wires and electric arcs.',GT?'SWIPE UP':'W ↑'],
+  ['slide','#ff9ad9','Slide','Under striped awnings, laser fences and drones.',GT?'SWIPE DOWN':'S ↓'],
+  ['fire','#ff4d6d','Shoot','The pistol never runs dry. Other guns use ammo, so save them for bosses.',GT?'HOLD FIRE':'HOLD SPACE'],
+  ['swap','#ffb02e','Swap guns',GT?'Tap the gun wheel to cycle.':'F, Shift, mouse wheel, or 1–8.',GT?'TAP WHEEL':'F / 1–8'],
+  ['gad','#5ad0ff','Gadgets','EMP Burst wipes out nearby enemies and their bullets. Phase Dash and Bullet Time get you out of trouble. Each recharges.',GT?'GADGET BUTTONS':'Q  E  R']]},
+ {id:'danger',t:'DANGERS',s:'What ends a run, and how to beat it',rows:[
+  ['gap','#ffd35a','Gaps between buildings','Falling is the top way runs end. Gaps have yellow-and-black stripes and two blinking red beacons. Jump at the stripes.','JUMP'],
+  ['wall','#ff4d6d','Security shutters','Solid walls that fill a lane. Hitting one ends the run on the spot.','CHANGE LANE'],
+  ['low','#7dff9a','Low barriers','Crates, trip wires, saw blades, mines and electric arcs. You can also shoot mines.','JUMP'],
+  ['high','#ff9ad9','Hanging barriers','Striped awnings, laser fences and drones.','SLIDE'],
+  ['timed','#5ad0ff','Vents and crushers','They switch on and off. Time it, or step into another lane.','TIME IT'],
+  ['chase','#ffb02e','Security on your tail','Any bump makes you stumble. Take a second hit within 6 seconds and security catches you.','STAY CLEAN'],
+  ['bot','#c79bff','Bots, sentries and tanks','Sentries shoot back and tanks take 6 hits. Shoot them for score, or dodge.','SHOOT']]},
+ {id:'power',t:'POWER',s:'Pick-ups, combos and bosses',rows:[
+  ['chip','#ffc83d','Chips','Grab them to spend in the Armoury. Upgrades last for every run.','COLLECT'],
+  ['shield','#7be8ff','Power-ups','Shield blocks one hit. Magnet pulls chips in. Jetpack flies you over everything. Also look for ×2 score, Rapid Fire, Triple Shot and Ammo.','GRAB'],
+  ['combo','#7dff9a','Combos','Kill again within 3.5 seconds to keep a combo going. Every 3 kills adds +0.5× score, up to 3×.','CHAIN'],
+  ['boss','#ff4d6d','Bosses','One waits at the end of every district. Each is weak to a gun type, and the gun wheel marks the right gun with a green ▲. If it says SHIELDED, shoot its escorts first.','SWAP TO ▲']]},
+ {id:'secrets',t:'SECRETS',s:'Shortcuts, bonus zones and traps',vids:true},
+ {id:'modes',t:'MODES',s:'More ways to play and come back',rows:[
+  ['daily','#ffd35a','Daily Heist','Same rooftops for everyone today, with a twist. Play daily to build your streak.','MENU'],
+  ['week','#7be8ff','Weekly event','A week-long twist, like Coin Fever.','MENU'],
+  ['coop','#7dff9a','Co-op','Two players, one room code, three shared lives. Down agents come back while the team has lives left.','CO-OP'],
+  ['chal','#ff9ad9','Challenge a friend','Send your run. They race the exact same rooftops with a live "ahead / behind" tracker.','AFTER A RUN'],
+  ['save','#ffb02e','Checkpoints','From district 2 on, Save & Quit in the pause menu lets you continue later.','PAUSE'],
+  ['lvl','#c79bff','Levels and trophies','Every run earns XP. Levels unlock chips, skins and sidekicks, and trophies unlock accessories.','KEEP PLAYING']]}
+];
+function renderGuide(){ const l=$('gd-list'); let h='';
+  for(const sec of GSEC){ h+=`<section class="gsec" id="gd-${sec.id}"><div class="sech"><span class="sec">${sec.t}</span><span class="secs">${sec.s}</span></div>`;
+    if(sec.vids){ h+='<div class="gvids">'; for(const g of GUIDE) h+=`<div class="gcard"><video muted loop playsinline preload="none" poster="${g.f}.jpg" data-src="${g.f}.mp4"></video><b>${g.t}</b><p>${g.d}</p></div>`; h+='</div>'; }
+    else { h+='<div class="glist">'; for(const r of sec.rows) h+=`<div class="grow" style="--c:${r[1]}"><div class="uic">${GI[r[0]]}</div><div class="gb"><div class="gt">${r[2]}</div><div class="gd">${r[3]}</div></div><span class="gk">${r[4]}</span></div>`; h+='</div>'; }
+    h+='</section>'; }
+  l.innerHTML=h;
+  try{ const io=new IntersectionObserver(es=>{ es.forEach(en=>{ const v=en.target; if(en.isIntersecting){ if(!v.src) v.src=v.dataset.src; v.play().catch(()=>{}); } else v.pause(); }); },{root:$('guide'),threshold:.4}); l.querySelectorAll('video').forEach(v=>io.observe(v)); }catch(er){}
+  gdSpy(); }
+function gdSpy(){ const sh=$('guide'), nav=$('gd-nav'); if(!sh||!nav) return; const nh=nav.offsetHeight, st=sh.getBoundingClientRect().top; let cur='basics';
+  for(const sec of GSEC){ const el=$('gd-'+sec.id); if(el&&el.getBoundingClientRect().top-st<=nh+40) cur=sec.id; }
+  if(sh.scrollTop+sh.clientHeight>=sh.scrollHeight-4) cur='modes';
+  for(const b of nav.querySelectorAll('[data-g]')) b.classList.toggle('on',b.dataset.g===cur); }
+$('guide').addEventListener('scroll',()=>{ if(!gdSpy.q){ gdSpy.q=1; requestAnimationFrame(()=>{ gdSpy.q=0; gdSpy(); }); } },{passive:true});
+$('gd-nav').addEventListener('click',e=>{ const b=e.target.closest('[data-g]'); if(!b) return; b.blur(); const sh=$('guide'), el=$('gd-'+b.dataset.g); if(!el) return;
+  sh.scrollTo({top:Math.max(0,sh.scrollTop+el.getBoundingClientRect().top-sh.getBoundingClientRect().top-$('gd-nav').offsetHeight-6),behavior:save.opts.rm?'auto':'smooth'}); try{ evt('guide',b.dataset.g); }catch(_){} });
+$('guidebtn').addEventListener('click',e=>{ e.currentTarget.blur(); renderGuide(); $('menu').classList.add('hidden'); $('guide').classList.remove('hidden'); $('guide').scrollTop=0; gdSpy(); });
 $('gd-back').addEventListener('click',e=>{ e.currentTarget.blur(); $('guide').classList.add('hidden'); $('gd-list').textContent=''; $('menu').classList.remove('hidden'); });
 $('ach-back').addEventListener('click',e=>{ e.currentTarget.blur(); $('achm').classList.add('hidden'); $('menu').classList.remove('hidden'); });
 $('lb-tabs').addEventListener('click',e=>{ const b=e.target.closest('[data-m]'); if(b) openLB(b.dataset.m); });
