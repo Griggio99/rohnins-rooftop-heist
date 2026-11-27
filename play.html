@@ -249,6 +249,64 @@
   @media(max-width:520px){ #sh-gun .card .cn,#sh-pet .card .cn{font-size:22px} #sh-gun .card .cd,#sh-pet .card .cd{font-size:14px} }
   body.rm .uic *,body.rm .ucard{animation:none!important}
   @media(prefers-reduced-motion:reduce){.uic *,.ucard{animation:none!important}}
+  /* v61 design pass: one width system, clear hierarchy */
+  :root{--mw:min(380px,88vw)}
+  @media (orientation:portrait),(min-height:521px){
+    #menu .mR>.btn,#menu .menu2,#menu .menu3,#menu #pname{width:var(--mw);max-width:none;box-sizing:border-box}
+    #menu #go{font-size:clamp(28px,7.4vw,38px);padding:.42em 0 .32em;box-shadow:0 0 0 2px rgba(255,240,180,.55),0 10px 30px rgba(240,168,30,.35);animation:gopulse 2.6s ease-in-out infinite}
+    #menu #coopbtn,#menu #cont{font-size:clamp(20px,5vw,26px)}
+    #menu .menu2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    #menu .menu2 .btn{width:100%;margin:0;font-size:clamp(14px,3.6vw,18px);padding:10px 6px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    #menu .menu3{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px}
+    #menu .menu3 .btn{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:64px;padding:10px 2px 8px;font-size:clamp(11px,3vw,14px);letter-spacing:.1em;margin:0}
+    #menu .menu3 .btn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+    #menu .menu3 .btn.hid{display:none}
+    #menu #pname{margin-top:10px;font-size:16px;letter-spacing:.1em;padding:9px 10px;border-width:1px;border-style:dashed;background:rgba(10,6,20,.45)}
+    #menu #pname::placeholder{color:rgba(255,224,122,.45)}
+    body.touch #menu .thelp{display:none}
+    #over{background:radial-gradient(ellipse at 50% 35%,rgba(12,6,28,.78),rgba(6,3,14,.94));-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);overflow-y:auto;justify-content:safe center}
+    #over .ogrid{width:var(--mw);display:flex;flex-direction:column;gap:10px;margin-top:4px}
+    #over .ogrid>.btn{width:100%;margin:0}
+    #over #again{font-size:clamp(28px,7.4vw,36px);padding:.4em 0 .3em;box-shadow:0 0 0 2px rgba(255,240,180,.55),0 10px 30px rgba(240,168,30,.35)}
+    #over .o2,#over .o3{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:10px}
+    #over .o2 .btn,#over .o3 .btn{width:100%;margin:0;font-size:clamp(16px,4.2vw,21px);padding:11px 4px 9px;white-space:nowrap}
+    #over .o2 .btn.hid,#over .o3 .btn.hid{display:none}
+    #over .o3 .btn{font-size:clamp(14px,3.6vw,17px);padding:8px 4px 6px;background:transparent;box-shadow:0 0 0 1px rgba(255,224,122,.28)}
+    #over #o-bank{font-size:13px;letter-spacing:.12em;line-height:1.5;max-width:var(--mw)}
+    #over .stats{margin:14px 0 14px}
+    #pause .btn,#coop #co-choose>.btn{width:var(--mw);box-sizing:border-box}
+  }
+  @keyframes gopulse{0%,100%{box-shadow:0 0 0 2px rgba(255,240,180,.55),0 10px 30px rgba(240,168,30,.3)}50%{box-shadow:0 0 0 2px rgba(255,240,180,.8),0 10px 40px rgba(240,168,30,.55)}}
+  .topback{position:fixed;top:max(12px,env(safe-area-inset-top));left:max(12px,env(safe-area-inset-left));z-index:20;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;padding:0;cursor:pointer;color:#ffe07a;background:rgba(20,12,34,.88);border:1px solid rgba(255,224,122,.4);box-shadow:0 4px 16px rgba(0,0,0,.4);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .12s,background .2s;-webkit-tap-highlight-color:transparent}
+  .topback svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;margin-left:-2px}
+  .topback:active{transform:scale(.92)} .topback:hover{background:rgba(40,26,64,.95)}
+  #sh-nav{padding-left:56px!important;box-sizing:border-box}
+  @media(min-width:1110px){ #sh-nav{padding-left:0!important} }
+  .mlist{width:var(--mw);display:flex;flex-direction:column;gap:8px}
+  .btn.mrow{width:100%;box-sizing:border-box;display:flex;align-items:center;gap:14px;text-align:left;font-size:clamp(19px,5vw,24px);letter-spacing:.12em;padding:14px 16px 12px;margin:0;position:relative}
+  .btn.mrow svg{width:24px;height:24px;flex:0 0 24px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .btn.mrow::after{content:'\203A';margin-left:auto;font-size:1.3em;opacity:.6}
+  .btn.mrow.hid{display:none}
+  #more #pname{width:var(--mw);box-sizing:border-box;margin-top:0;font-size:18px}
+  @media (orientation:portrait),(min-height:521px){
+    #menu .menu3{grid-template-columns:1fr 1fr}
+    #menu .menu3 .btn{flex-direction:row;gap:10px;min-height:52px;font-size:clamp(16px,4.4vw,20px);letter-spacing:.14em}
+  }
+  body.rm #menu #go{animation:none}
+  @media (orientation:landscape) and (max-height:520px){ #over .ogrid{display:flex;flex-wrap:wrap;gap:6px;justify-content:center} #over .o2,#over .o3{display:contents} #menu .menu3 .btn svg{display:none} }
+  #shopbtn{position:relative}
+  .mbadge{position:absolute;top:-6px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:#ff3d6b;color:#fff;font:700 11px/18px system-ui,sans-serif;letter-spacing:0;padding:0 4px;box-shadow:0 0 0 2px #0a0516}
+  .mbadge.hid{display:none}
+  .sgrp{width:var(--mw);text-align:left;font:14px 'Bebas Neue',Impact,sans-serif;letter-spacing:.28em;color:rgba(255,255,255,.5);margin:16px 0 6px;padding-left:4px}
+  #opts .sub{margin-bottom:4px!important}
+  .btn.srow{width:var(--mw);box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;font-size:clamp(17px,4.4vw,21px);letter-spacing:.1em;padding:12px 14px 10px;margin:0 0 8px}
+  .btn.srow .sval,.btn.srow>b{font:inherit;color:#12090a;background:linear-gradient(180deg,#ffe07a,#f0a81e);border-radius:999px;padding:3px 12px 1px;font-size:.82em;white-space:nowrap}
+  .btn.srow .sval.off{background:rgba(255,255,255,.1);color:rgba(255,255,255,.62)}
+  .btn.srow .sval.on{background:linear-gradient(180deg,#9dffc6,#3fd88a)}
+  #o-ctl.srow>b{background:none;color:#ffe07a;font-size:1.3em;padding:0}
+  #ctl .sub,#opts .sub{margin-bottom:6px}
+  #ctl .btn.srow{margin-top:0!important}
+  #opts .sub[style*="font-size:13px"],#ctl .sub[style*="font-size:13px"]{color:rgba(255,255,255,.55)!important;text-transform:none;letter-spacing:.02em!important;font-family:Rajdhani,system-ui,sans-serif;font-size:13px!important;max-width:var(--mw)!important;opacity:1!important}
   .tag{font-size:14px;letter-spacing:.2em;color:#7dffb0;font-weight:700;padding:6px 0}.tag.lock{color:#ff8da1;letter-spacing:.05em;font-weight:500}
   #btns button.txt{width:auto;border-radius:21px;padding:0 13px;font-family:'Bebas Neue',Impact,sans-serif;letter-spacing:.12em;font-size:16px}
   #btns button.on{background:rgba(125,255,176,.22);border-color:#7dffb0;color:#7dffb0}
@@ -344,7 +402,7 @@
     #menu .kicker{font-size:10px}
     #achToast{bottom:auto;top:max(8px,env(safe-area-inset-top));transform:translate(-50%,-220%)}
     #achToast.on{transform:translate(-50%,0)}
-    #over .row:has(#again){position:sticky;bottom:0;z-index:2;padding:6px 0;background:linear-gradient(transparent,rgba(8,4,20,.92) 35%)}
+    #over .ogrid{position:sticky;bottom:0;z-index:2;padding:6px 0;background:linear-gradient(transparent,rgba(8,4,20,.92) 35%)}
     #o-bank,#o-quote{display:none}
     #over .btn{font-size:15px;padding:6px 12px 4px;min-height:38px;margin:0} #over .row{gap:6px;margin-top:6px!important} #over h2{font-size:34px!important;margin:0} #over .stats{margin:4px 0 6px!important} #over .stats b{font-size:34px} #over #cause{margin:0}
     body #achToast,body:has(#over:not(.hidden)) #achToast{left:8px;transform:translate(0,-220%);max-width:34vw}
@@ -394,8 +452,7 @@
   <button id="cont" class="btn alt hid" style="margin-top:12px"></button>
   <button id="coopbtn" class="btn alt" style="margin-top:12px">CO-OP &middot; 2 PLAYERS</button>
   <div class="menu2"><button id="wkbtn" class="btn alt" style="border-color:#7be8ff;color:#7be8ff"></button><button id="daybtn" class="btn alt">DAILY HEIST</button></div>
-  <div class="menu3"><button id="achbtn" class="btn alt">TROPHIES</button><button id="shopbtn" class="btn alt">ARMOURY</button><button id="lbbtn" class="btn alt hid">LEADERBOARD</button><button id="optbtn" class="btn alt">OPTIONS</button><button id="guidebtn" class="btn alt">FIELD GUIDE</button></div>
-  <input id="pname" class="nm hid" maxlength="14" placeholder="YOUR NAME" autocomplete="off" spellcheck="false">
+  <div class="menu3"><button id="shopbtn" class="btn alt"><svg viewBox="0 0 24 24"><path d="M4 8h16l-1.5 11a2 2 0 0 1-2 1.7H7.5a2 2 0 0 1-2-1.7z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span>ARMOURY</span><b id="shopbadge" class="mbadge hid"></b></button><button id="morebtn" class="btn alt"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>MENU</span></button></div>
   <div class="help hg">
     <span class="hl">MOVE</span><span><b>←</b><b>→</b> or <b>A</b><b>D</b> lane &nbsp;<b>↑</b> jump &nbsp;<b>↓</b> slide</span>
     <span class="hl">SHOOT</span><span><b>SPACE</b> hold to fire</span>
@@ -411,7 +468,7 @@
  </div>
 </div>
 
-<div id="coop" class="ov hidden">
+<div id="coop" class="ov hidden"><button class="topback" data-back="co-back" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
   <h2 style="font-size:clamp(40px,9vw,76px)">CO-OP HEIST</h2>
   <div class="sub" id="co-sub" style="margin-bottom:14px">TWO AGENTS &middot; ONE VAULT</div>
   <div id="co-choose">
@@ -447,35 +504,42 @@
   <div id="o-rank" class="best" style="margin:-8px 0 12px"></div>
   <div id="o-team" class="best hid" style="margin:-4px 0 14px;color:#7be8ff"></div>
   <button id="resumecp" class="btn hid" style="margin-bottom:12px"></button>
-  <div class="row"><button id="again" class="btn">NEW RUN</button><button id="coagain" class="btn alt hid">CO-OP LOBBY</button><button id="over-shop" class="btn alt">ARMOURY</button><button id="share-sc" class="btn alt">SHARE SCORE</button><button id="clip-btn" class="btn alt hid">SAVE CLIP</button><button id="chal-btn" class="btn alt">CHALLENGE A FRIEND</button></div>
-  <div class="row" style="margin-top:12px"><button id="homebtn" class="btn alt">HOME</button></div>
+  <div class="ogrid">
+    <button id="again" class="btn">NEW RUN</button>
+    <button id="coagain" class="btn alt hid">CO-OP LOBBY</button>
+    <div class="o2"><button id="share-sc" class="btn alt">SHARE SCORE</button><button id="chal-btn" class="btn alt">CHALLENGE</button><button id="clip-btn" class="btn alt hid">SAVE CLIP</button></div>
+    <div class="o3"><button id="over-shop" class="btn alt">ARMOURY</button><button id="homebtn" class="btn alt">HOME</button></div>
+  </div>
 </div>
 
 <div id="comm2"></div>
 <div id="pace" class="hid"></div>
 <div id="chbanner" class="hid"></div>
-<div id="lvp" class="ov hidden scroll">
+<div id="lvp" class="ov hidden scroll"><button class="topback" data-back="lvp-back" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
   <h2 style="font-size:clamp(40px,8vw,64px)">AGENT RANK</h2>
   <div class="sub" id="lvp-me" style="margin-bottom:14px;font-size:16px;letter-spacing:.18em"></div>
   <div id="lvp-list"></div>
   <div class="sub" style="margin-top:10px;max-width:340px;font-size:13px;letter-spacing:.06em;opacity:.7">Every run earns XP. Rank up to unlock skins, sidekicks and chips.</div>
   <button id="lvp-back" class="btn" style="margin:20px 0 34px">BACK</button>
 </div>
-<div id="opts" class="ov hidden scroll">
+<div id="opts" class="ov hidden scroll"><button class="topback" data-back="o-back" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
   <h2 style="font-size:clamp(40px,8vw,64px)">OPTIONS</h2>
   <div class="sub" style="margin-bottom:18px">MAKE IT YOURS</div>
-  <button id="o-talk" class="btn alt" style="margin-top:10px"></button>
-  <button id="o-rm" class="btn alt" style="margin-top:10px"></button>
-  <button id="o-ctl" class="btn" style="margin-top:10px">CONTROLS &rsaquo;</button>
-  <button id="o-mv" class="btn alt" style="margin-top:10px"></button>
-  <button id="o-q" class="btn alt" style="margin-top:10px"></button>
-  <button id="o-df" class="btn alt" style="margin-top:10px"></button>
-  <button id="o-clip" class="btn alt" style="margin-top:10px"></button>
-  <button id="o-hc" class="btn alt" style="margin-top:10px"></button>
+  <div class="sgrp">GAMEPLAY</div>
+  <button id="o-ctl" class="btn alt srow">CONTROLS <b>&rsaquo;</b></button>
+  <button id="o-df" class="btn alt"></button>
+  <div class="sgrp">SOUND &amp; SCREEN</div>
+  <button id="o-mv" class="btn alt"></button>
+  <button id="o-talk" class="btn alt"></button>
+  <button id="o-q" class="btn alt"></button>
+  <button id="o-clip" class="btn alt"></button>
+  <div class="sgrp">ACCESSIBILITY</div>
+  <button id="o-rm" class="btn alt"></button>
+  <button id="o-hc" class="btn alt"></button>
   <div class="sub" style="margin-top:14px;max-width:340px;font-size:13px;letter-spacing:.06em;opacity:.7">REDUCED MOTION removes screen shake, loops and rainbow dreams. HIGH CONTRAST adds bright outlines to danger zones.</div>
   <button id="o-back" class="btn" style="margin:22px 0 34px">BACK</button>
 </div>
-<div id="ctl" class="ov hidden scroll">
+<div id="ctl" class="ov hidden scroll"><button class="topback" data-back="c-back" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
   <h2 style="font-size:clamp(40px,8vw,64px)">CONTROLS</h2>
   <div class="sub" style="margin-bottom:14px">TUNE IT TO YOUR THUMB</div>
   <button id="c-lh" class="btn alt" style="margin-top:10px"></button>
@@ -485,6 +549,14 @@
   <button id="c-hp" class="btn alt" style="margin-top:10px"></button>
   <div class="sub" style="margin-top:14px;max-width:360px;font-size:13px;letter-spacing:.05em;opacity:.75;line-height:1.6">Swipe and lift, or keep your thumb down and keep swiping. Both work. FIRE SIDE moves the fire and gadget buttons so your shooting thumb stays on its side. SNAPPY lanes move you instantly; SMOOTH glides.</div>
   <button id="c-back" class="btn" style="margin:22px 0 34px">BACK</button>
+</div>
+<div id="more" class="ov hidden scroll"><button class="topback" data-back="more-back" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <h2 style="font-size:clamp(40px,8vw,64px)">MENU</h2>
+  <div class="sub" style="margin-bottom:14px">EVERYTHING ELSE</div>
+  <div class="mlist"><button id="achbtn" class="btn alt mrow"><svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4c0 3 1.5 5 3.5 5M17 6h3c0 3-1.5 5-3.5 5M12 14v4M8 21h8M9.5 18h5"/></svg><span>TROPHIES</span></button><button id="lbbtn" class="btn alt mrow hid"><svg viewBox="0 0 24 24"><path d="M4 20V12h4v8M10 20V6h4v14M16 20v-5h4v5"/></svg><span>RANKS</span></button><button id="guidebtn" class="btn alt mrow"><svg viewBox="0 0 24 24"><path d="M4 5.5C6 4.5 9 4.5 12 6c3-1.5 6-1.5 8-.5V19c-2-1-5-1-8 .5-3-1.5-6-1.5-8-.5z"/><path d="M12 6v13.5"/></svg><span>GUIDE</span></button><button id="optbtn" class="btn alt mrow"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg><span>OPTIONS</span></button></div>
+  <div class="sgrp" id="pname-l">AGENT NAME</div>
+  <input id="pname" class="nm hid" maxlength="14" placeholder="AGENT NAME FOR THE LEADERBOARD" aria-label="Agent name for the leaderboard" autocomplete="off" spellcheck="false">
+  <button id="more-back" class="btn" style="margin:22px 0 34px">BACK</button>
 </div>
 <div id="pause" class="ov hidden">
   <h2>PAUSED</h2>
@@ -496,17 +568,17 @@
   <button id="saveq" class="btn alt" style="margin-top:12px">SAVE &amp; QUIT</button>
 </div>
 
-<div id="lbm" class="ov hidden scroll">
+<div id="lbm" class="ov hidden scroll"><button class="topback" data-back="lb-back" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
   <h2>LEADERBOARD</h2><div class="lbtabs" id="lb-tabs"><button class="btn alt sel" data-m="solo">SOLO</button><button class="btn alt" data-m="co">DUO</button><button class="btn alt" data-m="daily">DAILY</button><button class="btn alt" data-m="weekly">WEEKLY</button></div><div id="lb-list" style="margin:10px 0 18px"></div><button id="lb-back" class="btn alt">BACK</button>
 </div>
 
-<div id="guide" class="ov hidden scroll"><h2>FIELD GUIDE</h2><div class="best" style="margin:0 0 10px">SECRETS, BYPASSES &amp; TRICKS</div><div id="gd-list"></div><button id="gd-back" class="btn alt" style="margin:14px 0 20px">BACK</button></div>
+<div id="guide" class="ov hidden scroll"><button class="topback" data-back="gd-back" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><h2>FIELD GUIDE</h2><div class="best" style="margin:0 0 10px">SECRETS, BYPASSES &amp; TRICKS</div><div id="gd-list"></div><button id="gd-back" class="btn alt" style="margin:14px 0 20px">BACK</button></div>
 
-<div id="achm" class="ov hidden scroll">
+<div id="achm" class="ov hidden scroll"><button class="topback" data-back="ach-back" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
   <h2>TROPHIES</h2><div id="ach-sum" class="best" style="margin:0 0 8px"></div><div id="ach-list" style="margin:6px 0 18px;width:min(460px,92vw)"></div><button id="ach-back" class="btn alt">BACK</button>
 </div>
 
-<div id="shop" class="ov hidden scroll">
+<div id="shop" class="ov hidden scroll"><button class="topback" data-back="shop-back" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
   <h2 style="font-size:clamp(44px,9vw,76px)">ARMOURY</h2>
   <div class="bank"><i></i><span id="sh-bank">0</span> CHIPS</div>
   <nav id="sh-nav" aria-label="Armoury sections"><div class="tabs" role="tablist">
@@ -3430,6 +3502,7 @@ async function submitScore(){
     const r=await fetch(apiU('api/score'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:nm,score:Math.floor(G.sc),dist:Math.floor(G.dist),di:G.di,kills:G.kills,tok:RUNTOK})}); const j=await r.json();
     if(j&&j.rank){ $('o-rank').textContent='Leaderboard rank #'+j.rank+' of '+j.total; } }catch(e){} }
 function refreshMenu(){
+  try{ let n=0; for(const u of UPS){ const l=save.up[u.k]; if(l<u.max&&save.bank>=u.cost(l)) n++; } for(const id of save.owned){ if(!WEAPONS[id]) continue; for(const k of ['d','r','a']) if(wlv(id,k)<WLMAX&&save.bank>=wlCost(id,k)) n++; } const bd=$('shopbadge'); if(bd){ bd.textContent=n>9?'9+':n; bd.classList.toggle('hid',!n); } }catch(_){}
   document.body.classList.toggle('fresh',!((save.runs|0)>0)&&!document.body.dataset.nofresh&&!chal);
   const cp=save.cp; $('cont').classList.toggle('hid',!cpOK(cp)); if(cpOK(cp)) $('cont').textContent='CONTINUE · DISTRICT '+(cp.di+1)+(cp.eased?' · EASED':''); $('mbest').textContent=`Bank ${save.bank.toLocaleString()} chips · Best ${G.best.toLocaleString()} · ${weap().name}`; }
 function syncUI(){
@@ -3553,6 +3626,7 @@ $('sh-nav').addEventListener('click',e=>{ const b=e.target.closest('[data-tab]')
   const top=sh.scrollTop+el.getBoundingClientRect().top-sh.getBoundingClientRect().top-$('sh-nav').offsetHeight-6;
   sh.scrollTo({top:Math.max(0,top),behavior:save.opts.rm?'auto':'smooth'}); try{ evt('tab',b.dataset.tab); }catch(_){} sfx&&sfx.swish&&sfx.swish(); });
 let shopAnimOn=false;
+
 function startShopAnim(){ if(shopAnimOn) return; shopAnimOn=true; const run=ts=>{ if(!shopOpen){ shopAnimOn=false; return; } if(!save.opts.rm){ heroDraw(ts/1000); gunPreviews(ts/1000); skinPreviews(ts/1000); accPreviews(ts/1000); petPreviews(ts/1000); } else if(!run.once){ run.once=1; heroDraw(1.3); gunPreviews(1.3); skinPreviews(1.3); accPreviews(1.3); petPreviews(1.3); } requestAnimationFrame(run); }; requestAnimationFrame(run); }
 const RAR={pistol:0,smg:1,scatter:1,minigun:2,rail:2,plasma:2,rocket:3,ion:3}, RCOL=['#9aa3b4','#5ad0ff','#c79bff','#ffd35a'], RNAME=['COMMON','RARE','EPIC','LEGENDARY'];
 let shopSelW='', shopSelS='', heroPs={}, shopFlash=null;
@@ -3661,6 +3735,27 @@ document.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closes
   const M={'share-sc':['share','score-card'],'chal-btn':['share','challenge'],'clip-btn':['share','clip'],'co-invite':['share','coop-invite'],'co-create':['coop','create'],'co-join':['coop','join'],'co-start':['coop','start'],'daybtn':['mode','daily'],'wkbtn':['mode','weekly'],'coopbtn':['mode','coop-menu'],'again':['over','new-run'],'homebtn':['over','home'],'over-shop':['shop','from-over'],'saveq':['pause','save-quit'],'ctlq':['ctl','open-from-pause'],'o-ctl':['ctl','open-from-options']};
   const v=M[b.id]; if(v) evt(v[0],v[1]); },true);
 try{ loginStreak(); missions(); }catch(e){}
+/* v61 navigation: MENU sheet, top-left back on every sub-screen, phone back gesture closes the screen instead of leaving the site */
+$('morebtn').addEventListener('click',e=>{ e.currentTarget.blur(); $('menu').classList.add('hidden'); $('more').classList.remove('hidden'); try{ evt('nav','menu-sheet'); }catch(_){} });
+$('more-back').addEventListener('click',e=>{ e.currentTarget.blur(); $('more').classList.add('hidden'); $('menu').classList.remove('hidden'); refreshMenu(); });
+$('more').addEventListener('click',e=>{ const b=e.target.closest('.mrow'); if(b) $('more').classList.add('hidden'); },true);
+$('pname-l').classList.toggle('hid',$('pname').classList.contains('hid')); new MutationObserver(()=>$('pname-l').classList.toggle('hid',$('pname').classList.contains('hid'))).observe($('pname'),{attributes:true,attributeFilter:['class']});
+for(const b of document.querySelectorAll('.topback')) b.addEventListener('click',e=>{ e.preventDefault(); e.stopPropagation(); const t=$(b.dataset.back); if(t) t.click(); });
+const OVB={coop:'co-back',lvp:'lvp-back',opts:'o-back',ctl:'c-back',lbm:'lb-back',guide:'gd-back',achm:'ach-back',shop:'shop-back',more:'more-back'};
+const NAV={pop:false,ignore:false,stack:[]};
+const ovOpen=id=>!$(id).classList.contains('hidden');
+function navFlush(){ NAV.t=0; const shown=[], hidden=[]; for(const id in OVB){ const el=$(id); if(!el) continue; const open=ovOpen(id), was=NAV.stack.indexOf(id)>=0; if(open&&!was) shown.push(id); else if(!open&&was) hidden.push(id); }
+  for(const id of hidden) NAV.stack.splice(NAV.stack.indexOf(id),1);
+  for(const id of shown) NAV.stack.push(id);
+  if(NAV.pop||(!shown.length&&!hidden.length)) return;
+  try{ if(shown.length&&hidden.length) history.replaceState({ov:shown[shown.length-1]},'');
+    else if(shown.length) history.pushState({ov:shown[shown.length-1]},'');
+    else if(history.state&&history.state.ov){ NAV.ignore=true; history.back(); } }catch(_){} }
+const navMO=new MutationObserver(()=>{ if(!NAV.t) NAV.t=setTimeout(navFlush,0); });
+for(const id in OVB){ const el=$(id); if(el) navMO.observe(el,{attributes:true,attributeFilter:['class']}); }
+addEventListener('popstate',()=>{ if(NAV.ignore){ NAV.ignore=false; return; } const top=NAV.stack[NAV.stack.length-1]; if(!top) return; NAV.pop=true; try{ $(OVB[top]).click(); }finally{ setTimeout(()=>{ navFlush(); NAV.pop=false; try{ const t2=NAV.stack[NAV.stack.length-1]; if(t2) history.pushState({ov:t2},''); }catch(_){} },0); } });
+addEventListener('keydown',e=>{ if(e.key!=='Escape') return; const top=NAV.stack[NAV.stack.length-1]; if(!top) return; e.preventDefault(); e.stopImmediatePropagation(); $(OVB[top]).click(); },true);
+
 function updDailyBtn(){ const done=save.dlast===dayStr0(), live=done||save.dlast===new Date(Date.now()-864e5).toISOString().slice(0,10), b=$('daybtn'); const rm=864e5-(Date.now()%864e5), rh=Math.floor(rm/36e5), rn=Math.floor(rm%36e5/6e4); b.textContent='DAILY · '+dayMod().name+(done?' · DONE · NEW IN '+rh+'h '+rn+'m':'')+(live&&save.dstreak>1?' · '+save.dstreak+'x':''); b.title='Daily resets in '+rh+'h '+rn+'m (midnight UTC)'; }
 updDailyBtn(); setInterval(updDailyBtn,30000);
 $('wkbtn').textContent='WEEKLY · '+wkMod().name;
@@ -3693,7 +3788,7 @@ function paceUpd(){ const el=$('pace'); if(!el) return; const c=G.chal; if(!c||!
 function chalLink(){ if(G.daily) return 'https://rohninsheist.com/play.html?daily=1&beat='+Math.floor(G.sc); const nm=((LB.name||'').trim()||'A friend').replace(/[^\w \-']/g,'').slice(0,16); return 'https://rohninsheist.com/play.html?ch='+(G.seed||1)+'&beat='+Math.floor(G.sc)+'&by='+encodeURIComponent(nm)+'&gd='+Math.floor(G.dist)+'&gt='+Math.max(5,Math.floor(G.rt||0)); }
 $('chal-btn').addEventListener('click',async e=>{ const b=e.currentTarget; b.blur(); const url=chalLink(), text='Funkle & Rohnin dare you: beat my '+Math.floor(G.sc).toLocaleString()+' on the exact same rooftops!';
   try{ if(navigator.share){ await navigator.share({title:"Rohnin's Rooftop Heist challenge",text,url}); return; } }catch(er){ if(er&&er.name==='AbortError') return; }
-  try{ await navigator.clipboard.writeText(text+' '+url); b.textContent='LINK COPIED!'; setTimeout(()=>{ b.textContent='CHALLENGE A FRIEND'; },2200); }catch(er){ prompt('Copy this challenge link',url); } });
+  try{ await navigator.clipboard.writeText(text+' '+url); b.textContent='LINK COPIED!'; setTimeout(()=>{ b.textContent='CHALLENGE'; },2200); }catch(er){ prompt('Copy this challenge link',url); } });
 $('share-sc').addEventListener('click',e=>{ e.currentTarget.blur(); const b=e.currentTarget; b.textContent='MAKING IMAGE...'; shareScore().catch(()=>{}).finally(()=>{ b.textContent='SHARE SCORE'; }); });
 $('go').addEventListener('click',e=>{ e.currentTarget.blur(); const go=()=>{ startGame(); setTimeout(()=>{ if(G.state==='playing') quip('start',3.6); },2600); }; if(!save.cine&&(save.runs||0)>=1){ save.cine=1; persist(); playCine(go); } else go(); });
 $('cont').addEventListener('click',e=>{ e.currentTarget.blur(); if(save.cp) startGame(save.cp); });
@@ -3758,8 +3853,11 @@ $('sh-list').addEventListener('click',e=>{
   else if(b.dataset.eq&&save.owned.indexOf(b.dataset.eq)>=0){ save.weapon=b.dataset.eq; persist(); sfx.power(); }
   renderShop();
 });
-$('talkq').textContent='CHATTER: '+(save.talk===0?'OFF':'ON'); $('talkq').addEventListener('click',e=>{ e.currentTarget.blur(); save.talk=save.talk===0?1:0; persist(); e.currentTarget.textContent='CHATTER: '+(save.talk===0?'OFF':'ON'); if(save.talk===0&&commEl) commEl.classList.remove('on'); });
-function optLabels(){ $('o-talk').textContent='CHATTER: '+(save.talk===0?'OFF':'ON'); $('o-rm').textContent='REDUCED MOTION: '+(save.opts.rm?'ON':'OFF'); $('c-lh').textContent='FIRE SIDE: '+(save.opts.lh?'LEFT THUMB':'RIGHT THUMB'); $('c-lf').textContent='LANE FEEL: '+(save.opts.lf?'SMOOTH':'SNAPPY'); $('c-tj').textContent='TAP TO JUMP: '+(save.opts.tj?'ON':'OFF'); $('c-hp').textContent='HAPTICS: '+(save.opts.hp===0?'OFF':'ON'); $('o-mv').textContent='MUSIC: '+['FULL','LOW','OFF'][save.opts.mv||0]; $('c-sn').textContent='SWIPE SENSITIVITY: '+['LOW','NORMAL','HIGH'][save.opts.sn==null?1:save.opts.sn]; $('o-df').textContent='DIFFICULTY: '+DF[dfi()].n+(dfi()!==(save.opts.df|0)||(save.opts.df==null)?'':'')+((G.daily||G.weekly||G.race||NC.active)?' (locked: NORMAL)':''); $('o-q').textContent='GRAPHICS: '+(save.opts.q?'BATTERY SAVER':'AUTO'); $('o-clip').textContent='REPLAY CLIPS: '+(save.opts.clip?'ON':'OFF'); $('o-hc').textContent='HIGH CONTRAST: '+(save.opts.hc?'ON':'OFF'); document.body.classList.toggle('lh',!!save.opts.lh); document.body.classList.toggle('rm',!!save.opts.rm); document.body.classList.toggle('hc',!!save.opts.hc); }
+$('talkq').textContent='CHATTER: '+(save.talk===0?'OFF':'ON'); rowify(); $('talkq').addEventListener('click',e=>{ e.currentTarget.blur(); save.talk=save.talk===0?1:0; persist(); e.currentTarget.textContent='CHATTER: '+(save.talk===0?'OFF':'ON'); rowify(); if(save.talk===0&&commEl) commEl.classList.remove('on'); });
+function rowify(){ for(const b of document.querySelectorAll('#opts .btn.alt,#ctl .btn.alt,#pause #talkq')){ if(b.id==='o-ctl') continue; const t=b.textContent, i=t.indexOf(':'); if(i<0) continue;
+  const k=t.slice(0,i).trim(), v=t.slice(i+1).trim(), on=/^(ON|FULL|AUTO|SNAPPY|NORMAL)$/.test(v)||/THUMB|HARD/.test(v)?'':' off';
+  b.classList.add('srow'); b.innerHTML=''; const a=document.createElement('span'); a.textContent=k; const c=document.createElement('b'); c.textContent=v; c.className='sval'+(/^(ON)$/.test(v)?' on':/^(OFF)$/.test(v)?' off':''); b.append(a,c); } }
+function optLabels(){ $('o-talk').textContent='CHATTER: '+(save.talk===0?'OFF':'ON'); $('o-rm').textContent='REDUCED MOTION: '+(save.opts.rm?'ON':'OFF'); $('c-lh').textContent='FIRE SIDE: '+(save.opts.lh?'LEFT THUMB':'RIGHT THUMB'); $('c-lf').textContent='LANE FEEL: '+(save.opts.lf?'SMOOTH':'SNAPPY'); $('c-tj').textContent='TAP TO JUMP: '+(save.opts.tj?'ON':'OFF'); $('c-hp').textContent='HAPTICS: '+(save.opts.hp===0?'OFF':'ON'); $('o-mv').textContent='MUSIC: '+['FULL','LOW','OFF'][save.opts.mv||0]; $('c-sn').textContent='SWIPE SENSITIVITY: '+['LOW','NORMAL','HIGH'][save.opts.sn==null?1:save.opts.sn]; $('o-df').textContent='DIFFICULTY: '+DF[dfi()].n+(dfi()!==(save.opts.df|0)||(save.opts.df==null)?'':'')+((G.daily||G.weekly||G.race||NC.active)?' (locked: NORMAL)':''); $('o-q').textContent='GRAPHICS: '+(save.opts.q?'BATTERY SAVER':'AUTO'); $('o-clip').textContent='REPLAY CLIPS: '+(save.opts.clip?'ON':'OFF'); $('o-hc').textContent='HIGH CONTRAST: '+(save.opts.hc?'ON':'OFF'); document.body.classList.toggle('lh',!!save.opts.lh); document.body.classList.toggle('rm',!!save.opts.rm); rowify(); document.body.classList.toggle('hc',!!save.opts.hc); }
 optLabels();
 $('optbtn').addEventListener('click',e=>{ e.currentTarget.blur(); optLabels(); $('menu').classList.add('hidden'); $('opts').classList.remove('hidden'); });
 $('lvtag').addEventListener('click',()=>{ lvPanel(); $('menu').classList.add('hidden'); $('lvp').classList.remove('hidden'); });
