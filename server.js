@@ -23,7 +23,7 @@ const hits=new Map();
 function limited(ip,max,winMs){ const now=Date.now(); const a=(hits.get(ip)||[]).filter(t=>now-t<winMs); a.push(now); hits.set(ip,a); return a.length>max; }
 setInterval(()=>{ const now=Date.now(); for(const [k,v] of hits) if(!v.length||now-v[v.length-1]>120000) hits.delete(k); },60000);
 const clean=s=>String(s||'').replace(/[^\w .\-!]/g,'').trim().slice(0,14);
-const BAD=/(fuck|shit|cunt|nigg|fag|rape|nazi)/i;
+const BAD=/(fuck|shit|cunt|nigg|fag|rape|nazi|onerr|script|img ?src|javascript)/i;
 const CORS={'Access-Control-Allow-Origin':process.env.CORS_ORIGIN||'*','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Access-Control-Allow-Headers':'Content-Type'};
 function send(res,code,obj){ res.writeHead(code,Object.assign({'Content-Type':'application/json','Cache-Control':'no-store'},CORS)); res.end(JSON.stringify(obj)); }
 // ---- co-op rooms: presence-style state relay over Server-Sent Events (no dependencies) ----
@@ -46,6 +46,23 @@ const weekKey=()=>'W'+Math.floor((Math.floor(Date.now()/86400000)+3)/7);
 const topOf=(arr,n)=>arr.slice().sort((a,b)=>b.score-a.score).slice(0,n).map(({name,score,di})=>({name,score,di}));
 const rankIn=(arr,score)=>{ let r=1; for(const x of arr) if(x.score>score) r++; return r; };
 const errLog=[];
+// v58: personalised link previews. A challenge, daily or co-op invite link shows who sent it and the score to beat
+// in iMessage / WhatsApp / Discord / X previews, instead of a generic card.
+const escA=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function ogFor(u){
+  const q=u.searchParams, beat=Math.max(0,Math.floor(+q.get('beat')||0)), n=beat.toLocaleString('en-US');
+  const by=String(q.get('by')||'').replace(/[^\w \-']/g,'').trim().slice(0,16), room=String(q.get('room')||'').toUpperCase().replace(/[^A-Z]/g,'').slice(0,4);
+  if(room.length===4) return {t:'Join my co-op heist: room '+room,d:'Two agents, one vault. Tap to join my room in Rohnin\'s Rooftop Heist. Free, no download.'};
+  if(q.get('daily')==='1') return {t:beat?'Beat my '+n+' on today\'s Daily Heist':'Today\'s Daily Heist is live',d:'Same rooftops for everyone today. Free neon spy runner, plays in your browser.'};
+  if(+q.get('ch')>0) return {t:(by&&!BAD.test(by)?by:'A friend')+' dares you to beat '+(beat?n:'their score'),d:'Same rooftops, same run. Can you beat it? Rohnin\'s Rooftop Heist: free, plays in your browser.'};
+  return null;
+}
+function withOG(html,o){
+  const t=escA(o.t), d=escA(o.d);
+  return html.replace(/<meta property="og:title" content="[^"]*">/,'<meta property="og:title" content="'+t+'">')
+    .replace(/<meta property="og:description" content="[^"]*">/,'<meta property="og:description" content="'+d+'">')
+    .replace(/<meta name="twitter:card"/,'<meta name="twitter:title" content="'+t+'"><meta name="twitter:description" content="'+d+'"><meta name="twitter:card"');
+}
 function top(n){ return scores.slice().sort((a,b)=>b.score-a.score).slice(0,n).map(({name,score,di})=>({name,score,di})); }
 function rankOf(score){ let r=1; for(const s of scores) if(s.score>score) r++; return r; }
 const server=http.createServer((req,res)=>{
@@ -127,7 +144,8 @@ const server=http.createServer((req,res)=>{
   if(u.pathname.startsWith('/api/')) return send(res,404,{error:'not found'});
   let p=decodeURIComponent(u.pathname); if(p==='/') p='/index.html';
   const f=path.normalize(path.join(PUB,p)); if(!f.startsWith(PUB)||HIDE.test(p)){ res.writeHead(403); return res.end(); }
-  fs.readFile(f,(err,buf)=>{ if(err){ res.writeHead(404); return res.end('Not found'); } const ct0=MIME[path.extname(f)]||MIME[path.extname(f).toLowerCase()]||'application/octet-stream'; const ext=path.extname(f).toLowerCase(); const vt=ext==='.mp4'?'video/mp4':ext==='.webm'?'video/webm':ext==='.jpg'?'image/jpeg':ext==='.txt'?'text/plain':ext==='.xml'?'application/xml':null; const rg=req.headers.range&&/^bytes=(\d*)-(\d*)$/.exec(req.headers.range); if(rg&&(ext==='.mp4'||ext==='.webm')){ let st=rg[1]===''?Math.max(0,buf.length-(+rg[2]||0)):+rg[1], en=rg[1]===''||rg[2]===''?buf.length-1:Math.min(+rg[2],buf.length-1); if(st>en||st>=buf.length){ res.writeHead(416,{'Content-Range':'bytes */'+buf.length}); return res.end(); } res.writeHead(206,{'Content-Type':vt,'Content-Range':'bytes '+st+'-'+en+'/'+buf.length,'Content-Length':en-st+1,'Accept-Ranges':'bytes','Cache-Control':'public, max-age=3600'}); return res.end(buf.slice(st,en+1)); } res.writeHead(200,{'Content-Type':vt||ct0,'Accept-Ranges':'bytes','Cache-Control':p==='/index.html'?'no-cache':'public, max-age=3600'}); res.end(buf); });
+  fs.readFile(f,(err,buf)=>{ if(err){ res.writeHead(404); return res.end('Not found'); } const ct0=MIME[path.extname(f)]||MIME[path.extname(f).toLowerCase()]||'application/octet-stream'; const ext=path.extname(f).toLowerCase(); const vt=ext==='.mp4'?'video/mp4':ext==='.webm'?'video/webm':ext==='.jpg'?'image/jpeg':ext==='.txt'?'text/plain':ext==='.xml'?'application/xml':null; const rg=req.headers.range&&/^bytes=(\d*)-(\d*)$/.exec(req.headers.range); if(rg&&(ext==='.mp4'||ext==='.webm')){ let st=rg[1]===''?Math.max(0,buf.length-(+rg[2]||0)):+rg[1], en=rg[1]===''||rg[2]===''?buf.length-1:Math.min(+rg[2],buf.length-1); if(st>en||st>=buf.length){ res.writeHead(416,{'Content-Range':'bytes */'+buf.length}); return res.end(); } res.writeHead(206,{'Content-Type':vt,'Content-Range':'bytes '+st+'-'+en+'/'+buf.length,'Content-Length':en-st+1,'Accept-Ranges':'bytes','Cache-Control':'public, max-age=3600'}); return res.end(buf.slice(st,en+1)); } if(p==='/play.html'){ const o=ogFor(u); if(o){ res.writeHead(200,{'Content-Type':ct0,'Cache-Control':'no-cache'}); return res.end(withOG(buf.toString('utf8'),o)); } }
+    res.writeHead(200,{'Content-Type':vt||ct0,'Accept-Ranges':'bytes','Cache-Control':p==='/index.html'?'no-cache':'public, max-age=3600'}); res.end(buf); });
 });
 server.on('upgrade',(req,sock)=>{
   const u=new URL(req.url,'http://x'); const m=u.pathname.match(/^\/api\/room\/([A-Za-z]{4})\/ws$/); const key=req.headers['sec-websocket-key'];
