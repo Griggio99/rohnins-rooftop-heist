@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Heist Stats · Rohnin's Rooftop Heist</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root,.viz-root{color-scheme:dark;
+    --bg:#0b0616;--surface-1:#150d26;--surface-2:#1d1333;--line:rgba(255,255,255,.09);
+    --text-primary:#efefef;--text-secondary:#a59fb8;--text-muted:#7d7690;
+    --series-1:#338ced;--series-2:#e76624;--accent:#ffd35a}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text-primary);font:15px/1.45 Rajdhani,system-ui,sans-serif}
+  .viz-root{color:var(--text-primary);max-width:1180px;margin:0 auto;padding:max(18px,env(safe-area-inset-top)) 18px 40px}
+  header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:18px}
+  h1{font:clamp(34px,6vw,52px)/1 'Bebas Neue',Impact,sans-serif;letter-spacing:.06em;margin:0;color:var(--accent)}
+  .meta{color:var(--text-secondary);font-size:14px}
+  .meta a{color:var(--text-secondary)}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+  .kpi{background:var(--surface-1);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .kpi .v{font:34px/1 'Bebas Neue',Impact,sans-serif;letter-spacing:.03em}
+  .kpi .l{color:var(--text-secondary);font-size:13px;letter-spacing:.04em;margin-top:4px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;align-items:start}
+  .card{background:var(--surface-1);border:1px solid var(--line);border-radius:14px;padding:14px 16px 16px;min-width:0}
+  .card.wide{grid-column:1/-1}
+  .card h2{font:20px 'Bebas Neue',Impact,sans-serif;letter-spacing:.1em;margin:0 0 2px}
+  .card .q{color:var(--text-secondary);font-size:13px;margin:0 0 12px}
+  .bars{display:flex;flex-direction:column;gap:7px}
+  .bar{display:grid;grid-template-columns:minmax(90px,38%) 1fr 92px;align-items:center;gap:10px;font-size:14px;cursor:default}
+  .bar .n{color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bar .t{height:12px;border-radius:0 4px 4px 0;background:rgba(255,255,255,.05);position:relative}
+  .bar .f{position:absolute;left:0;top:0;bottom:0;border-radius:0 4px 4px 0;background:var(--series-1);min-width:2px}
+  .bar .v{font-variant-numeric:tabular-nums;color:var(--text-secondary);min-width:52px;text-align:right}
+  .bar:hover .f{filter:brightness(1.2)}
+  .bar .v small{display:block;font-size:11px;color:var(--text-muted);line-height:1.1}
+  .split{display:flex;height:16px;border-radius:4px;overflow:hidden;gap:2px;margin:6px 0 8px}
+  .split span{display:block;height:100%}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--text-secondary)}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+  .mini{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:10px}
+  .mini div{background:var(--surface-2);border-radius:10px;padding:8px 10px}
+  .mini b{display:block;font:24px/1 'Bebas Neue',Impact,sans-serif;letter-spacing:.03em}
+  .mini span{font-size:12px;color:var(--text-secondary)}
+  .empty{color:var(--text-muted);font-size:14px;padding:6px 0}
+  .tbl{margin-top:10px;font-size:13px;color:var(--text-secondary)}
+  .tbl summary{cursor:pointer}
+  .tbl table{border-collapse:collapse;width:100%;margin-top:6px}
+  .tbl td,.tbl th{padding:3px 6px;border-bottom:1px solid var(--line);text-align:left}
+  .tbl td:last-child,.tbl th:last-child{text-align:right;font-variant-numeric:tabular-nums}
+  #tip{position:fixed;pointer-events:none;background:#241a3d;border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:6px 9px;font-size:13px;color:var(--text-primary);box-shadow:0 6px 20px rgba(0,0,0,.4);opacity:0;transition:opacity .1s;z-index:9}
+  svg text{font-family:Rajdhani,system-ui,sans-serif}
+  footer{margin-top:22px;color:var(--text-muted);font-size:13px;text-align:center}
+  footer a{color:var(--text-secondary)}
+</style>
+</head>
+<body>
+<div class="viz-root">
+  <header>
+    <div><h1>HEIST STATS</h1><div class="meta">Anonymous, aggregate play data from rohninsheist.com · <span id="upd">loading…</span></div></div>
+    <div class="meta"><a href="/play.html">Play the game</a> · <a href="/api/stats">Raw data</a></div>
+  </header>
+  <div class="kpis" id="kpis"></div>
+  <div class="grid">
+    <div class="card wide"><h2>Daily activity</h2><p class="q">Are more people showing up each day?</p><div id="c-days"></div></div>
+    <div class="card"><h2>Growth funnel</h2><p class="q">Where do new players drop off, and does sharing bring people back in?</p><div id="c-funnel"></div></div>
+    <div class="card"><h2>Where players come from</h2><p class="q">Every visit, by source</p><div id="c-src"></div></div>
+    <div class="card"><h2>Coming back</h2><p class="q">Daily players by days since their first visit</p><div id="c-ret"></div></div>
+    <div class="card"><h2>How runs end</h2><p class="q">What kills players most</p><div id="c-cause"></div></div>
+    <div class="card"><h2>How far players get</h2><p class="q">Furthest district reached per run</p><div id="c-di"></div></div>
+    <div class="card"><h2>Phone controls</h2><p class="q">Hold-and-swipe vs lift-each-swipe, and where swipes go wrong</p><div id="c-touch"></div></div>
+    <div class="card"><h2>Swipe directions</h2><p class="q">Moves fired on phones</p><div id="c-dir"></div></div>
+    <div class="card"><h2>Armoury purchases</h2><p class="q">What players spend chips on</p><div id="c-buy"></div></div>
+    <div class="card"><h2>Chips earned per run</h2><p class="q">Is the economy too stingy or too generous?</p><div id="c-chips"></div></div>
+    <div class="card"><h2>Sharing &amp; co-op</h2><p class="q">Buttons pressed</p><div id="c-share"></div></div>
+    <div class="card"><h2>Session length</h2><p class="q">Minutes per visit</p><div id="c-sess"></div></div>
+    <div class="card"><h2>Runs per session</h2><p class="q">Do players go again?</p><div id="c-sruns"></div></div>
+    <div class="card"><h2>Control settings</h2><p class="q">What players change in Controls</p><div id="c-ctl"></div></div>
+  </div>
+  <footer>Rohnin's Rooftop Heist · By <a href="https://garrettriggio.com">Garrett Riggio</a></footer>
+</div>
+<div id="tip" role="tooltip"></div>
+<script>
+(()=>{
+const $=id=>document.getElementById(id), tip=$('tip');
+const fmt=n=>n==null?'–':Number(n).toLocaleString('en-US');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pct=(a,b)=>b?Math.round(a*100/b)+'%':'–';
+function showTip(e,html){ tip.innerHTML=html; tip.style.opacity=1; const r=tip.getBoundingClientRect(); let x=e.clientX+14, y=e.clientY-r.height-10; if(x+r.width>innerWidth-8) x=e.clientX-r.width-14; if(y<8) y=e.clientY+16; tip.style.left=x+'px'; tip.style.top=y+'px'; }
+function hideTip(){ tip.style.opacity=0; }
+function table(rows,h1,h2){ return '<details class="tbl"><summary>Show as table</summary><table><tr><th>'+esc(h1)+'</th><th>'+esc(h2)+'</th></tr>'+rows.map(r=>'<tr><td>'+esc(r[0])+'</td><td>'+fmt(r[1])+'</td></tr>').join('')+'</table></details>'; }
+function bars(id,obj,opt){ opt=opt||{}; const el=$(id); let rows=Array.isArray(obj)?obj:Object.entries(obj||{}); rows=rows.filter(r=>r[1]>0);
+  if(opt.order) rows.sort((a,b)=>opt.order.indexOf(a[0])-opt.order.indexOf(b[0])); else if(!opt.keep) rows.sort((a,b)=>b[1]-a[1]);
+  if(opt.top&&rows.length>opt.top){ const rest=rows.slice(opt.top).reduce((s,r)=>s+r[1],0); rows=rows.slice(0,opt.top).concat([['Other',rest]]); }
+  if(!rows.length){ el.innerHTML='<div class="empty">'+(opt.empty||'No data yet. This fills in as people play the new version.')+'</div>'; return; }
+  const max=Math.max(...rows.map(r=>r[1])), tot=rows.reduce((s,r)=>s+r[1],0);
+  el.innerHTML='<div class="bars">'+rows.map(r=>{ const lab=opt.label?opt.label(r[0]):r[0]; return '<div class="bar" data-t="'+esc('<b>'+lab+'</b><br>'+fmt(r[1])+(opt.noShare?'':' · '+pct(r[1],tot)+' of total')+(r[2]?'<br>'+r[2]:''))+'"><span class="n">'+esc(lab)+'</span><span class="t"><span class="f" style="width:'+(r[1]/max*100).toFixed(1)+'%"></span></span><span class="v">'+fmt(r[1])+(r[3]?' <small>'+esc(r[3])+'</small>':'')+'</span></div>'; }).join('')+'</div>'+table(rows.map(r=>[opt.label?opt.label(r[0]):r[0],r[1]]),opt.h||'Item',opt.hv||'Count');
+  el.querySelectorAll('.bar').forEach(b=>{ b.addEventListener('mousemove',e=>showTip(e,b.dataset.t)); b.addEventListener('mouseleave',hideTip); }); }
+function line(id,days){ const el=$(id); const ks=Object.keys(days||{}).sort().slice(-30);
+  if(ks.length<2){ el.innerHTML='<div class="empty">Daily tracking starts with this version. Check back in a couple of days for a trend line.</div>'+(ks.length?'<div class="mini">'+['visits','runs','newv','shares'].map(k=>'<div><b>'+fmt((days[ks[0]]||{})[k]||0)+'</b><span>'+{visits:'Visits',runs:'Runs',newv:'New visitors',shares:'Shares'}[k]+' today</span></div>').join('')+'</div>':''); return; }
+  const S=[['visits','Visits','var(--series-1)'],['runs','Runs played','var(--series-2)']], W=1100, H=260, L=44, R=90, T=14, Bm=30;
+  const vals=ks.map(k=>days[k]||{}), mx=Math.max(1,...vals.flatMap(v=>S.map(s=>v[s[0]]||0))), nice=Math.pow(10,Math.floor(Math.log10(mx))), top=Math.ceil(mx/nice)*nice;
+  const X=i=>L+(W-L-R)*(ks.length===1?0.5:i/(ks.length-1)), Y=v=>T+(H-T-Bm)*(1-v/top);
+  let g=''; for(let i=0;i<=4;i++){ const v=top*i/4, y=Y(v); g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y+'" y2="'+y+'" stroke="rgba(255,255,255,.07)"/><text x="'+(L-8)+'" y="'+(y+4)+'" text-anchor="end" fill="#7d7690" font-size="12">'+fmt(Math.round(v))+'</text>'; }
+  const step=Math.ceil(ks.length/8); ks.forEach((k,i)=>{ if(i%step===0||i===ks.length-1) g+='<text x="'+X(i)+'" y="'+(H-8)+'" text-anchor="middle" fill="#7d7690" font-size="12">'+k.slice(5)+'</text>'; });
+  let p=''; S.forEach(s=>{ const pts=vals.map((v,i)=>X(i).toFixed(1)+','+Y(v[s[0]]||0).toFixed(1)).join(' '); const lv=vals[vals.length-1][s[0]]||0; p+='<polyline points="'+pts+'" fill="none" stroke="'+s[2]+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="'+X(ks.length-1)+'" cy="'+Y(lv)+'" r="4" fill="'+s[2]+'" stroke="var(--surface-1)" stroke-width="2"/><text x="'+(X(ks.length-1)+8)+'" y="'+(Y(lv)+4)+'" fill="#efefef" font-size="13">'+s[1]+' '+fmt(lv)+'</text>'; });
+  el.innerHTML='<div class="legend">'+S.map(s=>'<span><i style="background:'+s[2]+'"></i>'+s[1]+'</span>').join('')+'</div><svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;margin-top:6px" role="img" aria-label="Daily visits and runs, last '+ks.length+' days">'+g+p+'<line id="xh" y1="'+T+'" y2="'+(H-Bm)+'" stroke="rgba(255,255,255,.35)" stroke-dasharray="3 3" opacity="0"/><rect x="'+L+'" y="'+T+'" width="'+(W-L-R)+'" height="'+(H-T-Bm)+'" fill="transparent" id="hit"/></svg>'+table(ks.map(k=>[k,(days[k]||{}).visits||0]),'Day','Visits');
+  const svg=el.querySelector('svg'), xh=el.querySelector('#xh'), hit=el.querySelector('#hit');
+  hit.addEventListener('mousemove',e=>{ const r=svg.getBoundingClientRect(), sx=(e.clientX-r.left)/r.width*W, i=Math.max(0,Math.min(ks.length-1,Math.round((sx-L)/(W-L-R)*(ks.length-1)))), v=vals[i]; xh.setAttribute('x1',X(i)); xh.setAttribute('x2',X(i)); xh.setAttribute('opacity',1);
+    showTip(e,'<b>'+ks[i]+'</b><br>'+S.map(s=>'<span style="color:'+s[2]+'">■</span> '+s[1]+': '+fmt(v[s[0]]||0)).join('<br>')+'<br>New visitors: '+fmt(v.newv||0)+'<br>Shares: '+fmt(v.shares||0)); });
+  hit.addEventListener('mouseleave',()=>{ xh.setAttribute('opacity',0); hideTip(); }); }
+const CAUSE={'Fell between the buildings':'Fell into a gap','Security caught up with you':'Caught by security','Slammed into a security shutter':'Hit a shutter','Gunned down':'Gunned down','Caught in a blast':'Caught in a blast','Caught in a laser sweep':'Laser sweep'};
+const SRC={direct:'Typed in / bookmark',site:'From the website',challenge:'Challenge link','coop-invite':'Co-op invite','daily-link':'Daily Heist link',search:'Search engines',meta:'Facebook / Instagram',tiktok:'TikTok',x:'X / Twitter',reddit:'Reddit',discord:'Discord',youtube:'YouTube',portal:'Game portals',other:'Other sites'};
+async function load(){ let d; try{ d=await (await fetch('/api/stats',{cache:'no-store'})).json(); }catch(e){ $('upd').textContent='could not load data'; return; }
+  const E=d.ev||{}, I=d.inp||{}, sum=o=>Object.values(o||{}).reduce((s,v)=>s+v,0);
+  const touch=(d.dev||{}).touch||0, desk=(d.dev||{}).desk||0, shares=sum(E.share), inbound=Object.entries(E.src||{}).filter(([k])=>k!=='direct'&&k!=='site').reduce((s,[,v])=>s+v,0);
+  $('kpis').innerHTML=[[fmt(d.runs),'Runs played'],[Math.floor((d.avgSec||0)/60)+':'+String((d.avgSec||0)%60).padStart(2,'0'),'Average run'],[pct(touch,touch+desk),'Runs on phones'],[fmt((E.visit||{}).new||0),'New visitors'],[fmt(sum(E.dau)-((E.dau||{}).new||0)),'Return visits (daily)'],[fmt(shares),'Shares'],[fmt(inbound),'Visits from links']].map(k=>'<div class="kpi"><div class="v">'+k[0]+'</div><div class="l">'+k[1]+'</div></div>').join('');
+  line('c-days',d.days);
+  const st=E.start||{}, nv=(E.visit||{}).new||0;
+  bars('c-funnel',[['New visitors',nv],['Started run 1',st['run-1']||0],['Started run 2',st['run-2']||0],['Shared something',shares],['Came in from a shared link',((E.src||{}).challenge||0)+((E.src||{})['coop-invite']||0)+((E.src||{})['daily-link']||0)]].map((r,i,a)=>[r[0],r[1],'',i&&a[i-1][1]?pct(r[1],a[i-1][1])+' of step before':'']),{keep:true,noShare:true,h:'Step',empty:'The funnel starts filling once the new version is live.'});
+  bars('c-src',E.src,{label:k=>SRC[k]||k.replace(/^utm:/,'Campaign: '),top:7,h:'Source'});
+  bars('c-ret',E.dau,{order:['new','same-day','day-1','day-2-7','day-8-30','day-30+'],label:k=>({new:'First day','same-day':'Same day',  'day-1':'Next day','day-2-7':'2 to 7 days later','day-8-30':'8 to 30 days later','day-30+':'Over a month later'})[k]||k,h:'Days since first visit'});
+  bars('c-cause',Object.fromEntries(Object.entries(d.cause||{}).filter(([k])=>k!=='deploy-test')),{label:k=>CAUSE[k]||k,h:'Cause of death'});
+  bars('c-di',Object.fromEntries(Object.entries(d.byDi||{}).map(([k,v])=>['District '+(+k+1),v])),{keep:true,h:'District'});
+  { const el=$('c-touch'); if(!I.g){ el.innerHTML='<div class="empty">Swipe tracking starts with this version. Play a few runs on a phone and it shows up here.</div>'; }
+    else { const hold=I.hold||0, lift=I.lift||0;
+      el.innerHTML='<div class="split" role="img" aria-label="Lift each swipe '+pct(lift,hold+lift)+', hold and chain '+pct(hold,hold+lift)+'"><span style="width:'+(lift/(hold+lift)*100)+'%;background:var(--series-1)"></span><span style="width:'+(hold/(hold+lift)*100)+'%;background:var(--series-2)"></span></div><div class="legend"><span><i style="background:var(--series-1)"></i>Lift each swipe '+pct(lift,hold+lift)+'</span><span><i style="background:var(--series-2)"></i>Hold and chain '+pct(hold,hold+lift)+'</span></div>'
+       +'<div class="mini"><div><b>'+fmt(Math.round(I.g/I.runs))+'</b><span>Swipes per run</span></div><div><b>'+(lift?Math.round(I.px/lift):0)+' px</b><span>Average swipe length</span></div><div><b>'+(lift?Math.round(I.ms/lift):0)+' ms</b><span>Touch to move fired</span></div><div><b>'+((I.hk||0)/I.runs).toFixed(1)+'</b><span>Thumb-lift curls ignored per run</span></div><div><b>'+fmt(I.flk||0)+'</b><span>Quick flicks rescued</span></div><div><b>'+fmt(I.tap||0)+'</b><span>Taps (no move)</span></div><div><b>'+fmt(I.fj||0)+'</b><span>Falls after a late jump</span></div><div><b>'+fmt(I.fn||0)+'</b><span>Falls with no jump tried</span></div></div>'; } }
+  bars('c-dir',{'Left':I.L||0,'Right':I.R||0,'Jump (up)':I.U||0,'Slide (down)':I.D||0},{keep:true,h:'Direction',empty:'Swipe tracking starts with this version.'});
+  { const g={}; for(const [k,v] of Object.entries(E.buy||{})){ const c=k.split(':')[0]; g[c]=(g[c]||0)+v; } bars('c-buy',g,{label:k=>({upgrade:'Upgrades','gun-upgrade':'Gun upgrades',sidekick:'New sidekicks','sidekick-up':'Sidekick levels',skin:'Skins',accessory:'Accessories'})[k]||k,h:'Category'}); }
+  bars('c-chips',d.chips,{order:['0-49','50-149','150-399','400-999','1000+'],label:k=>k+' chips',h:'Chips per run'});
+  bars('c-share',Object.assign({},...Object.entries(E.share||{}).map(([k,v])=>({['Share: '+k]:v})),...Object.entries(E.coop||{}).map(([k,v])=>({['Co-op: '+k]:v}))),{h:'Action'});
+  bars('c-sess',E['sess-min'],{order:['<1','1-3','3-10','10-30','30+'],label:k=>k+' min',h:'Minutes'});
+  bars('c-sruns',E['sess-runs'],{order:['0','1','2-3','4-7','8+'],label:k=>k+(k==='1'?' run':' runs'),h:'Runs in session'});
+  bars('c-ctl',E.ctl,{label:k=>k.replace(':',' → ').replace(/-/g,' '),h:'Setting'});
+  $('upd').textContent='updated '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+}
+load(); setInterval(load,60000);
+})();
+</script>
+</body>
+</html>

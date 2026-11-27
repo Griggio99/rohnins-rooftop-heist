@@ -106,9 +106,18 @@ const server=http.createServer((req,res)=>{
     return; }
   if(u.pathname==='/api/ev'&&req.method==='POST'){
     if(limited('ev'+ip,40,60000)) return send(res,429,{error:'slow down'});
-    let b=''; req.on('data',d=>{ b+=d; if(b.length>600){ if(!res.headersSent){ res.writeHead(413,{'Connection':'close'}); res.end(); } req.destroy(); } }); req.on('end',()=>{ try{ const j=JSON.parse(b); if(j&&j.e==='run'&&j.d){ const d=j.d, inc=(o,k)=>{ k=String(k).replace(/[^\w \-.]/g,'').slice(0,40)||'?'; o[k]=(o[k]||0)+1; };
-      stats.runs++; stats.sumT+=Math.min(7200,Math.max(0,+d.t||0)); inc(stats.byDi,Math.min(30,Math.max(0,+d.di||0))); inc(stats.byDist,Math.min(20000,Math.max(0,+d.dist||0))); inc(stats.cause,d.cause); inc(stats.mode,d.mode); if(d.pet) inc(stats.pet,d.pet); if(d.q) inc(stats.q,d.q); if(d.fps) inc(stats.fps,d.fps); if(d.dev) inc(stats.dev,d.dev); if(d.nth) inc(stats.nth,d.nth); sdirty=true; } }catch(e){} send(res,200,{ok:true}); }); return; }
-  if(u.pathname==='/api/stats') return send(res,200,Object.assign({avgSec:stats.runs?Math.round(stats.sumT/stats.runs):0},stats));
+    let b=''; req.on('data',d=>{ b+=d; if(b.length>1400){ if(!res.headersSent){ res.writeHead(413,{'Connection':'close'}); res.end(); } req.destroy(); } }); req.on('end',()=>{ try{ const j=JSON.parse(b); if(j&&j.e==='run'&&j.d){ const d=j.d, inc=(o,k)=>{ k=String(k).replace(/[^\w \-.]/g,'').slice(0,40)||'?'; o[k]=(o[k]||0)+1; };
+      stats.runs++; stats.sumT+=Math.min(7200,Math.max(0,+d.t||0)); inc(stats.byDi,Math.min(30,Math.max(0,+d.di||0))); inc(stats.byDist,Math.min(20000,Math.max(0,+d.dist||0))); inc(stats.cause,d.cause); inc(stats.mode,d.mode); if(d.pet) inc(stats.pet,d.pet); if(d.q) inc(stats.q,d.q); if(d.fps) inc(stats.fps,d.fps); if(d.dev) inc(stats.dev,d.dev); if(d.nth) inc(stats.nth,d.nth);
+      if(d.inp&&typeof d.inp==='object'){ stats.inp=stats.inp||{runs:0}; stats.inp.runs++; for(const k of ['g','L','R','U','D','lift','hold','tap','tapj','flk','hk','rv','px','ms','fj','fn']){ const v=Math.floor(+d.inp[k]); if(v>0&&v<100000) stats.inp[k]=(stats.inp[k]||0)+v; } for(const k of ['tj','lf','sn','lh']){ const o=stats.inp['set_'+k]=stats.inp['set_'+k]||{}; inc(o,d.inp[k]); } }
+      if(d.chips) inc(stats.chips=stats.chips||{},d.chips);
+      { const dk=new Date().toISOString().slice(0,10), D=stats.days=stats.days||{}, o=D[dk]=D[dk]||{}; o.runs=(o.runs||0)+1; const ks=Object.keys(D).sort(); while(ks.length>120) delete D[ks.shift()]; }
+      sdirty=true; } else if(j&&j.e==='ev'&&j.d){ const OK=['visit','src','newsrc','dau','start','share','coop','mode','over','shop','buy','tab','ctl','pause','sess-min','sess-runs'];
+        const n=String(j.d.e||''); if(OK.indexOf(n)>=0){ const E=stats.ev=stats.ev||{}, o=E[n]=E[n]||{}; let k=String(j.d.k==null?'-':j.d.k).replace(/[^\w \-.:+<>]/g,'').slice(0,40)||'-'; if(!(k in o)&&Object.keys(o).length>=150) k='other'; o[k]=(o[k]||0)+1;
+          const dk=new Date().toISOString().slice(0,10), D=stats.days=stats.days||{}, dd=D[dk]=D[dk]||{}; if(n==='visit'){ dd.visits=(dd.visits||0)+1; if(k==='new') dd.newv=(dd.newv||0)+1; } else if(n==='dau') dd.dau=(dd.dau||0)+1; else if(n==='start') dd.starts=(dd.starts||0)+1; else if(n==='share') dd.shares=(dd.shares||0)+1; else if(n==='src'&&k!=='direct'&&k!=='site') dd.inbound=(dd.inbound||0)+1;
+          sdirty=true; } } }catch(e){} send(res,200,{ok:true}); }); return; }
+  if(u.pathname==='/api/stats'){ const I=stats.inp, pct=(a,b)=>b?Math.round((a||0)*100/b)+'%':'n/a';
+    const touch=I&&I.g?{touchRuns:I.runs,swipesPerRun:Math.round(I.g/I.runs),heldChains:pct(I.hold,I.g),liftEachSwipe:pct(I.lift,I.g),avgSwipePx:I.lift?Math.round(I.px/I.lift):0,avgSwipeMs:I.lift?Math.round(I.ms/I.lift):0,releaseHooksBlockedPerRun:+(I.hk/I.runs).toFixed(1),quickReversals:pct(I.rv,I.g),fallsAfterLateJump:I.fj||0,fallsWithNoJump:I.fn||0}:null;
+    return send(res,200,Object.assign({avgSec:stats.runs?Math.round(stats.sumT/stats.runs):0,touch},stats)); }
   if(u.pathname==='/api/errors') return send(res,200,{count:errLog.length,errors:errLog.slice(-30)});
   if(u.pathname==='/api/run'){ if(limited(ip,30,60000)) return send(res,429,{error:'slow down'}); const sc0=Math.max(0,Math.min(60000,Math.floor(+u.searchParams.get('sc0'))||0)); return send(res,200,{tok:mkTok(sc0)}); }
   if(u.pathname==='/api/score'&&req.method==='POST'){
