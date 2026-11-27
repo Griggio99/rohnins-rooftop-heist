@@ -51,6 +51,7 @@ function rankOf(score){ let r=1; for(const s of scores) if(s.score>score) r++; r
 const server=http.createServer((req,res)=>{
   const ip=(req.headers['x-forwarded-for']||req.socket.remoteAddress||'').split(',')[0].trim();
   const u=new URL(req.url,'http://x');
+  res.setHeader('X-Content-Type-Options','nosniff'); res.setHeader('Referrer-Policy','strict-origin-when-cross-origin');
   if(req.method==='OPTIONS'){ res.writeHead(204,CORS); return res.end(); }
   if(u.pathname==='/api/ping') return send(res,200,{ok:true,players:scores.length,rooms:true,ws:true});
   { const m=u.pathname.match(/^\/api\/room\/([A-Za-z]{4})\/(events|pub)$/);
