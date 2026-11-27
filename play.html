@@ -152,7 +152,8 @@
   .lvr b{font-family:'Bebas Neue',Impact,sans-serif;font-size:20px;letter-spacing:.1em;color:#7be8ff}.lvr .rn{opacity:.75;font-size:12px;letter-spacing:.1em}.lvr .rw{color:#ffe07a;font-weight:700;font-size:13px}.lvr i{font-style:normal;text-align:right;opacity:.7;font-size:12px}
   .lvr.got{border-color:#7dffb0;opacity:.85}.lvr.got i{color:#7dffb0;font-size:18px}.lvr.nxt{border-color:#7be8ff;box-shadow:0 0 14px rgba(123,232,255,.3)}
   #lvtag:hover{text-shadow:0 0 12px #7be8ff}
-  #coach{position:fixed;left:50%;top:18%;transform:translateX(-50%);z-index:9;padding:10px 20px;border-radius:30px;background:rgba(10,6,24,.82);border:2px solid #7be8ff;color:#fff;font-family:'Bebas Neue',Impact,sans-serif;font-size:26px;letter-spacing:.14em;text-shadow:0 0 12px #7be8ff;pointer-events:none;animation:cpulse 1.1s ease-in-out infinite;white-space:normal;text-align:center;max-width:90vw;font-size:clamp(15px,4.6vw,26px)!important;line-height:1.15}
+  #coach{position:fixed;left:50%;top:14%;transform:translateX(-50%);z-index:9;padding:7px 16px;border-radius:30px;background:rgba(10,6,24,.82);border:2px solid #7be8ff;color:#fff;font-family:'Bebas Neue',Impact,sans-serif;font-size:26px;letter-spacing:.14em;text-shadow:0 0 12px #7be8ff;pointer-events:none;animation:cpulse 1.1s ease-in-out infinite;white-space:normal;text-align:center;max-width:90vw;font-size:clamp(13px,3.8vw,22px)!important;line-height:1.15}
+  @media (max-height:480px){ #coach{top:17%;padding:4px 12px;font-size:14px!important;border-width:1px} }
   #coach.hid{display:none}
   @keyframes cpulse{50%{box-shadow:0 0 22px rgba(123,232,255,.7);transform:translateX(-50%) scale(1.05)}}
   @keyframes shim{0%{left:-60%}55%,100%{left:130%}}
@@ -251,6 +252,35 @@
   #instbtn,#iosHint{margin-top:12px}
   #iosHint{font-size:13px;color:rgba(255,255,255,.6);letter-spacing:.04em;max-width:300px}
   #bf svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .mL,.mR{display:contents}
+  .menu2 .btn,.menu3 .btn{min-height:42px}
+  body:has(#over:not(.hidden)) #achToast{bottom:auto;top:max(10px,env(safe-area-inset-top));transform:translate(-50%,-220%)}
+  body:has(#over:not(.hidden)) #achToast.on{transform:translate(-50%,0)}
+  body:has(#over:not(.hidden)) #comm,body:has(#over:not(.hidden)) #comm2{display:none}
+  @media (orientation:landscape) and (max-height:520px){
+    #menu{flex-direction:row;align-items:safe center;justify-content:safe center;gap:4vw;padding:0 4vw}
+    #menu .mL,#menu .mR{display:flex;flex-direction:column;align-items:center;flex:1 1 0;min-width:0}
+    #menu .mR{max-width:min(440px,50vw)}
+    #menu .help,#menu #iosHint{display:none}
+    #menu .mR .btn{margin-top:8px}
+    #menu .menu2,#menu .menu3{margin-top:8px;width:100%}
+    #menu .mR>.btn#go{margin-top:0}
+    #menu .mR .btn{font-size:17px;padding:6px 12px 4px;min-height:38px}
+    #menu .mR .menu2 .btn{font-size:14px;flex:1 1 0;white-space:nowrap}
+    #menu .mR .menu3{gap:6px;max-width:none} #menu .mR .menu3 .btn{font-size:11.5px;padding:5px 4px 3px;min-height:38px}
+    #menu .mR .menu3 .btn,#menu .mR .menu2 .btn{margin-top:0}
+    #menu .mR .nm{margin-top:8px;padding:6px 10px;font-size:18px}
+    #menu .mR .best{margin-top:6px}
+    #menu .mL h1{font-size:clamp(28px,9vh,52px)!important}
+    #menu .kicker{font-size:10px}
+    #achToast{bottom:auto;top:max(8px,env(safe-area-inset-top));transform:translate(-50%,-220%)}
+    #achToast.on{transform:translate(-50%,0)}
+    #over .row:has(#again){position:sticky;bottom:0;z-index:2;padding:6px 0;background:linear-gradient(transparent,rgba(8,4,20,.92) 35%)}
+    #o-bank,#o-quote{display:none}
+    #over .btn{font-size:15px;padding:6px 12px 4px;min-height:38px;margin:0} #over .row{gap:6px;margin-top:6px!important} #over h2{font-size:34px!important;margin:0} #over .stats{margin:4px 0 6px!important} #over .stats b{font-size:34px} #over #cause{margin:0}
+    body #achToast,body:has(#over:not(.hidden)) #achToast{left:8px;transform:translate(0,-220%);max-width:34vw}
+    body #achToast.on,body:has(#over:not(.hidden)) #achToast.on{transform:translate(0,0)}
+  }
   @media (max-height:480px){ #o-trophy{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 4px} #o-trophy svg{width:44px;height:44px} #o-quote{margin:0;font-size:14px;text-align:left} #o-chal{margin:-2px 0 6px!important} .kicker{margin-bottom:2px} .sub{margin:4px 0 12px} .best{margin-top:8px} #menu .btn{font-size:20px;padding:8px 24px 6px} .stats{margin:10px 0 12px} #over h2{font-size:44px} }
   @media (max-width:420px){ .btn{padding:11px 22px 9px} }
   .cocode{font-family:'Bebas Neue',Impact,sans-serif;font-size:clamp(54px,14vw,96px);letter-spacing:.28em;padding-left:.28em;color:#7be8ff;text-shadow:0 0 22px rgba(123,232,255,.55);line-height:1;margin:6px 0 12px}
@@ -283,11 +313,14 @@
 <button id="fire" class="off" aria-label="Fire"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/></svg></button>
 
 <div id="menu" class="ov">
+ <div class="mL">
   <div class="kicker">One night // Eight districts // Sixteen bosses</div>
   <h1 style="font-size:clamp(34px,min(10.2vw,12vh),112px)">ROHNIN'S<br>ROOFTOP HEIST</h1>
   <div class="sub">THE MIDNIGHT SCORE</div>
   <div id="lvtag" role="button" tabindex="0" style="cursor:pointer;font-family:'Bebas Neue',Impact,sans-serif;letter-spacing:.2em;color:#7be8ff;font-size:clamp(13px,3.6vw,16px);margin:-6px 0 6px;opacity:.95"></div>
   <div id="evtag" class="hid" style="font-family:'Bebas Neue',Impact,sans-serif;letter-spacing:.2em;color:#bff3ff;font-size:clamp(12px,3.3vw,17px);margin:0 0 10px;text-shadow:0 0 12px #7be8ff">&#10052; WINTER HEIST EVENT &middot; EXCLUSIVE SKIN &#10052;</div>
+ </div>
+ <div class="mR">
   <button id="go" class="btn">START THE HEIST</button>
   <button id="cont" class="btn alt hid" style="margin-top:12px"></button>
   <button id="coopbtn" class="btn alt" style="margin-top:12px">CO-OP &middot; 2 PLAYERS</button>
@@ -306,6 +339,7 @@
   <button id="instbtn" class="btn alt hid">INSTALL APP</button>
   <div id="iosHint" class="hid">To install: tap Share, then <b>Add to Home Screen</b>.</div>
   <div class="best" id="mbest"></div>
+ </div>
 </div>
 
 <div id="coop" class="ov hidden">
@@ -651,10 +685,10 @@ function makeSection(){
   segs.push({z0,z1,id:segId++,first,nl:NL,rw:rwOf(NL)}); if(!menuMode) maybeTwist(z0);
   let c=z0+(first?46:18); const end=z1-22, diff=Math.min(1,z0/9000);
   while(c<end){ pattern(c,diff); if(!menuMode&&twAt(c)==='gold'&&Math.random()<0.7) coinLine(ri(0,NL-1),c+9,ri(5,8)); if(!menuMode&&Math.random()<0.32) addSky(ri(0,NL-1),c+ri(-6,8)); c+=(14+speedAt(c)*0.62+rand(0,8)-diff*3)*dfx().sg; }
-  gapAfter(z1); first=false;
+  gapAfter(z1,first&&(save.runs||0)<3); first=false;
 }
-function gapAfter(z1){
-  const v=speedAt(z1), gl=6.5+(v-20)*0.18+rand(0,2.5);
+function gapAfter(z1,easy){
+  const v=speedAt(z1), gl=easy?5.2+rand(0,0.8):6.5+(v-20)*0.18+rand(0,2.5);
   const al=ri(0,NL-1); for(let i=0;i<5;i++){ const t=(i+0.5)/5; coins.push({x:lx(al),y:0.9+1.8*Math.sin(Math.PI*t),z:z1+gl*t,got:false}); }
   gz=z1+gl;
 }
@@ -2174,7 +2208,7 @@ const QDIST=[
  [{d:[['R','Funkle... is that the NORTH POLE?!'],['G','Do not touch the cookies, Rohnin.']]},['B','SNOW EVERYWHERE!'],{d:[['G','Santa keeps his vault very cold.'],['R','He is going to be so mad.']]}]
 ];
 QUIPS.xmas=QDIST[9];
-function quip(k,dur,force){ if(save.talk===0) return; if(!force&&G.t-(G.lq===undefined?-99:G.lq)<9) return; const pool=(k==='dist'&&QDIST[pI()])||QUIPS[k]; if(!pool||!pool.length) return; const q=pick(pool); G.lq=G.t+(q.d?q.d.length*1.5:0); say(q); }
+function quip(k,dur,force){ if(save.talk===0) return; if(!force&&(save.tut||0)<3&&!coachDone.jump&&G.dist<260) return; if(!force&&G.t-(G.lq===undefined?-99:G.lq)<9) return; const pool=(k==='dist'&&QDIST[pI()])||QUIPS[k]; if(!pool||!pool.length) return; const q=pick(pool); G.lq=G.t+(q.d?q.d.length*1.5:0); say(q); }
 const bcEl=document.getElementById('bcard'); let bcTm=0;
 function bossCard(title,sub){ if(!bcEl||save.talk===0) return; const q=flat1(pick(QUIPS.win)); G.lq=G.t; bcEl.innerHTML='<div class="bt">'+title+'</div><div class="bs">'+sub+'</div><div class="bq">'+MK.G+'<p><b>FUNKLE</b></p>'+MK.R+'<p><b>ROHNIN</b></p></div><div class="bj"><b>'+(q[0]==='G'?'FUNKLE':'ROHNIN')+':</b> '+q[1]+'</div>'; bcEl.classList.add('on'); clearTimeout(bcTm); bcTm=setTimeout(()=>bcEl.classList.remove('on'),2300); }
 const CINE=[['G','Five feet tall. Zero feet of fear.',2500],['R','I am Rohnin. This heist is named after me.',2600],['B','Two agents. One vault. GO!',2000]];
@@ -2847,8 +2881,8 @@ const WKMODS=[
 const weekNo=()=>Math.floor((Math.floor(Date.now()/86400000)+3)/7);
 const wkMod=()=>WKMODS[weekNo()%WKMODS.length];
 function weekSeed(){ let h=2166136261; const s='heist-week-'+weekNo(); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return (h>>>0)||1; }
-const dayNo=()=>Math.floor(Date.now()/86400000), DMODS=['lowg','turbo','pistol','dark'];
-function dayMod(){ let i=(dayNo()*3+1)%DMODS.length; if(DMODS[i]===wkMod().id) i=(i+1)%DMODS.length; return WKMODS.find(m=>m.id===DMODS[i]); }
+const dayNo=()=>Math.floor(Date.now()/86400000), DMODS=['lowg','turbo','pistol','dark','rich'];
+function dayMod(){ let i=(dayNo()*2+1)%DMODS.length; if(DMODS[i]===wkMod().id) i=(i+1)%DMODS.length; return WKMODS.find(m=>m.id===DMODS[i]); }
 function applyMod(id){ G.mod=id||''; GRAV=id==='lowg'?17:32; JUMP_V=id==='lowg'?11.2:14; }
 let fxAvg=16, bloomC=null, bloomX=null, vigG=null, vigK='';
 function drawPost(dt){
@@ -2899,7 +2933,7 @@ let RUNTOK='';
 async function getRunTok(sc0){ RUNTOK=''; if(!LB.on||EMB) return; try{ const r=await fetch(apiU('api/run?sc0='+Math.floor(sc0||0)),{cache:'no-store'}); const j=await r.json(); RUNTOK=(j&&j.tok)||''; }catch(e){} }
 async function submitScore(){
   if(G.sc>=50) toHost({t:'score',score:Math.floor(G.sc),dist:Math.floor(G.dist),di:G.di,kills:G.kills,race:!!G.race});
-  if(!LB.on||G.sc<50) return; if(dfi()===0&&!G.daily&&!G.weekly){ try{ $('o-rank').textContent='Easy mode: score not ranked (switch to Normal in Options)'; }catch(_){} return; } const nm=(LB.name||'').trim()||'ROHNIN';
+  if(!LB.on||G.sc<50) return; if(dfi()===0&&!G.daily&&!G.weekly){ try{ const rk=$('o-rank'); rk.textContent='Easy mode: score not ranked. '; if((save.runs||0)>=3){ const bt=document.createElement('button'); bt.className='btn alt'; bt.style.cssText='font-size:15px;padding:7px 14px 5px;margin-top:6px;min-height:40px'; bt.textContent='PLAY RANKED · SWITCH TO NORMAL'; bt.onclick=()=>{ save.opts.df=1; persist(); rk.textContent='Normal mode on. Your next run is ranked.'; }; rk.appendChild(document.createElement('br')); rk.appendChild(bt); } else rk.textContent+='(switch to Normal in Options)'; }catch(_){} return; } const nm=(LB.name||'').trim()||'ROHNIN';
   const post=b=>fetch(apiU('api/score'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({name:nm,score:Math.floor(G.sc),dist:Math.floor(G.dist),di:G.di,kills:G.kills,tok:RUNTOK},b||{}))}).then(r=>r.json()).catch(()=>null);
   if(G.weekly){ post({mode:'weekly'}); return; } try{ if(G.daily) post({mode:'daily'}); const ps=NC.peer&&NC.peer.s; if((NC.active||NC.runId)&&ps&&ps.rn===NC.runId&&ps.nm){ const team=[nm.toUpperCase(),String(ps.nm)].sort().join(' + '); post({mode:'co',team,score:Math.floor(G.sc+(ps.sc||0)),kills:G.kills+(ps.kl||0)}); }
     const r=await fetch(apiU('api/score'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:nm,score:Math.floor(G.sc),dist:Math.floor(G.dist),di:G.di,kills:G.kills,tok:RUNTOK})}); const j=await r.json();
@@ -3079,8 +3113,8 @@ function closeShop(){ shopOpen=false; $('shop').classList.add('hidden'); if(shop
 const dayStr=()=>new Date().toISOString().slice(0,10);
 function daySeed(){ let h=2166136261; const s='heist-'+dayStr(); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return (h>>>0)||1; }
 try{ loginStreak(); missions(); }catch(e){}
-function updDailyBtn(){ const done=save.dlast===dayStr0(), live=done||save.dlast===new Date(Date.now()-864e5).toISOString().slice(0,10), b=$('daybtn'); b.textContent='DAILY · '+dayMod().name+(done?' · DONE':'')+(live&&save.dstreak>1?' · '+save.dstreak+'x':''); b.title=new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'}); }
-updDailyBtn();
+function updDailyBtn(){ const done=save.dlast===dayStr0(), live=done||save.dlast===new Date(Date.now()-864e5).toISOString().slice(0,10), b=$('daybtn'); const rm=864e5-(Date.now()%864e5), rh=Math.floor(rm/36e5), rn=Math.floor(rm%36e5/6e4); b.textContent='DAILY · '+dayMod().name+(done?' · DONE · NEW IN '+rh+'h '+rn+'m':'')+(live&&save.dstreak>1?' · '+save.dstreak+'x':''); b.title='Daily resets in '+rh+'h '+rn+'m (midnight UTC)'; }
+updDailyBtn(); setInterval(updDailyBtn,30000);
 $('wkbtn').textContent='WEEKLY · '+wkMod().name;
 $('wkbtn').addEventListener('click',e=>{ e.currentTarget.blur(); auInit(); raceSeed=weekSeed(); weeklyFlag=true; startGame(); setTimeout(()=>pop(pl.x,pl.y+3,PZ,'WEEKLY: '+wkMod().name+' · '+wkMod().desc,'#7be8ff',true),400); });
 $('daybtn').addEventListener('click',e=>{ e.currentTarget.blur(); auInit(); raceSeed=daySeed(); dailyFlag=true; startGame(); setTimeout(()=>pop(pl.x,pl.y+3,PZ,'DAILY: '+dayMod().name+' · '+dayMod().desc,'#ffd35a',true),400); });
@@ -3150,14 +3184,15 @@ function lvPanel(){ const xp=save.xp||0, L=lvOf(xp), el=$('lvp-list'); let h='';
 function xpAward(){ const g=Math.floor(G.sc/9+G.dist/25+G.kills*2+(G.daily?40:0)); const before=save.xp||0, L0=lvOf(before); save.xp=before+g; const L1=lvOf(save.xp); let bonus=0; const rw=[]; for(let l=L0+1;l<=L1;l++){ rw.push(grantLv(l)); bonus++; } if(bonus){ achToast('LEVEL UP! LV '+L1+' · '+lvName(L1)+' · '+rw[rw.length-1].toUpperCase()); } persist();
   const lo=xpAt(L1), hi=xpAt(L1+1), pct=Math.max(0,Math.min(1,(save.xp-lo)/(hi-lo))); $('o-xpt').textContent='+'+g+' XP · LV '+L1+' '+lvName(L1)+' · '+(hi-save.xp)+' TO NEXT'; const b=$('o-xpb'); b.style.transition='none'; b.style.width=Math.max(0,Math.min(1,(before-xpAt(L0))/(xpAt(L0+1)-xpAt(L0))))*100+'%'; void b.offsetWidth; b.style.transition=''; requestAnimationFrame(()=>{ b.style.width=(L1>L0?100:pct*100)+'%'; if(L1>L0) setTimeout(()=>{ b.style.transition='none'; b.style.width='0'; void b.offsetWidth; b.style.transition=''; b.style.width=pct*100+'%'; },1200); }); lvRefresh(); }
 lvRefresh();
-const COACH=[['lane',()=>IS_TOUCH?'SWIPE LEFT / RIGHT TO SWITCH LANES':'PRESS A / D OR ← → TO SWITCH LANES',8],['jump',()=>IS_TOUCH?'SWIPE UP TO JUMP GAPS':'PRESS W OR ↑ TO JUMP',90],['slide',()=>IS_TOUCH?'SWIPE DOWN TO SLIDE UNDER SHUTTERS':'PRESS S OR ↓ TO SLIDE',170],['fire',()=>IS_TOUCH?'HOLD THE FIRE BUTTON TO SHOOT':'HOLD SPACE TO SHOOT',260]];
+const COACH=[['lane',()=>IS_TOUCH?'SWIPE LEFT / RIGHT TO SWITCH LANES':'PRESS A / D OR ← → TO SWITCH LANES',8],['jump',()=>IS_TOUCH?'SWIPE UP TO JUMP GAPS':'PRESS W OR ↑ TO JUMP',48],['slide',()=>IS_TOUCH?'SWIPE DOWN TO SLIDE UNDER SHUTTERS':'PRESS S OR ↓ TO SLIDE',170],['fire',()=>IS_TOUCH?'HOLD THE FIRE BUTTON TO SHOOT':'HOLD SPACE TO SHOOT',260]];
 const coachDone={}; let coachI=0, coachT=0;
 function coachAct(a){ if(a==='left'||a==='right') coachDone.lane=1; else coachDone[a]=1; }
 setInterval(()=>{ const el=$('coach'); if(!el) return; if(G.state!=='playing'||(save.tut||0)>=3||EMB){ el.classList.add('hid'); if(G.state==='dead'&&coachI>0&&!G.coachSaved){ G.coachSaved=1; save.tut=(save.tut||0)+1; persist(); } return; }
   if(G.dist<2){ coachI=0; coachT=0; for(const k in coachDone) delete coachDone[k]; G.coachSaved=0; }
+  if(COACH[coachI+1]&&G.dist>=COACH[coachI+1][2]&&!coachDone[COACH[coachI+1][0]]){ coachI++; coachT=0; }
   const c=COACH[coachI]; if(!c){ el.classList.add('hid'); return; }
   if(coachDone[c[0]]){ coachI++; coachT=0; el.classList.add('hid'); return; }
-  if(G.dist>=c[2]){ coachT+=0.2; el.textContent=c[1](); el.classList.remove('hid'); if(coachT>9){ coachI++; coachT=0; el.classList.add('hid'); } } else el.classList.add('hid'); },200);
+  if(G.dist>=c[2]){ coachT+=0.2; el.textContent=c[1](); el.classList.remove('hid'); if(coachT>(c[0]==='jump'?16:9)){ coachI++; coachT=0; el.classList.add('hid'); } } else el.classList.add('hid'); },200);
 const confP=[]; let confOn=false;
 function confetti(x,y,cols){ if(save.opts.rm) return; let cv=document.getElementById('conf'); if(!cv){ cv=document.createElement('canvas'); cv.id='conf'; document.body.appendChild(cv); } cv.width=innerWidth; cv.height=innerHeight; for(let i=0;i<46;i++){ const a=Math.random()*6.283, v=120+Math.random()*340; confP.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-160,r:2+Math.random()*4,c:cols[i%cols.length],l:1,rot:Math.random()*6}); } if(!confOn){ confOn=true; let last=performance.now(); const st=ts=>{ const dt=Math.min(0.05,(ts-last)/1000); last=ts; const c=cv.getContext('2d'); c.clearRect(0,0,cv.width,cv.height); for(let i=confP.length-1;i>=0;i--){ const p=confP[i]; p.vy+=700*dt; p.x+=p.vx*dt; p.y+=p.vy*dt; p.vx*=0.99; p.l-=dt*0.9; p.rot+=dt*8; if(p.l<=0){ confP.splice(i,1); continue; } c.globalAlpha=Math.min(1,p.l*1.6); c.fillStyle=p.c; c.save(); c.translate(p.x,p.y); c.rotate(p.rot); c.fillRect(-p.r,-p.r*0.5,p.r*2,p.r); c.restore(); } if(confP.length) requestAnimationFrame(st); else { confOn=false; c.clearRect(0,0,cv.width,cv.height); } }; requestAnimationFrame(st); } }
 $('sh-list').addEventListener('click',e=>{

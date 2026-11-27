@@ -49,7 +49,7 @@ const errLog=[];
 function top(n){ return scores.slice().sort((a,b)=>b.score-a.score).slice(0,n).map(({name,score,di})=>({name,score,di})); }
 function rankOf(score){ let r=1; for(const s of scores) if(s.score>score) r++; return r; }
 const server=http.createServer((req,res)=>{
-  const ip=(req.headers['x-forwarded-for']||req.socket.remoteAddress||'').split(',')[0].trim();
+  const ip=String(req.headers['cf-connecting-ip']||req.headers['x-forwarded-for']||req.socket.remoteAddress||'').split(',')[0].trim();
   const u=new URL(req.url,'http://x');
   res.setHeader('X-Content-Type-Options','nosniff'); res.setHeader('Referrer-Policy','strict-origin-when-cross-origin');
   if(req.method==='OPTIONS'){ res.writeHead(204,CORS); return res.end(); }
@@ -66,7 +66,7 @@ const server=http.createServer((req,res)=>{
         return;
       }
       if(limited(ip+':pub',1800,60000)) return send(res,429,{error:'slow down'});
-      let body=''; req.on('data',c=>{ body+=c; if(body.length>4000) req.destroy(); });
+      let body=''; req.on('data',c=>{ body+=c; if(body.length>4000){ if(!res.headersSent){ res.writeHead(413,{'Connection':'close'}); res.end(); } req.destroy(); } });
       req.on('end',()=>{ let j; try{ j=JSON.parse(body); }catch(e){ return send(res,400,{error:'bad json'}); }
         const id=String(j&&j.id||'').replace(/[^\w]/g,'').slice(0,12); if(!id) return send(res,400,{error:'id'});
         const r=rooms.get(code); if(!r||!r.clients.has(id)) return send(res,409,{error:'not joined'});
@@ -81,7 +81,7 @@ const server=http.createServer((req,res)=>{
     return send(res,200,{top:top(n)}); }
   if(u.pathname==='/api/err'&&req.method==='POST'){
     if(limited(ip+'e',20,60000)) return send(res,429,{error:'slow down'});
-    let body=''; req.on('data',c=>{ body+=c; if(body.length>3000) req.destroy(); });
+    let body=''; req.on('data',c=>{ body+=c; if(body.length>3000){ if(!res.headersSent){ res.writeHead(413,{'Connection':'close'}); res.end(); } req.destroy(); } });
     req.on('end',()=>{ let j; try{ j=JSON.parse(body); }catch(e){ return send(res,400,{error:'bad json'}); }
       const ua=String(req.headers['user-agent']||''), dev=(ua.match(/iPhone|iPad|Android|Windows|Macintosh|Linux/)||['?'])[0];
       const rec={t:new Date().toISOString(),m:String(j.m||'').slice(0,300),s:String(j.s||'').slice(0,500),u:String(j.u||'').slice(0,80),dev};
@@ -89,15 +89,16 @@ const server=http.createServer((req,res)=>{
     return; }
   if(u.pathname==='/api/ev'&&req.method==='POST'){
     if(limited('ev'+ip,40,60000)) return send(res,429,{error:'slow down'});
-    let b=''; req.on('data',d=>{ b+=d; if(b.length>600) req.destroy(); }); req.on('end',()=>{ try{ const j=JSON.parse(b); if(j&&j.e==='run'&&j.d){ const d=j.d, inc=(o,k)=>{ k=String(k).replace(/[^\w \-.]/g,'').slice(0,40)||'?'; o[k]=(o[k]||0)+1; };
+    let b=''; req.on('data',d=>{ b+=d; if(b.length>600){ if(!res.headersSent){ res.writeHead(413,{'Connection':'close'}); res.end(); } req.destroy(); } }); req.on('end',()=>{ try{ const j=JSON.parse(b); if(j&&j.e==='run'&&j.d){ const d=j.d, inc=(o,k)=>{ k=String(k).replace(/[^\w \-.]/g,'').slice(0,40)||'?'; o[k]=(o[k]||0)+1; };
       stats.runs++; stats.sumT+=Math.min(7200,Math.max(0,+d.t||0)); inc(stats.byDi,Math.min(30,Math.max(0,+d.di||0))); inc(stats.byDist,Math.min(20000,Math.max(0,+d.dist||0))); inc(stats.cause,d.cause); inc(stats.mode,d.mode); if(d.pet) inc(stats.pet,d.pet); if(d.q) inc(stats.q,d.q); if(d.fps) inc(stats.fps,d.fps); if(d.dev) inc(stats.dev,d.dev); if(d.nth) inc(stats.nth,d.nth); sdirty=true; } }catch(e){} send(res,200,{ok:true}); }); return; }
   if(u.pathname==='/api/stats') return send(res,200,Object.assign({avgSec:stats.runs?Math.round(stats.sumT/stats.runs):0},stats));
   if(u.pathname==='/api/errors') return send(res,200,{count:errLog.length,errors:errLog.slice(-30)});
   if(u.pathname==='/api/run'){ if(limited(ip,30,60000)) return send(res,429,{error:'slow down'}); const sc0=Math.max(0,Math.min(60000,Math.floor(+u.searchParams.get('sc0'))||0)); return send(res,200,{tok:mkTok(sc0)}); }
   if(u.pathname==='/api/score'&&req.method==='POST'){
     if(limited(ip,12,60000)) return send(res,429,{error:'slow down'});
-    let body=''; req.on('data',c=>{ body+=c; if(body.length>2000) req.destroy(); });
+    let body=''; let big=false; req.on('data',c=>{ if(big) return; body+=c; if(body.length>2000){ big=true; body=''; try{ res.writeHead(413,{'Content-Type':'application/json'}); res.end('{"error":"too large"}'); }catch(_){} } });
     req.on('end',()=>{
+      if(big) return;
       let j; try{ j=JSON.parse(body); }catch(e){ return send(res,400,{error:'bad json'}); }
       const mode=j.mode==='co'?'co':j.mode==='daily'?'daily':j.mode==='weekly'?'weekly':'solo', M=(mode==='co'||mode==='weekly'||mode==='daily')?2:1;
       let name=mode==='co'?String(j.team||'').replace(/[^\w .\-!&+]/g,'').trim().slice(0,30):clean(j.name)||'ROHNIN'; if(BAD.test(name)) name=mode==='co'?'':'ROHNIN';
