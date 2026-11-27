@@ -3654,9 +3654,14 @@ addEventListener('message',e=>{
 let sw=null; const SWT=IS_TOUCH?Math.max(26,Math.min(innerWidth,innerHeight)*0.07):26;
 cv.addEventListener('pointerdown',e=>{ sw={id:e.pointerId,x:e.clientX,y:e.clientY,moved:false,t:0}; });
 cv.addEventListener('pointermove',e=>{
-  if(!sw||e.pointerId!==sw.id||G.state!=='playing') return; const dx=e.clientX-sw.x, dy=e.clientY-sw.y, ax=Math.abs(dx), ay=Math.abs(dy); if(Math.max(ax,ay)<(sw.moved&&IS_TOUCH?SWT*1.6:SWT)) return;
-  if(IS_TOUCH){ const now=performance.now(); if(now-sw.t<150) return; sw.t=now; }
-  sw.moved=true; sw.x=e.clientX; sw.y=e.clientY; if(ay>=ax*(IS_TOUCH?1.15:0.75)) act(dy<0?'jump':'slide'); else act(dx<0?'left':'right');
+  if(!sw||e.pointerId!==sw.id||G.state!=='playing') return;
+  const now=performance.now(), dx=e.clientX-sw.x, dy=e.clientY-sw.y, ax=Math.abs(dx), ay=Math.abs(dy);
+  const spd=sw.pt?Math.hypot(e.clientX-sw.px,e.clientY-sw.py)/Math.max(1,now-sw.pt):0; sw.px=e.clientX; sw.py=e.clientY; sw.pt=now;
+  const vert=ay>=ax*(IS_TOUCH?0.95:0.75), dir=vert?(dy<0?'jump':'slide'):(dx<0?'left':'right');
+  let thr=SWT; if(IS_TOUCH){ if(sw.moved&&dir===sw.dir) thr*=1.2; if(spd>0.8) thr*=0.8; } /* flicks and quick reversals stay snappy; slow same-way drags need a bit more travel */
+  if(Math.max(ax,ay)<thr) return;
+  if(IS_TOUCH){ if(now-sw.t<70) return; sw.t=now; }
+  sw.moved=true; sw.dir=dir; sw.x=e.clientX; sw.y=e.clientY; act(vert?(dy<0?'jump':'slide'):(dx<0?'left':'right'));
 });
 cv.addEventListener('pointerup',e=>{ if(!sw||e.pointerId!==sw.id) return; if(!sw.moved&&G.state==='playing'&&e.pointerType==='touch') act('jump'); sw=null; });
 cv.addEventListener('pointercancel',e=>{ if(sw&&e.pointerId===sw.id) sw=null; });
