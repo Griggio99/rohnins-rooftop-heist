@@ -864,7 +864,7 @@ function chordTones(root,maj){ return [root,root+(maj?4:3),root+7,root+12]; }
 function saw2(f,t,dur,vol,dest,lp,atk){ tone(f,t,dur,'sawtooth',vol,dest,{lp:lp,atk:atk||0.008,det:-9}); tone(f,t,dur,'sawtooth',vol,dest,{lp:lp,atk:atk||0.008,det:9}); }
 function kickAt(t,v){ const c=AU.ctx; tone(168,t,0.2,'sine',v,AU.mus,{to:44,atk:0.002}); tone(60,t,0.12,'triangle',v*0.5,AU.mus,{to:40,atk:0.002}); noise(t,0.012,0.18,3000,AU.mus);
   if(AU.duck){ const g=AU.duck.gain; g.cancelScheduledValues(t); g.setValueAtTime(0.22,t); g.linearRampToValueAtTime(1,t+0.23); } }
-function playStep(step,t){
+function playStepDef(step,t){
   const pd=PAL[pI()], pg=PROGS[(G.di+(pd.root%3))%3], bar=Math.floor(step/16)%4, s=step%16, ph=Math.floor(step/128)%4, inP=step%128;
   const key=pd.root+12, croot=key+pg.o[bar], maj=pg.q[bar], ct=chordTones(croot,maj), d=AU.duck, m=AU.mus;
   const lt=AU.lite, hv=(!lt&&(boss.on||G.arena))?1:0, bd=ph===2&&inP<32&&!lt; // breakdown: first 2 bars of every 3rd phrase
@@ -895,11 +895,94 @@ function playStep(step,t){
   // breakdown riser
   if(bd&&s===0&&inP===0) tone(220,t,2.0,'sawtooth',0.035,d,{to:1760,lp:2600,atk:0.9});
 }
+/* ---- per-biome tracks: original house / dance-pop styles (own chords, hooks, grooves; no sampled or copied tunes) ---- */
+const ARP16=[0,1,2,3,2,1,2,3,0,1,2,3,2,3,2,1], ARP8=[0,1,2,3,2,1,2,1];
+const PG={A:{o:[0,8,3,10],q:[0,1,1,1]},B:{o:[0,5,8,7],q:[0,0,1,1]},C:{o:[0,4,5,7],q:[1,0,1,1]},D:{o:[2,7,0,9],q:[0,1,1,0]},E:{o:[0,10,8,7],q:[0,1,1,1]},F:{o:[0,5,9,7],q:[1,1,0,1]},H:{o:[0,0,8,10],q:[0,0,1,1]},I:PROGS[0]};
+const MU={
+ 0:{nm:'Piano House',tm:1.0,pg:PG.I,dr:{k:'x...x...x...x...',s:'....x.......x...',o:'..x...x...x...x.',h:'.x.x.x.x.x.x.x.x'},
+  bass:{p:'..r...r...r...r.',w:'sawtooth',lp:560,v:0.3,len:0.17,sub:1},cp:{p:'X..x..x...x.x...',w:'triangle',lp:3200,v:0.085,len:0.3,n:3},pad:{w:'triangle',v:0.04,lp:2200},
+  ar:{r:2,seq:ARP8,w:'sine',lp:3600,v:0.05,len:0.14,oct:24},hk:{a:[[0,2,1],[2,3,1],[3,2,1],[6,1,2],[10,2,1],[12,3,2]],b:[[0,3,2],[4,2,1],[6,1,1],[8,2,2],[12,1,1],[14,0,1]],w:'triangle',lp:4200,v:0.11,oct:24,up:12}},
+ 1:{nm:'Nu-Disco',tm:0.97,pg:PG.D,dr:{k:'x...x...x...x...',s:'....x.......x...',o:'..x...x...x...x.',ol:0.16,h:'xxxxxxxxxxxxxxxx',ha:1},
+  bass:{p:'r.o.r.o.r.o.r.o.',w:'sawtooth',lp:700,v:0.3,len:0.12},cp:{p:'.x.x..x..x.x..x.',w:'square',lp:2600,v:0.034,len:0.07,n:3},pad:{w:'sawtooth',v:0.03,lp:1800},
+  ar:null,hk:{a:[[0,3,1],[2,3,1],[4,2,2],[8,3,1],[10,2,1],[12,1,2]],b:[[0,2,2],[3,3,1],[6,2,1],[8,1,2],[12,0,2]],w:'sawtooth',lp:3000,v:0.07,oct:24,up:0}},
+ 2:{nm:'City-Pop House',tm:1.02,pg:PG.F,dr:{k:'x...x...x...x...',s:'....x.......x...',o:'..x...x...x...x.',h:'.x.x.x.x.x.x.x.x'},
+  bass:{p:'r..r..r.r..r..o.',w:'square',lp:900,v:0.26,len:0.1,sub:1},cp:{p:'..x..x..x..x..x.',w:'sawtooth',lp:4200,v:0.03,len:0.12,n:3},pad:{w:'triangle',v:0.04,lp:2600},
+  ar:{r:1,seq:ARP16,w:'square',lp:4200,v:0.026,len:0.07,oct:24},hk:{a:[[1,2,1],[3,3,1],[5,2,1],[8,1,1],[10,2,1],[11,3,1],[14,2,1]],b:[[0,3,1],[2,2,1],[4,1,1],[7,2,1],[9,3,1],[12,2,2]],w:'triangle',lp:5000,v:0.1,oct:24,up:12}},
+ 3:{nm:'Deep House',tm:0.98,pg:PG.A,dr:{k:'x...x...x...x...',s:'....g.......x...',o:'..x...x...x...x.',h:'.x...x...x...x..'},
+  bass:{p:'.r..r..r..r..r..',w:'sine',lp:420,v:0.42,len:0.22,sub:1},cp:{p:'..x....x..x.....',w:'triangle',lp:1800,v:0.055,len:0.25,n:4},pad:{w:'triangle',v:0.065,lp:1800},
+  ar:{r:4,seq:ARP8,w:'sine',lp:3000,v:0.035,len:0.5,oct:36},hk:{a:[[0,2,4],[8,1,3],[12,3,2]],b:[[0,1,4],[6,2,2],[10,3,4]],w:'sine',lp:3000,v:0.1,oct:24,up:12}},
+ 4:{nm:'Electro House',tm:1.05,pg:PG.B,dr:{k:'x...x...x...x...',s:'....x.......x..g',o:'..x...x...x...x.',h:'.x.x.x.x.x.x.x.x',ha:1},
+  bass:{p:'r.rr.rr.r.rr.rr.',w:'sawtooth',lp:720,v:0.34,len:0.09,sub:1},cp:{p:'X..x..x...x.X...',saw:1,lp:3000,v:0.034,len:0.2,n:3},pad:{w:'sawtooth',v:0.028,lp:1500},
+  ar:null,hk:{a:[[0,3,2],[4,3,2],[8,2,2],[12,3,1],[14,2,1]],b:[[0,2,2],[4,1,2],[8,0,2],[12,1,2]],w:'sawtooth',lp:3500,v:0.09,oct:24,up:0}},
+ 5:{nm:'UK Garage',tm:1.07,pg:PG.D,dr:{k:'x.....g...x.....',s:'....x.......x..g',o:'..x..x..x..x..x.',h:'x.x.xxx.x.xxx.x.'},
+  bass:{p:'r.....r.r.o.....',w:'sawtooth',lp:520,v:0.3,len:0.2,sub:1},cp:{p:'x..x....x..x..x.',w:'square',lp:1800,v:0.04,len:0.12,n:3},pad:{w:'triangle',v:0.04,lp:2000},
+  ar:null,hk:{a:[[0,2,1],[3,3,1],[6,2,2],[10,3,1],[13,2,1]],b:[[2,1,1],[5,2,1],[8,3,2],[11,2,1],[14,1,1]],w:'triangle',lp:4200,v:0.11,oct:24,up:12}},
+ 6:{nm:'Trance',tm:1.08,pg:PG.B,dr:{k:'x...x...x...x...',s:'....x.......x...',o:'..x...x...x...x.',h:'.x.x.x.x.x.x.x.x'},
+  bass:{p:'.rrr.rrr.rrr.rrr',w:'sawtooth',lp:650,v:0.26,len:0.09,sub:1},cp:{p:'X.......X.......',saw:1,lp:2800,v:0.034,len:0.5,n:3},pad:{w:'sawtooth',v:0.03,lp:1600},
+  ar:{r:1,seq:ARP16,w:'sawtooth',lp:4500,v:0.03,len:0.09,oct:24},hk:{a:[[0,3,4],[4,2,2],[6,1,2],[8,3,4],[12,2,2],[14,1,2]],b:[[0,2,4],[4,3,2],[6,2,2],[8,1,4],[12,0,4]],w:'sawtooth',lp:3800,v:0.08,oct:24,up:0}},
+ 7:{nm:'Synthwave',tm:0.96,pg:PG.A,dr:{k:'x...x...x...x...',s:'....x.......x...',o:'..x...x...x...x.',h:'x.x.x.x.x.x.x.x.'},
+  bass:{p:'r.r.r.r.r.r.r.r.',w:'sawtooth',lp:520,v:0.26,len:0.2,sub:1},cp:{p:'x.x.x.x.x.x.x.x.',w:'sawtooth',lp:1800,v:0.02,len:0.1,n:3},pad:{w:'sawtooth',v:0.03,lp:1500},
+  ar:{r:2,seq:ARP8,w:'triangle',lp:3000,v:0.05,len:0.2,oct:24},hk:{a:[[0,0,2],[2,2,2],[4,3,2],[8,2,2],[10,1,2],[12,2,4]],b:[[0,3,2],[2,2,2],[4,1,2],[8,0,4],[12,1,4]],w:'sawtooth',lp:2600,v:0.075,oct:24,up:12}},
+ 8:{nm:'Desert House',tm:1.0,pg:PG.E,dr:{k:'x...x...x...x...',s:'....x.......x...',o:'..x...x...x...x.',h:'.x.x.x.x.x.x.x.x'},
+  bass:{p:'r..r..r.r..r..r.',w:'sawtooth',lp:600,v:0.3,len:0.14,sub:1},cp:{p:'x..x..x.x..x.x..',w:'sawtooth',lp:1500,v:0.04,len:0.14,n:2},pad:{w:'triangle',v:0.04,lp:2000},
+  ar:null,hk:{a:[[0,2,1],[1,3,1],[2,2,1],[3,1,1],[6,2,2],[8,1,1],[9,2,1],[10,1,1],[12,0,3]],b:[[0,3,2],[3,2,1],[4,1,1],[5,2,1],[8,1,2],[12,0,4]],w:'sawtooth',lp:2200,v:0.07,oct:24,up:0},
+  ex:(s,t,bar,ph,inP,bd,hv,lt,ct,d,m)=>{ if(bd||lt) return; if(s===3||s===6||s===11||s===14){ tone(620,t,0.05,'triangle',0.09,m,{to:380}); noise(t,0.03,0.05,5000,m); } if(s===10||s===12) tone(150,t,0.12,'sine',0.14,m,{to:90}); }},
+ 11:{nm:'Liquid House',tm:0.94,pg:PG.F,dr:{k:'x...x...x...x...',s:'....x.......x...',o:'..x...x...x...x.',h:'x.xxx.xxx.xxx.xx'},
+  bass:{p:'r..r..r.r.......',w:'sine',lp:500,v:0.42,len:0.25,sub:1},cp:{p:'x.x..x.x..x.....',w:'sine',lp:3000,v:0.07,len:0.3,n:3},pad:{w:'sine',v:0.065,lp:1600},
+  ar:{r:1,seq:ARP16,w:'sine',lp:4000,v:0.028,len:0.06,oct:36},hk:{a:[[0,3,3],[6,2,2],[10,1,3]],b:[[0,2,3],[6,3,2],[12,1,3]],w:'sine',lp:3500,v:0.1,oct:24,up:12},
+  ex:(s,t,bar,ph,inP,bd,hv,lt,ct,d,m)=>{ if(!bd&&!lt&&s%4===1&&Math.random()<0.35) tone(500+Math.random()*900,t,0.07,'sine',0.03,AU.dlySend||d,{to:1500}); }},
+ 12:{nm:'Bubblegum Dance-Pop',tm:1.06,pg:PG.I,dr:{k:'x...x...x...x...',s:'....x.......x...',o:'..x...x...x...x.',h:'x.x.x.x.x.x.x.x.',ha:1},
+  bass:{p:'..r...r...r...r.',w:'square',lp:800,v:0.26,len:0.12,sub:1},cp:{p:'X..x..x...x.x...',w:'square',lp:4500,v:0.028,len:0.1,n:3},pad:{w:'triangle',v:0.04,lp:2600},
+  ar:{r:2,seq:[2,3,2,1,3,2,1,2],w:'square',lp:4600,v:0.035,len:0.09,oct:24},hk:{a:[[0,3,1],[1,3,1],[2,2,1],[4,3,2],[8,3,1],[9,3,1],[10,2,1],[12,1,2]],b:[[0,2,1],[2,3,1],[4,2,1],[6,1,1],[8,2,2],[12,3,2]],w:'sawtooth',lp:4800,v:0.08,oct:24,up:12},
+  ex:(s,t,bar,ph,inP,bd,hv,lt,ct,d)=>{ if(s===0&&!bd&&!lt) for(let i=0;i<3;i++) tone(mf(ct[i]+60),t+i*0.06,0.18,'sine',0.04,AU.dlySend||d); }},
+ 13:{nm:'Spooky House',tm:0.96,pg:PG.H,dr:{k:'x...x...x...x...',s:'....g.......x...',o:'..x...x...x...x.',h:'.x...x...x...x..'},
+  bass:{p:'r..r..r.r..r..r.',w:'sawtooth',lp:450,v:0.38,len:0.16,sub:1},cp:{p:'x.......x.......',w:'square',lp:1500,v:0.06,len:0.7,n:3},pad:{w:'sawtooth',v:0.04,lp:900},
+  ar:null,hk:{a:[[0,1,3],[4,0,1],[6,1,1],[8,2,3],[12,1,2]],b:[[0,3,2],[3,2,1],[6,1,2],[10,0,2],[14,1,1]],w:'square',lp:2200,v:0.07,oct:24,up:0},
+  ex:(s,t,bar,ph,inP,bd,hv,lt,ct,d,m,cr)=>{ if(lt) return; if(s===0&&bar%2===0){ const f=mf(cr+36); tone(f,t,2.2,'sine',0.06,AU.dlySend||d,{atk:0.004}); tone(f*2.76,t,1.2,'sine',0.02,AU.dlySend||d,{atk:0.004}); } if(s===14&&bar===3) tone(900,t,0.4,'sine',0.03,d,{to:2200}); }},
+ 14:{nm:'Steam Electro',tm:1.03,pg:PG.B,dr:{k:'x...x...x...x...',s:'....x.......x..g',o:'..x...x...x...x.',h:'x.x.x.x.x.x.x.x.'},
+  bass:{p:'r..r.r..r..r.r..',w:'square',lp:520,v:0.28,len:0.1,sub:1},cp:{p:'.x..x..x.x..x..x',w:'sawtooth',lp:2500,v:0.03,len:0.06,n:3},pad:{w:'sawtooth',v:0.026,lp:1400},
+  ar:{r:1,seq:[0,0,2,0,0,2,0,2,0,0,2,0,3,2,0,2],w:'square',lp:2400,v:0.02,len:0.04,oct:12},hk:{a:[[0,2,1],[2,2,1],[3,3,1],[6,2,1],[8,1,1],[10,1,1],[11,2,1],[14,3,1]],b:[[0,3,1],[3,2,1],[4,1,1],[6,2,1],[8,3,2],[12,2,2]],w:'sawtooth',lp:2000,v:0.075,oct:24,up:0},
+  ex:(s,t,bar,ph,inP,bd,hv,lt,ct,d,m)=>{ if(bd||lt) return; if(s===2||s===6||s===10||s===14){ noise(t,0.045,0.09,3500,m); tone(1400,t,0.035,'square',0.03,m,{to:900}); } if(s===0&&bar%2===1) noise(t,0.5,0.05,6000,m); }},
+ 15:{nm:'Tropical House',tm:0.9,pg:PG.F,dr:{k:'x...x...x...x...',s:'....g.......x...',o:'..x...x...x...x.',h:'.xxx.xxx.xxx.xxx',ha:1},
+  bass:{p:'r..r..r.r..r..r.',w:'sine',lp:500,v:0.4,len:0.2,sub:1},cp:{p:'..x..x..x..x..x.',w:'triangle',lp:3200,v:0.07,len:0.12,n:3},pad:{w:'sine',v:0.055,lp:1800},
+  ar:null,hk:{a:[[0,2,1],[3,3,1],[6,2,1],[8,1,1],[11,2,1],[14,3,1]],b:[[0,3,1],[3,2,1],[6,1,1],[10,2,1],[12,3,2]],w:'triangle',lp:3800,v:0.12,oct:24,up:12},
+  ex:(s,t,bar,ph,inP,bd,hv,lt,ct,d,m)=>{ if(!bd&&!lt&&(s===7||s===15)) tone(1800,t,0.03,'square',0.025,m); }},
+ 16:{nm:'Big Beat Breaks',tm:1.05,pg:PG.H,dr:{k:'x.....g..x..g...',s:'....x.......x..g',o:'..x.......x...x.',h:'x.x.x.x.x.x.x.x.',ha:1},
+  bass:{p:'r.....r..r..r.o.',w:'sawtooth',lp:600,v:0.32,len:0.14,sub:1},cp:{p:'X.....x..x.....x',w:'sawtooth',lp:2800,v:0.034,len:0.12,n:3},pad:{w:'sawtooth',v:0.026,lp:1400},
+  ar:null,hk:{a:[[0,3,2],[3,3,1],[6,2,1],[8,3,2],[11,2,1],[14,1,2]],b:[[0,2,2],[3,3,1],[6,1,1],[8,2,2],[12,3,2]],w:'sawtooth',lp:3000,v:0.085,oct:24,up:0},
+  ex:(s,t,bar,ph,inP,bd,hv,lt,ct,d,m)=>{ if(inP===0&&!lt){ noise(t,2.4,0.18,0,m,260); tone(48,t,1.8,'sine',0.3,m,{to:30}); } }}
+};
+function playStepMu(step,t,ms){
+  const pd=PAL[pI()], pg=ms.pg, bar=Math.floor(step/16)%4, s=step%16, ph=Math.floor(step/128)%4, inP=step%128;
+  const key=pd.root+12, croot=key+pg.o[bar], maj=pg.q[bar], ct=chordTones(croot,maj), d=AU.duck, m=AU.mus;
+  const lt=AU.lite, hv=(!lt&&(boss.on||G.arena))?1:0, bd=ph===2&&inP<32&&!lt, second=!lt&&(inP>=64||hv), fill=!lt&&inP>=112, last=inP>=124;
+  const dr=ms.dr, on=p=>p.charCodeAt(s)!==46;
+  if(!bd&&on(dr.k)) kickAt(t,dr.k[s]==='g'?0.4:0.85);
+  if(on(dr.s)){ const v=dr.s[s]==='g'?0.4:1; noise(t,0.16,0.3*v,1500,m); noise(t+0.012,0.1,0.18*v,2600,m); tone(210,t,0.07,'triangle',0.16*v,m,{to:130}); }
+  if(!bd&&on(dr.o)) noise(t,dr.ol||0.1,0.1,7200,m);
+  if(!bd&&(hv||second||dr.ha)&&on(dr.h)) noise(t,0.035,hv?0.065:0.04,9000,m);
+  if(bd&&s%2===0) noise(t,0.03,0.03,9000,m);
+  if(step%128===0) noise(t,1.1,0.16,3200,m);
+  if(fill){ const r=last?1:2; if(s%r===0) noise(t,0.07,0.1+((inP-112)/16)*0.16,2200,m); if(last&&s===15) tone(300,t,0.14,'sawtooth',0.05,d,{to:1800}); }
+  if(!bd){ let bn=pd.root+pg.o[bar]; if(bn>44) bn-=12; const b=ms.bass, c=b.p[s];
+    if(c!=='.'){ const iv=c==='o'?12:c==='f'?7:0; tone(mf(bn+iv),t,hv?b.len*0.8:b.len,b.w,b.v,d,{lp:hv?b.lp*1.5:b.lp}); }
+    if(b.sub&&s===0) tone(mf(bn),t,0.18,'sine',0.38,d); }
+  if(G.xm&&!(XM&&XM.fin)&&!lt&&(s===2||s===6||s===10||s===14)) tone(mf(ct[(s>>2)%4]+36),t,0.22,'sine',0.045,AU.dlySend||d,{atk:0.003});
+  if(s===0){ for(const n of ct.slice(0,3)) tone(mf(n+12),t,1.65,ms.pad.w,ms.pad.v,d,{atk:0.12,lp:ms.pad.lp}); }
+  const cp=ms.cp; if(!bd&&!lt&&on(cp.p)){ const ch=cp.p[s], vv=cp.v*(ch==='X'?1.25:1), up=ch==='u'?12:0; for(const n of ct.slice(0,cp.n||3)){ if(cp.saw) saw2(mf(n+12+up),t,cp.len,vv,d,cp.lp); else tone(mf(n+12+up),t,cp.len,cp.w,vv,d,{lp:cp.lp,atk:0.006}); } }
+  const ar=ms.ar; if(ar){ if(!bd&&second&&s%ar.r===0){ const idx=ar.seq[(s/ar.r)%ar.seq.length]; tone(mf(ct[idx]+ar.oct),t,ar.len,ar.w,ar.v,AU.dlySend||d,{lp:ar.lp,atk:0.004}); }
+    else if(lt&&s%2===0&&inP>=32){ const idx=ARP8[(s/2)%8]; tone(mf(ct[idx]+ar.oct),t,0.12,'triangle',0.03,AU.dlySend||d,{lp:3000,atk:0.004}); } }
+  else if(lt&&s%2===0&&inP>=32){ const idx=ARP[(s/2)%8]; tone(mf(ct[idx]+24),t,0.12,'triangle',0.03,AU.dlySend||d,{lp:3000,atk:0.004}); }
+  if(!bd&&second){ const hk=ms.hk, H=bar%2?hk.b:hk.a; for(const n of H) if(n[0]===s){ const f=mf(ct[n[1]]+hk.oct+(hv?0:hk.up)); tone(f,t,0.28*n[2]*0.7+0.08,hv?'sawtooth':hk.w,hv?0.07:hk.v,AU.dlySend||d,{lp:hv?3200:hk.lp,atk:0.01}); if(!hv&&hk.w!=='sine') tone(f,t,0.2,'sine',0.05,AU.dlySend||d); } }
+  if(ms.ex) ms.ex(s,t,bar,ph,inP,bd,hv,lt,ct,d,m,croot);
+  if(bd&&s===0&&inP===0) tone(220,t,2.0,'sawtooth',0.035,d,{to:1760,lp:2600,atk:0.9});
+}
+function playStep(step,t){ const ms=MU[pI()]; if(ms) playStepMu(step,t,ms); else playStepDef(step,t); }
 function auTick(){
   const c=AU.ctx; if(!c||AU.muted) return; const live=AU.on;
   if(!live&&!(AU.menuOk&&(G.state==='menu'||G.state==='dead'))) return; AU.lite=!live;
   if(AU.next<c.currentTime) AU.next=c.currentTime+0.05;
-  const bpm=((live?122:118)+(live?clamp((G.speed-18)*0.45,0,10)+((boss.on||G.arena)?4:0):0))*(PAL[pI()].tm||1);
+  const bpm=((live?122:118)+(live?clamp((G.speed-18)*0.45,0,10)+((boss.on||G.arena)?4:0):0))*((MU[pI()]||PAL[pI()]).tm||1);
   if(AU.dly) AU.dly.delayTime.value=60/bpm*0.75;
   while(AU.next<c.currentTime+0.2){ playStep(AU.step,AU.next); AU.next+=60/bpm/4; AU.step++; }
 }
